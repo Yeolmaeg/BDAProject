@@ -1,0 +1,11 @@
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local config
+config/config.local.php

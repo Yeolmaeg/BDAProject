@@ -8,9 +8,14 @@ CREATE TABLE teams (
   team_name     VARCHAR(100) NOT NULL,
   city          VARCHAR(100),
   country       VARCHAR(100),
+  stadium_id    INT NOT NULL,  
   founded_year  SMALLINT,
   winnings      INT DEFAULT 0,
-  UNIQUE KEY uk_teams_name (team_name)
+  CONSTRAINT KEY fk_matches_stadium
+    FOREIGN KEY (stadium_id) REFERENCES stadiums(stadium_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  UNIQUE KEY uk_teams_name (team_name),
+  KEY idx_matches_stadium (stadium_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 2) players

@@ -11,7 +11,7 @@ CREATE TABLE teams (
   stadium_id    INT NOT NULL,  
   founded_year  SMALLINT,
   winnings      INT DEFAULT 0,
-  CONSTRAINT KEY fk_matches_stadium
+  CONSTRAINT KEY fk_teams_stadium
     FOREIGN KEY (stadium_id) REFERENCES stadiums(stadium_id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   UNIQUE KEY uk_teams_name (team_name),

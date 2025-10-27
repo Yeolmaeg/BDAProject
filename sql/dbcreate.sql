@@ -7,7 +7,6 @@ CREATE TABLE teams (
   team_id       INT AUTO_INCREMENT PRIMARY KEY,
   team_name     VARCHAR(100) NOT NULL,
   city          VARCHAR(100),
-  country       VARCHAR(100),
   stadium_id    INT NOT NULL,  
   founded_year  SMALLINT,
   winnings      INT DEFAULT 0,

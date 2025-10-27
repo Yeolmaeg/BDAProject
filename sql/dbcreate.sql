@@ -124,6 +124,7 @@ CREATE TABLE batting_stats (
   rbi                 SMALLINT,
   batting_avg         DECIMAL(5,3),
   on_base_percentage  DECIMAL(5,3),
+  slugging_percentage DECIMAL(5,3),
   CONSTRAINT fk_bat_match
     FOREIGN KEY (match_id) REFERENCES matches(match_id)
     ON UPDATE CASCADE ON DELETE CASCADE,

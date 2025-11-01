@@ -1,8 +1,21 @@
 USE team04;
 
-SET FOREIGN_KEY_CHECKS = 0;
 
--- 1) teams
+-- FK 참조 순서에 따라 재배치함
+
+-- stadiums
+CREATE TABLE stadiums (
+  stadium_id    INT AUTO_INCREMENT PRIMARY KEY,
+  stadium_name  VARCHAR(120) NOT NULL,
+  location      VARCHAR(200),
+  built_year    SMALLINT,
+  roof_type     ENUM('OPEN','RETRACTABLE','DOME','UNKNOWN') DEFAULT 'UNKNOWN',
+  UNIQUE KEY uk_stadiums_name (stadium_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- teams (stadiums 참조)  
 CREATE TABLE teams (
   team_id       INT AUTO_INCREMENT PRIMARY KEY,
   team_name     VARCHAR(100) NOT NULL,
@@ -10,14 +23,16 @@ CREATE TABLE teams (
   stadium_id    INT NOT NULL,  
   founded_year  SMALLINT,
   winnings      INT DEFAULT 0,
-  CONSTRAINT KEY fk_teams_stadium
+  CONSTRAINT fk_teams_stadium
     FOREIGN KEY (stadium_id) REFERENCES stadiums(stadium_id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   UNIQUE KEY uk_teams_name (team_name),
-  KEY idx_matches_stadium (stadium_id)
+  KEY idx_teams_stadium (stadium_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 2) players
+
+
+-- players (teams 참조)
 CREATE TABLE players (
   player_id     INT AUTO_INCREMENT PRIMARY KEY,
   player_name   VARCHAR(120) NOT NULL,
@@ -34,17 +49,10 @@ CREATE TABLE players (
   KEY idx_players_name (player_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 3) stadiums
-CREATE TABLE stadiums (
-  stadium_id    INT AUTO_INCREMENT PRIMARY KEY,
-  stadium_name  VARCHAR(120) NOT NULL,
-  location      VARCHAR(200),
-  built_year    SMALLINT,
-  roof_type     ENUM('OPEN','RETRACTABLE','DOME','UNKNOWN') DEFAULT 'UNKNOWN',
-  UNIQUE KEY uk_stadiums_name (stadium_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 4) matches
+
+
+-- matches (stadiums, teams 참조)
 CREATE TABLE matches (
   match_id      BIGINT AUTO_INCREMENT PRIMARY KEY,
   match_date    DATETIME NOT NULL,
@@ -71,7 +79,10 @@ CREATE TABLE matches (
   KEY idx_matches_teams (home_team_id, away_team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 5) team_match_performance
+
+
+
+-- team_match_performance (matches, teams 참조)
 CREATE TABLE team_match_performance (
   team_match_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
   match_id          BIGINT NOT NULL,
@@ -92,7 +103,10 @@ CREATE TABLE team_match_performance (
   KEY idx_tmp_hoa (home_or_away)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 6) pitching_stats
+
+
+
+--  pitching_stats (matches, players 참조)
 CREATE TABLE pitching_stats (
   pitch_id          BIGINT AUTO_INCREMENT PRIMARY KEY,
   match_id          BIGINT NOT NULL,
@@ -113,7 +127,10 @@ CREATE TABLE pitching_stats (
   KEY idx_pitch_so (strikeouts)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 7) batting_stats
+
+
+
+-- batting_stats (matches, players 참조)
 CREATE TABLE batting_stats (
   batting_id          BIGINT AUTO_INCREMENT PRIMARY KEY,
   match_id            BIGINT NOT NULL,
@@ -137,4 +154,4 @@ CREATE TABLE batting_stats (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-SET FOREIGN_KEY_CHECKS = 1;
+

@@ -116,6 +116,13 @@ WITH src AS (
   UNION ALL SELECT 'Choi Hyung-woo','outfielder',41,'Republic of Korea',1000000000
   UNION ALL SELECT 'Socrates Brito','outfielder',32,'Dominican Republic',1140000000
   UNION ALL SELECT 'Kim Doo-hyun','infielder', 21, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'KIm Do-hyun', 'United States of America', 24, 'Republic of Korea', 90000000
+  UNION ALL SELECT 'Jang Jae-hyuk', 'pitcher', 23, 'Republic of Korea', 31000000
+  UNION ALL SELECT 'Kim Min-jae', 'pitcher', 21, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Cam Alldred', 'pitcher', 29, 'United States of America', 437000000  
+  UNION ALL SELECT 'Park Jeong-woo', 'outfielder', 26, 'Republic of Korea', 65000000
+  UNION ALL SELECT 'Eric Lauer', 'pitcher', 29, 'United States of America', 437000000  
+  UNION ALL SELECT 'Eric Stout', 'pitcher', 31, 'United States of America', 65500000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -199,6 +206,8 @@ WITH src AS (
   UNION ALL SELECT 'Yang Woo-hyun', 'infielder', 24, 'Dominican Republic', 40000000
   UNION ALL SELECT 'Lee Chang-yong', 'infielder', 25, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Ruben Cardenas', 'outfielder', 27, 'United States of America', 618000000
+  UNION ALL SELECT 'Kim Mu-shin', 'pitcher', 25, 'Republic of Korea', 70000000
+  UNION ALL SELECT 'Song Eun-beom', 'pitcher', 40, 'Republic of Korea', 60000000 
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -229,7 +238,7 @@ WITH src AS (
   UNION ALL SELECT 'Son Ju-young','pitcher',25,'Republic of Korea',43000000
   UNION ALL SELECT 'Yoo Young-chan','pitcher',20,'Republic of Korea',85000000
   UNION ALL SELECT 'Yoon Ho-sol','pitcher',29,'Republic of Korea',70000000
-  UNION ALL SELECT 'Lee Mi-deum','pitcher',31,'Republic of Korea',30000000
+  UNION ALL SELECT 'Lee Mid-Eum','pitcher',31,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Sang-young','pitcher',25,'Republic of Korea',50000000
   UNION ALL SELECT 'Lee Woo-chan','pitcher',29,'Republic of Korea',125000000
   UNION ALL SELECT 'Lee Jong-jun','pitcher',20,'Republic of Korea',30000000
@@ -276,6 +285,7 @@ WITH src AS (
   UNION ALL SELECT 'Choi Myeong-kyung', 'infielder', 23, 'Republic of Korea', 30000000 
   UNION ALL SELECT 'Choi Won-young', 'outfielder', 21, 'Republic of Korea', 30000000 
   UNION ALL SELECT 'Ham Chang-geun', 'outfielder', 23, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Elieser Hernández', 'pitcher', 29, 'United States of America', 1164000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -356,6 +366,9 @@ WITH src AS (
   UNION ALL SELECT 'Jared Young', 'infielder', 29, 'Canada', 434000000
   UNION ALL SELECT 'Park Min-jun', 'catcher', 22, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Kwon Hwi', 'pitcher', 24, 'Republic of Korea', 37000000
+  UNION ALL SELECT 'Kim Do-Yun', 'pitcher', 22, 'Republic of Korea', 31000000
+  UNION ALL SELECT 'Jordan Balazovic', 'pitcher', 26, 'Canada', 364000000
+  UNION ALL SELECT 'Park Ji-ho', 'pitcher', 21, 'Republic of Korea', 30000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -436,6 +449,7 @@ WITH src AS (
   UNION ALL SELECT 'Sim Woo-jun', 'infielder', 29, 'Republic of Korea', 500000000
   UNION ALL SELECT 'Ahn Hyun-min', 'outfielder', 21, 'Republic of Korea', 33000000
   UNION ALL SELECT 'Yun Jun-hyeok', 'infielder', 23, 'Republic of Korea', 35000000
+  UNION ALL SELECT 'Han Cha-hyeon', 'pitcher', 26, 'Republic of Korea', 35000000   
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -514,6 +528,11 @@ WITH src AS (
   UNION ALL SELECT 'Jeong Jun-jae', 'infielder', 21, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Jung Hyun-seung', 'outfielder', 23, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Choi Min-chang', 'outfielder', 29, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Drew Anderson', 'pitcher', 30, 'United States of America', 1675000000
+  UNION ALL SELECT 'Keisho Shirakawa', 'pitcher', 23, 'Japan', 34300000
+  UNION ALL SELECT 'Kim Taek-hyeong', 'pitcher', 28, 'Republic of Korea', 205000000
+  UNION ALL SELECT 'Jang Ji-hoon', 'pitcher', 26, 'Republic of Korea', 130000000  
+  UNION ALL SELECT 'Park Sung-bin', 'pitcher', 21, 'Republic of Korea', 30000000
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -596,6 +615,9 @@ WITH src AS (
   UNION ALL SELECT 'Lee In-han','outfielder',26,'Republic of Korea',31000000
   UNION ALL SELECT 'Choo Jae-hyun','outfielder',27,'Republic of Korea', 60000000
   UNION ALL SELECT 'Hyun Do-hun', 'pitcher', 31,'Republic of Korea',33000000
+  UNION ALL SELECT 'Lee Min-seok', 'pitcher', 21, 'Republic of Korea', 40000000
+  UNION ALL SELECT 'Yoon Seong-bin', 'pitcher', 25, 'Republic of Korea', 31000000
+  UNION ALL SELECT 'Park Joon-woo', 'pitcher', 19, 'Republic of Korea', 30000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -674,6 +696,10 @@ WITH src AS (
   UNION ALL SELECT 'Chae Eun-seong','outfielder',20,'Republic of Korea',1000000000
   UNION ALL SELECT 'Yonathan Perlaza','outfielder',34,'Bolivarian Republic of Venezuela',1143000000
   UNION ALL SELECT 'Han Kyeong-bin','infielder', 26, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Jaime Barría', 'pitcher', 28, 'Republic of Panama', 699000000
+  UNION ALL SELECT 'Kim Do-bin', 'pitcher', 23, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Kim Seung-il', 'pitcher', 23, 'Republic of Korea', 30000000  
+  UNION ALL SELECT 'Ryan Weiss', 'pitcher', 28, 'United States of America', 524000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -752,6 +778,10 @@ WITH src AS (
   UNION ALL SELECT 'Kim Beom-jun','outfielder', 24, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Kim Se-hun','infielder', 19, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Han Jae-hwan', 'infielder', 23, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Jun Ru-geon', 'pitcher', 24, 'Republic of Korea', 31000000
+  UNION ALL SELECT 'Son Ju-hwan', 'pitcher', 22, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Mok Ji-hoon', 'pitcher', 20, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Eric Jokisch', 'pitcher', 35, 'United States of America', 145600000    
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)
@@ -825,13 +855,13 @@ WITH src AS (
   UNION ALL SELECT 'Im Byeong-uk','outfielder',35,'Republic of Korea',70000000
   UNION ALL SELECT 'Joo Seong-won','outfielder',30,'Republic of Korea',35000000
   UNION ALL SELECT 'Ronnie Dawson','outfielder',29,'United States of America',786000000
-  UNION ALL SELECT 'Kim Dong-wook','pticher', 27, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Kim Dong-wook','pitcher', 27, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Park Bum-jun','pitcher', 20, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Park Joo-hong', 'outfielder', 23, 'Republic of Korea', 37000000
   UNION ALL SELECT 'Shim Hwi-yun', 'infielder', 19, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Yang Ji-yul', 'pitcher', 26, 'Republic of Korea', 35000000
   UNION ALL SELECT 'Won Seong-jun', 'outfielder', 24, 'Republic of Korea', 40000000
-  UNION ALL SELECT 'Lee Seung-won','infielder', 20, 'Republic of Korea', 32000000
+  UNION ALL SELECT 'Lee Seung-won','infielder', 20, 'Republic of Korea', 32000000 
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
 INSERT INTO players (player_name, position, age, nationality, team_id, salary)

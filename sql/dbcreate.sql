@@ -111,7 +111,6 @@ CREATE TABLE IF NOT EXISTS team_match_performance (
   team_rbi          SMALLINT DEFAULT 0,
   team_homeruns     SMALLINT DEFAULT 0,
   team_errors       SMALLINT DEFAULT 0,
-  team_injury_rate  DECIMAL(5,2),
   home_or_away      ENUM('HOME','AWAY') NOT NULL,
   CONSTRAINT fk_tmp_match
     FOREIGN KEY (match_id) REFERENCES matches(match_id)

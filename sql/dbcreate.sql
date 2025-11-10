@@ -3,7 +3,7 @@ SET time_zone = '+09:00';
 
 CREATE DATABASE IF NOT EXISTS team04
   DEFAULT CHARACTER SET utf8mb4
-  DEFAULT COLLATE utf8mb4_0900_ai_ci;
+  DEFAULT COLLATE utf8mb4_general_ci;
 
 USE team04;
 
@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS players (
 
 DELIMITER $$
 
+DROP TRIGGER IF EXISTS players_bi_set_team_name $$
 CREATE TRIGGER players_bi_set_team_name
 BEFORE INSERT ON players
 FOR EACH ROW
@@ -60,6 +61,7 @@ BEGIN
   SET NEW.team_name = (SELECT team_name FROM teams WHERE team_id = NEW.team_id);
 END$$
 
+DROP TRIGGER IF EXISTS players_bu_set_team_name $$
 CREATE TRIGGER players_bu_set_team_name
 BEFORE UPDATE ON players
 FOR EACH ROW
@@ -222,6 +224,7 @@ CREATE TABLE IF NOT EXISTS player_weather_performance (
 -- 이름 동기화 (player_id로 player_name 채움)
 DELIMITER $$
 
+DROP TRIGGER IF EXISTS pwp_player_name_sync_ins $$
 CREATE TRIGGER pwp_player_name_sync_ins
 BEFORE INSERT ON player_weather_performance
 FOR EACH ROW
@@ -229,6 +232,7 @@ BEGIN
   SET NEW.player_name = (SELECT player_name FROM players WHERE player_id = NEW.player_id);
 END$$
 
+DROP TRIGGER IF EXISTS pwp_player_name_sync_upd $$
 CREATE TRIGGER pwp_player_name_sync_upd
 BEFORE UPDATE ON player_weather_performance
 FOR EACH ROW

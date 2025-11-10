@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS players (
   age           SMALLINT,
   nationality   VARCHAR(80),
   team_id       INT NOT NULL,
+  team_name     VARCHAR(100) NOT NULL,
   salary        BIGINT UNSIGNED,
   CONSTRAINT fk_players_team
     FOREIGN KEY (team_id) REFERENCES teams(team_id)
@@ -49,6 +50,27 @@ CREATE TABLE IF NOT EXISTS players (
   KEY idx_players_name (player_name),
   KEY idx_players_team_position (team_id, position)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DELIMITER $$
+
+CREATE TRIGGER players_bi_set_team_name
+BEFORE INSERT ON players
+FOR EACH ROW
+BEGIN
+  SET NEW.team_name = (SELECT team_name FROM teams WHERE team_id = NEW.team_id);
+END$$
+
+CREATE TRIGGER players_bu_set_team_name
+BEFORE UPDATE ON players
+FOR EACH ROW
+BEGIN
+  IF NEW.team_id <> OLD.team_id THEN
+    SET NEW.team_name = (SELECT team_name FROM teams WHERE team_id = NEW.team_id);
+  END IF;
+END$$
+
+DELIMITER ;
+
 
 -- matches (stadiums, teams 참조)
 CREATE TABLE IF NOT EXISTS matches (
@@ -145,17 +167,223 @@ CREATE TABLE IF NOT EXISTS batting_stats (
 
 
 -- users
+-- users
 CREATE TABLE IF NOT EXISTS users (
   user_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_name     VARCHAR(100) NOT NULL,
-  user_bdate    DATE,                      -- 생년월일 YYYY-MM-DD
+  user_bdate    DATE,
   user_phone    VARCHAR(20),
-  user_email    VARCHAR(255) NOT NULL,     -- 로그인할 때 이메일 쓸 예정
-  user_pass     VARCHAR(255) NOT NULL, 
+  user_email    VARCHAR(255) NOT NULL,
+  user_pass     VARCHAR(255) NOT NULL,
+  favorite_team_id   INT NULL, -- 북마크용 추가
+  favorite_player_id INT NULL, -- 북마크용 추가
+
+  CONSTRAINT fk_users_fav_team
+    FOREIGN KEY (favorite_team_id) REFERENCES teams(team_id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT fk_users_fav_player
+    FOREIGN KEY (favorite_player_id) REFERENCES players(player_id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+
   UNIQUE KEY uk_users_email (user_email),
   UNIQUE KEY uk_users_phone (user_phone),
-  KEY idx_users_name (user_name)
+  KEY idx_users_name (user_name),
+  KEY idx_users_fav_team (favorite_team_id),
+  KEY idx_users_fav_player (favorite_player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+
+-- player_weather_performance (고정 버킷)
+CREATE TABLE IF NOT EXISTS player_weather_performance (
+  player_weather_perf_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  player_id         INT NOT NULL,
+  player_name       VARCHAR(120) NOT NULL,
+  temp_bucket       VARCHAR(20)  NOT NULL,
+  humidity_bucket   VARCHAR(20)  NOT NULL,
+  wind_bucket       VARCHAR(20)  NOT NULL,
+  rain_bucket       VARCHAR(20)  NOT NULL,
+  bat_matches_count   INT NOT NULL DEFAULT 0,
+  pitch_matches_count INT NOT NULL DEFAULT 0,
+  avg_ba   DECIMAL(5,3) NULL,     -- 타자 타율
+  avg_ops  DECIMAL(5,3) NULL,     -- 타자 OPS=OBP+SLG
+  avg_era  DECIMAL(5,2) NULL,     -- 투수 era
+
+  CONSTRAINT fk_pwp_player
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  UNIQUE KEY uk_pwp_combo (player_id, temp_bucket, humidity_bucket, wind_bucket, rain_bucket),
+  KEY idx_pwp_player (player_id),
+  KEY idx_pwp_buckets (temp_bucket, humidity_bucket, wind_bucket, rain_bucket)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 이름 동기화 (player_id로 player_name 채움)
+DELIMITER $$
+
+CREATE TRIGGER pwp_player_name_sync_ins
+BEFORE INSERT ON player_weather_performance
+FOR EACH ROW
+BEGIN
+  SET NEW.player_name = (SELECT player_name FROM players WHERE player_id = NEW.player_id);
+END$$
+
+CREATE TRIGGER pwp_player_name_sync_upd
+BEFORE UPDATE ON player_weather_performance
+FOR EACH ROW
+BEGIN
+  IF NEW.player_id <> OLD.player_id THEN
+    SET NEW.player_name = (SELECT player_name FROM players WHERE player_id = NEW.player_id);
+  END IF;
+END$$
+
+DELIMITER ;
+
+
+
+-- 데이터 바뀌면 리프레시
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE refresh_player_weather_performance()
+BEGIN
+  -- 초기화
+  TRUNCATE TABLE player_weather_performance;
+
+  -- batting_stats에서 타자 집계
+  INSERT INTO player_weather_performance
+    (player_id, temp_bucket, humidity_bucket, wind_bucket, rain_bucket,
+     bat_matches_count, pitch_matches_count, avg_ba, avg_ops, avg_era)
+  SELECT
+    b.player_id,
+
+    -- temp bucket
+    CASE
+      WHEN m.temp IS NULL THEN 'UNK'
+      WHEN m.temp < 10   THEN '<10'
+      WHEN m.temp < 15   THEN '10-15'
+      WHEN m.temp < 20   THEN '15-20'
+      WHEN m.temp < 25   THEN '20-25'
+      WHEN m.temp < 30   THEN '25-30'
+      ELSE '>=30'
+    END AS temp_bucket,
+
+    -- humidity bucket
+    CASE
+      WHEN m.humidity IS NULL THEN 'UNK'
+      WHEN m.humidity < 50   THEN '<50'
+      WHEN m.humidity < 60   THEN '50-60'
+      WHEN m.humidity < 70   THEN '60-70'
+      WHEN m.humidity < 80   THEN '70-80'
+      ELSE '>=80'
+    END AS humidity_bucket,
+
+    -- wind bucket
+    CASE
+      WHEN m.wind_speed IS NULL THEN 'UNK'
+      WHEN m.wind_speed < 1   THEN '<1'
+      WHEN m.wind_speed < 2   THEN '1-2'
+      WHEN m.wind_speed < 3   THEN '2-3'
+      WHEN m.wind_speed < 5   THEN '3-5'
+      ELSE '>=5'
+    END AS wind_bucket,
+
+    -- rain bucket
+    CASE
+      WHEN m.rainfall IS NULL THEN 'UNK'
+      WHEN m.rainfall = 0    THEN '0'
+      WHEN m.rainfall <= 1   THEN '0-1'
+      WHEN m.rainfall <= 5   THEN '1-5'
+      WHEN m.rainfall <= 10  THEN '5-10'
+      ELSE '>10'
+    END AS rain_bucket,
+  
+    -- 성적 비교를 위한 평균
+    COUNT(*)                                    AS bat_matches_count,
+    0                                           AS pitch_matches_count,
+    ROUND(AVG(b.batting_avg), 3)                AS avg_ba,
+    ROUND(AVG(b.on_base_percentage + b.slugging_percentage), 3)
+                                                AS avg_ops,
+    NULL                                        AS avg_era
+  FROM batting_stats b
+  JOIN matches m ON m.match_id = b.match_id
+  GROUP BY b.player_id, temp_bucket, humidity_bucket, wind_bucket, rain_bucket
+  ;
+
+  -- pitching_stats에서 투수 집계 
+  INSERT INTO player_weather_performance
+    (player_id, temp_bucket, humidity_bucket, wind_bucket, rain_bucket,
+     bat_matches_count, pitch_matches_count, avg_ba, avg_ops, avg_era)
+  SELECT
+    p.player_id,
+
+    CASE
+      WHEN m.temp IS NULL THEN 'UNK'
+      WHEN m.temp < 10   THEN '<10'
+      WHEN m.temp < 15   THEN '10-15'
+      WHEN m.temp < 20   THEN '15-20'
+      WHEN m.temp < 25   THEN '20-25'
+      WHEN m.temp < 30   THEN '25-30'
+      ELSE '>=30'
+    END AS temp_bucket,
+
+    CASE
+      WHEN m.humidity IS NULL THEN 'UNK'
+      WHEN m.humidity < 50   THEN '<50'
+      WHEN m.humidity < 60   THEN '50-60'
+      WHEN m.humidity < 70   THEN '60-70'
+      WHEN m.humidity < 80   THEN '70-80'
+      ELSE '>=80'
+    END AS humidity_bucket,
+
+    CASE
+      WHEN m.wind_speed IS NULL THEN 'UNK'
+      WHEN m.wind_speed < 1   THEN '<1'
+      WHEN m.wind_speed < 2   THEN '1-2'
+      WHEN m.wind_speed < 3   THEN '2-3'
+      WHEN m.wind_speed < 5   THEN '3-5'
+      ELSE '>=5'
+    END AS wind_bucket,
+
+    CASE
+      WHEN m.rainfall IS NULL THEN 'UNK'
+      WHEN m.rainfall = 0    THEN '0'
+      WHEN m.rainfall <= 1   THEN '0-1'
+      WHEN m.rainfall <= 5   THEN '1-5'
+      WHEN m.rainfall <= 10  THEN '5-10'
+      ELSE '>10'
+    END AS rain_bucket,
+
+    0                        AS bat_matches_count,
+    COUNT(*)                 AS pitch_matches_count,
+    NULL                     AS avg_ba,
+    NULL                     AS avg_ops,
+    ROUND(AVG(p.era), 2)     AS avg_era
+  FROM pitching_stats p
+  JOIN matches m ON m.match_id = p.match_id
+  GROUP BY p.player_id, temp_bucket, humidity_bucket, wind_bucket, rain_bucket
+  ON DUPLICATE KEY UPDATE
+
+    -- 타자/투수 경기 카운트 분리
+    pitch_matches_count = VALUES(pitch_matches_count),
+    -- 평균은 투수쪽만 채우고, 타자 평균은 기존 값 유지
+    avg_era = VALUES(avg_era),
+    avg_ba  = player_weather_performance.avg_ba,
+    avg_ops = player_weather_performance.avg_ops,
+    bat_matches_count = player_weather_performance.bat_matches_count
+  ;
+
+  -- players name 동기화 한 번 더
+  UPDATE player_weather_performance pwp
+  JOIN players p ON p.player_id = pwp.player_id
+  SET pwp.player_name = p.player_name;
+END$$
+
+DELIMITER ;
+
+
+
+
 
 
 

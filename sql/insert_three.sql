@@ -55,7 +55,7 @@ COMMIT;
 /* ===== KIA Tigers ===== */
 START TRANSACTION;
 SET @team_name := 'KIA Tigers';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kang I-jun','pitcher',25,'Republic of Korea',30000000
   UNION ALL SELECT 'Gwak Do-gyu','pitcher',20,'Republic of Korea',33000000
   UNION ALL SELECT 'Kim Geon-guk','pitcher',19,'Republic of Korea',40000000
@@ -115,30 +115,35 @@ WITH src AS (
   UNION ALL SELECT 'Choi Won-jun','outfielder',33,'Republic of Korea',220000000
   UNION ALL SELECT 'Choi Hyung-woo','outfielder',41,'Republic of Korea',1000000000
   UNION ALL SELECT 'Socrates Brito','outfielder',32,'Dominican Republic',1140000000
-  UNION ALL SELECT 'Kim Doo-hyun','infielder', 21, 'Republic of Korea', 30000000
-  UNION ALL SELECT 'KIm Do-hyun', 'United States of America', 24, 'Republic of Korea', 90000000
-  UNION ALL SELECT 'Jang Jae-hyuk', 'pitcher', 23, 'Republic of Korea', 31000000
-  UNION ALL SELECT 'Kim Min-jae', 'pitcher', 21, 'Republic of Korea', 30000000
-  UNION ALL SELECT 'Cam Alldred', 'pitcher', 29, 'United States of America', 437000000  
-  UNION ALL SELECT 'Park Jeong-woo', 'outfielder', 26, 'Republic of Korea', 65000000
+  UNION ALL SELECT 'Kim Doo-hyun','infielder',21, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Kim Do-hyun', 'pitcher', 24, 'Republic of Korea', 90000000
+  UNION ALL SELECT 'Jang Jae-hyuk', 'pitcher',23, 'Republic of Korea', 31000000
+  UNION ALL SELECT 'Kim Min-jae', 'pitcher',21, 'Republic of Korea', 30000000
+  UNION ALL SELECT 'Cam Alldred', 'pitcher',29, 'United States of America', 437000000  
+  UNION ALL SELECT 'Park Jeong-woo', 'outfielder',26, 'Republic of Korea', 65000000
   UNION ALL SELECT 'Eric Lauer', 'pitcher', 29, 'United States of America', 437000000  
   UNION ALL SELECT 'Eric Stout', 'pitcher', 31, 'United States of America', 65500000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== Samsung Lions ===== */
 START TRANSACTION;
 SET @team_name := 'Samsung Lions';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kim Dae-woo','pitcher',35,'Republic of Korea',100000000
   UNION ALL SELECT 'Kim Seo-jun','pitcher',21,'Republic of Korea',34000000
   UNION ALL SELECT 'Kim Si-hyun','pitcher',22,'Republic of Korea',37000000
@@ -208,22 +213,28 @@ WITH src AS (
   UNION ALL SELECT 'Ruben Cardenas', 'outfielder', 27, 'United States of America', 618000000
   UNION ALL SELECT 'Kim Mu-shin', 'pitcher', 25, 'Republic of Korea', 70000000
   UNION ALL SELECT 'Song Eun-beom', 'pitcher', 40, 'Republic of Korea', 60000000 
+  UNION ALL SELECT 'Kim Dae-ho', 'pitcher', 23, 'Republic of Korea', 30000000
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== LG Twins ===== */
 START TRANSACTION;
 SET @team_name := 'LG Twins';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kang Hyo-jong','pitcher',22,'Republic of Korea',38000000
   UNION ALL SELECT 'Kim Dae-hyun','pitcher',27,'Republic of Korea',57000000
   UNION ALL SELECT 'Kim Young-jun','pitcher',25,'Republic of Korea',36000000
@@ -288,20 +299,25 @@ WITH src AS (
   UNION ALL SELECT 'Elieser Hernández', 'pitcher', 29, 'United States of America', 1164000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== Doosan Bears ===== */
 START TRANSACTION;
 SET @team_name := 'Doosan Bears';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kwak Bin','pitcher',25,'Republic of Korea',210000000
   UNION ALL SELECT 'Kim Kang-ryul','pitcher',35,'Republic of Korea',150000000
   UNION ALL SELECT 'Kim Dong-joo','pitcher',20,'Republic of Korea',55000000
@@ -371,20 +387,27 @@ WITH src AS (
   UNION ALL SELECT 'Park Ji-ho', 'pitcher', 21, 'Republic of Korea', 30000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
+
+
 
 /* ===== kt wiz ===== */
 START TRANSACTION;
 SET @team_name := 'kt wiz';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kang Geon','pitcher',20,'Republic of Korea',35000000
   UNION ALL SELECT 'Go Young-pyo','pitcher',33,'Republic of Korea',2000000000
   UNION ALL SELECT 'Kim Geon-ung','pitcher',20,'Republic of Korea',30000000
@@ -452,20 +475,25 @@ WITH src AS (
   UNION ALL SELECT 'Han Cha-hyeon', 'pitcher', 26, 'Republic of Korea', 35000000   
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== SSG Landers ===== */
 START TRANSACTION;
 SET @team_name := 'SSG Landers';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Go Hyo-jun','pitcher',41,'Republic of Korea',153000000
   UNION ALL SELECT 'Kim Kwang-hyun','pitcher',36,'Republic of Korea',1000000000
   UNION ALL SELECT 'Kim Ju-on','pitcher',20,'Republic of Korea',30000000
@@ -535,20 +563,25 @@ WITH src AS (
   UNION ALL SELECT 'Park Sung-bin', 'pitcher', 21, 'Republic of Korea', 30000000
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== Lotte Giants ===== */
 START TRANSACTION;
 SET @team_name := 'Lotte Giants';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Koo Seung-min','pitcher',34,'Republic of Korea',450000000
   UNION ALL SELECT 'Kim Kang-hyun','pitcher',20,'Republic of Korea',32000000
   UNION ALL SELECT 'Kim Do-gyu','pitcher',20,'Republic of Korea',80000000
@@ -620,20 +653,25 @@ WITH src AS (
   UNION ALL SELECT 'Park Joon-woo', 'pitcher', 19, 'Republic of Korea', 30000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== Hanwha Eagles ===== */
 START TRANSACTION;
 SET @team_name := 'Hanwha Eagles';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kang Jae-min','pitcher',28,'Republic of Korea',145000000
   UNION ALL SELECT 'Kim Gyu-yeon','pitcher',22,'Republic of Korea',41000000
   UNION ALL SELECT 'Kim Gi-jung','pitcher',23,'Republic of Korea',44000000
@@ -702,20 +740,25 @@ WITH src AS (
   UNION ALL SELECT 'Ryan Weiss', 'pitcher', 28, 'United States of America', 524000000  
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
 
 /* ===== NC Dinos ===== */
 START TRANSACTION;
 SET @team_name := 'NC Dinos';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kim Min-gyun','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Si-hoon','pitcher',24,'Republic of Korea',110000000
   UNION ALL SELECT 'Kim Young-gyu','pitcher',25,'Republic of Korea',225000000
@@ -784,20 +827,27 @@ WITH src AS (
   UNION ALL SELECT 'Eric Jokisch', 'pitcher', 35, 'United States of America', 145600000    
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
+
+
 
 /* ===== Kiwoom Heroes ===== */
 START TRANSACTION;
 SET @team_name := 'Kiwoom Heroes';
-WITH src AS (
+WITH src(player_name, position, age, nationality, salary) AS (
   SELECT 'Kim Dong-gyu','pitcher',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Kim Dong-hyeok','pitcher',22,'Republic of Korea',60000000
   UNION ALL SELECT 'Kim Seon-gi','pitcher',33,'Republic of Korea',70000000
@@ -864,16 +914,20 @@ WITH src AS (
   UNION ALL SELECT 'Lee Seung-won','infielder', 20, 'Republic of Korea', 32000000 
 ),
 team AS (SELECT team_id FROM teams WHERE team_name = @team_name)
-INSERT INTO players (player_name, position, age, nationality, team_id, salary)
-SELECT s.* , t.team_id, s.salary
+
+INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
+SELECT
+ s.player_name, s.position, s.age, s.nationality,
+ t.team_id, @team_name, s.salary
 FROM src s CROSS JOIN team t
 ON DUPLICATE KEY UPDATE
   position = VALUES(position),
   age = VALUES(age),
   nationality = VALUES(nationality),
+  team_id = VALUES(team_id),
+  team_name = VALUES(team_name),
   salary = VALUES(salary);
 COMMIT;
-
 
 
 

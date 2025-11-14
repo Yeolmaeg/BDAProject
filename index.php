@@ -9,9 +9,6 @@ require_once 'header.php';
 
 // 3. 페이지의 본문 내용
 ?>
-    <div class="search-container">
-            <input type="search" placeholder="Search">
-    </div>
 
         <div class="card-box welcome-card">
             <h2>환영합니다!</h2>

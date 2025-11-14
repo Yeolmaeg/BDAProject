@@ -15,16 +15,19 @@
 
 @font-face {
     font-family: 'KBO_Light';
-    src: url('public/KBO_Dia_Gothic_light.ttf') format('truetype');
+    /* 이 경로가 정확한지 확인하세요. CSS 파일 기준 상대 경로입니다. */
+    src: url('public/KBO_Dia_Gothic_light.ttf') format('truetype'); 
     font-weight: 300;
     font-style: normal;
 }
 
 :root {
-    --kbo-dark-blue: #001F63;
-    --kbo-light-blue: #8AB4F8;
-    --kbo-white: #F5F7FA;
-    --kbo-white-bg: #FFFFFF;
+    --kbo-dark-blue: #001F63; /* 짙은 남색 */
+    --kbo-light-blue: #8AB4F8; /* 밝은 파랑 */
+    --kbo-white: #F5F7FA; /* 약간 회색빛 도는 흰색 */
+    --kbo-white-bg: #FFFFFF; /* 순수 흰색 배경 */
+    --kbo-gray-bg: #F0F0F0; /* 회색 배경 (Welcome Card 등) */
+    --kbo-light-gray: #E0E0E0; /* 옅은 경계선 */
 }
 
 * {
@@ -38,27 +41,38 @@ body {
     background-color: var(--kbo-white-bg);
 }
 
-/* Header Styles */
+/* --- Header Styles (검색창 중앙 배치) --- */
 .header {
     background-color: var(--kbo-white);
-    padding: 10px 20px;
+    padding: 5px 10px;
     border-bottom: 1px solid var(--kbo-light-gray);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* 로고-검색창-메뉴 분산 배치 */
     align-items: center;
 }
 
-.header .logo {
-    font-family: 'KBO_Bold', sans-serif;
-    font-size: 24px;
-    color: var(--kbo-dark-blue);
-    text-decoration: none;
-}
 .header-logo-img {
-    height: 60px; /* 로고 이미지 높이 조절 (원하는 크기로 변경) */
-    width: auto; /* 비율 유지 */
-    display: block; /* 링크 안에 이미지를 블록 요소로 */
-    padding: 1px 0; /* 상하 여백 조절 */
+    height: 60px;
+    width: auto;
+    display: block;
+    padding: 1px 0;
+}
+
+/* 검색 컨테이너: 중앙 배치 및 공간 점유 */
+.header-search-container {
+    flex: 1; /* 남은 공간을 모두 차지 */
+    padding: 0 60px; 
+    max-width: 10000px; 
+    margin: 0 auto; 
+}
+
+/* 검색 입력창 스타일 */
+.header-search-input {
+    width: 100%; 
+    padding: 12px 15px; 
+    font-size: 16px; 
+    border: 1px solid var(--kbo-light-gray);
+    border-radius: 10px; 
 }
 
 .header-menu a,
@@ -73,50 +87,46 @@ body {
     font-size: 14px;
 }
 
-/* Nav Bar Styles */
+/* --- Nav Bar Styles (5등분) --- */
 .nav-bar {
     background-color: var(--kbo-dark-blue);
-    display: flex;
-    justify-content: flex-start;
-    padding-left: 20px;
+    display: flex; /* Flexbox 활성화 */
+    /* padding-left: 20px; 삭제 */
 }
 
 .nav-bar a {
     text-decoration: none;
     color: var(--kbo-white);
-    padding: 10px 20px;
-    background-color: transparent;
-    border-right: 1px solid #ccc;
+    
+    /* 5등분 핵심 */
+    flex: 1; /* 남은 공간을 균등하게 분배 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    padding: 10px 0; /* 좌우 패딩을 0으로 설정하여 flex: 1을 온전히 사용 */
+
+    background-color: var(--kbo-dark-blue); /* 배경색 통일 */
+    border-right: 1px solid rgba(255, 255, 255, 0.2); /* 경계선: 흰색 20% 투명도 */
     transition: background-color 0.2s;
+}
+
+/* 마지막 항목의 경계선 제거 */
+.nav-bar a:last-child {
+    border-right: none;
 }
 
 .nav-bar a.active,
 .nav-bar a:hover {
-    background-color: var(--kbo-white);
-    color: var(--kbo-dark-blue);
+    background-color: var(--kbo-white); /* 활성/호버 시 배경색 변경 */
+    color: var(--kbo-dark-blue); /* 폰트 색상 변경 */
 }
 
-/* Main Content Layout */
+/* --- Main Content Layout --- */
 .main-content {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Search Bar */
-.search-container {
-    padding: 20px 0;
-}
-
-.search-container input[type="search"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--kbo-light-blue);
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-/* Common Card/Box Style */
+/* --- 나머지 Common Card/Box Styles는 그대로 유지 --- */
 .card-box {
     background-color: var(--kbo-white);
     border-radius: 8px;
@@ -124,11 +134,10 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Login/Welcome Card Specific */
 .welcome-card {
     text-align: center;
     max-width: 500px;
-    margin: 100px auto; /* 중앙 정렬 */
+    margin: 100px auto; 
 }
 
 .welcome-card h2 {
@@ -151,11 +160,19 @@ body {
 }
 
 .welcome-card .login-btn {
-    background-color: var(--kbo-light-gray);
+    background-color: var(--kbo-light-gray); /* kbo-light-gray 변수 정의 누락, 임시로 설정 */
     color: #333;
 }
+/* kbo-light-gray 변수가 정의되지 않아 추가합니다. */
+:root {
+    --kbo-dark-blue: #001F63;
+    --kbo-light-blue: #8AB4F8;
+    --kbo-white: #F5F7FA;
+    --kbo-white-bg: #FFFFFF;
+    --kbo-light-gray: #E0E0E0; /* kbo-light-gray 변수 추가 */
+}
 
-/* Dashboard Specific Styles (image_7a0220.png) */
+/* Dashboard Styles */
 .dashboard-box {
     border: 2px solid var(--kbo-light-blue);
     padding: 30px;
@@ -183,7 +200,7 @@ body {
 .match-score {
     font-size: 36px;
     font-family: 'KBO_Bold', sans-serif;
-    color: #c00; /* 승리 팀 강조 */
+    color: #c00; 
     margin: 5px 0;
 }
 

@@ -21,6 +21,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <a href="/" class="logo">
             <img src="public/logo_team04.png" alt="TEAM04 Logo" class="header-logo-img">
         </a>
+
+        <div class="header-search-container">
+            <input type="search" class="header-search-input" placeholder="Search">
+        </div>
+
         <div class="header-menu">
             <?php if (!$is_logged_in): ?>
                 <a href="login.php" <?php if($current_page == 'login.php') echo 'class="active"'; ?>>login</a>
@@ -36,8 +41,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <a href="teams.php" <?php if($current_page == 'teams.php') echo 'class="active"'; ?>>teams</a>
         <a href="players.php" <?php if($current_page == 'players.php') echo 'class="active"'; ?>>players</a>
         <a href="matches.php" <?php if($current_page == 'matches.php') echo 'class="active"'; ?>>matches</a>
-        <a href="player_rank.php" <?php if($current_page == 'player_rank.php') echo 'class="active"'; ?>>rank(players)</a>
-        <a href="team_rank.php" <?php if($current_page == 'team_rank.php') echo 'class="active"'; ?>>rank(teams)</a>
+        <a href="player_rank.php" <?php if($current_page == 'player_rank.php') echo 'class="active"'; ?>>player ranking by weather</a>
+        <a href="team_rank.php" <?php if($current_page == 'team_rank.php') echo 'class="active"'; ?>>team ranking by weather</a>
     </nav>
 
     <main class="main-content">

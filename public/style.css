@@ -135,14 +135,19 @@ body {
 }
 
 .welcome-card {
-    text-align: center;
-    max-width: 500px;
+    text-align: left;
+    max-width: 1000px;
     margin: 100px auto; 
 }
 
 .welcome-card h2 {
     margin-bottom: 20px;
     font-family: 'KBO_Bold', sans-serif;
+}
+.welcome-card p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #555;
 }
 
 .welcome-card button {
@@ -160,8 +165,18 @@ body {
 }
 
 .welcome-card .login-btn {
-    background-color: var(--kbo-light-gray); /* kbo-light-gray 변수 정의 누락, 임시로 설정 */
+    background-color: var(--kbo-white); 
     color: #333;
+}
+.welcome-card .signup-btn:hover {
+    background-color: var(--kbo-light-blue); /* 마우스 올렸을 때 밝은 파랑으로 변경 */
+    color: var(--kbo-white); /* 글자색은 짙은 남색으로 변경 */
+    transition: background-color 0.3s; /* 부드러운 전환 효과 추가 */
+}
+.welcome-card .login-btn:hover {
+    background-color: var(--kbo-light-gray); /* 마우스 올렸을 때 옅은 회색으로 변경 */
+    color: #333;
+    transition: background-color 0.3s; /* 부드러운 전환 효과 추가 */
 }
 /* kbo-light-gray 변수가 정의되지 않아 추가합니다. */
 :root {
@@ -224,4 +239,28 @@ body {
     display: flex;
     align-items: center;
     font-size: 16px;
+}
+/* 팀 테이블 스타일 */
+.team-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+.team-table th,
+.team-table td {
+    /* ******************************************** */
+    /* 상하 패딩은 12px 유지, 좌우 패딩을 20px로 늘림 */
+    padding: 12px 20px; 
+    /* ******************************************** */
+    text-align: left;
+    border-bottom: 1px solid var(--kbo-light-gray);
+    /* border-spacing, border-collapse: collapse 때문에 셀의 마진은 작동하지 않습니다. */
+}
+
+/* 테이블 헤더 스타일 */
+.team-table thead th {
+    /* ... (나머지 스타일 유지) ... */
+    border-bottom: 2px solid var(--kbo-light-gray); 
 }

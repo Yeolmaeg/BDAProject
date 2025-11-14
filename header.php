@@ -18,7 +18,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
 
     <header class="header">
-        <a href="/" class="logo">
+        <a href="index.php" class="logo">
             <img src="public/logo_team04.png" alt="TEAM04 Logo" class="header-logo-img">
         </a>
 

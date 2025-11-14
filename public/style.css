@@ -1,0 +1,203 @@
+/* kbo_style.css */
+@font-face {
+    font-family: 'KBO_Bold';
+    src: url('KBO_Dia_Gothic_Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KBO_Medium';
+    src: url('KBO_Dia_Gothic_Medium.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KBO_Light';
+    src: url('public/KBO_Dia_Gothic_light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+:root {
+    --kbo-dark-blue: #001F63;
+    --kbo-light-blue: #8AB4F8;
+    --kbo-white: #F5F7FA;
+    --kbo-white-bg: #FFFFFF;
+}
+
+* {
+    font-family: 'KBO_Medium', sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--kbo-white-bg);
+}
+
+/* Header Styles */
+.header {
+    background-color: var(--kbo-white);
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--kbo-light-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .logo {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 24px;
+    color: var(--kbo-dark-blue);
+    text-decoration: none;
+}
+
+.header-menu a,
+.header-menu button {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Nav Bar Styles */
+.nav-bar {
+    background-color: var(--kbo-light-blue);
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 20px;
+}
+
+.nav-bar a {
+    text-decoration: none;
+    color: #333;
+    padding: 10px 20px;
+    background-color: transparent;
+    border-right: 1px solid #ccc;
+    transition: background-color 0.2s;
+}
+
+.nav-bar a.active,
+.nav-bar a:hover {
+    background-color: var(--kbo-white);
+}
+
+/* Main Content Layout */
+.main-content {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Search Bar */
+.search-container {
+    padding: 20px 0;
+}
+
+.search-container input[type="search"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--kbo-light-blue);
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Common Card/Box Style */
+.card-box {
+    background-color: var(--kbo-white);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Login/Welcome Card Specific */
+.welcome-card {
+    text-align: center;
+    max-width: 500px;
+    margin: 100px auto; /* 중앙 정렬 */
+}
+
+.welcome-card h2 {
+    margin-bottom: 20px;
+    font-family: 'KBO_Bold', sans-serif;
+}
+
+.welcome-card button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.welcome-card .signup-btn {
+    background-color: var(--kbo-dark-blue);
+    color: var(--kbo-white);
+}
+
+.welcome-card .login-btn {
+    background-color: var(--kbo-light-gray);
+    color: #333;
+}
+
+/* Dashboard Specific Styles (image_7a0220.png) */
+.dashboard-box {
+    border: 2px solid var(--kbo-light-blue);
+    padding: 30px;
+}
+
+.dashboard-box h2 {
+    font-family: 'KBO_Bold', sans-serif;
+    color: var(--kbo-dark-blue);
+    margin-bottom: 25px;
+}
+
+.recent-match-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--kbo-light-blue);
+    margin-bottom: 20px;
+}
+
+.match-info {
+    line-height: 1.8;
+}
+
+.match-score {
+    font-size: 36px;
+    font-family: 'KBO_Bold', sans-serif;
+    color: #c00; /* 승리 팀 강조 */
+    margin: 5px 0;
+}
+
+.player-stats {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.weather-info {
+    margin-top: 20px;
+}
+
+.weather-info h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.weather-details {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}

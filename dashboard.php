@@ -22,7 +22,7 @@ $weather_note = "다음 경기 실황의 기상 조건이 경기장에 미치는
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBO 통계 - <?php echo $team_name; ?> 대시보드</title>
-    <link rel="stylesheet" href="kbo_style.css">
+    <link rel="stylesheet" href="public/style.css">
 </head>
 <body>
 

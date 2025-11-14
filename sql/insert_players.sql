@@ -1,59 +1,8 @@
 
--- stadiums, teams, players 데이터 삽입
-
-
-SET NAMES utf8mb4;
 USE team04;
 
-START TRANSACTION;
-
--- stadiums 
-INSERT INTO stadiums (stadium_name, location, built_year, roof_type) VALUES
-  ('Gwangju-KIA Champions Field', '10 Seorim-ro, Buk-gu, Gwangju, Republic of Korea', 2014, 'OPEN'),
-  ('Daegu Samsung Lions Park', 'Yagujeonseol-ro, Suseong-gu, Daegu, Republic of Korea', 2016, 'OPEN'),
-  ('Seoul Sports Complex Baseball Stadium', '25 Olympic-ro, Songpa-gu, Seoul, Republic of Korea', 1982, 'OPEN'),
-  ('Suwon kt wiz Park', '893 Gyeongsu-daero, Jangan-gu, Suwon, Gyeonggi-do, Republic of Korea', 1989, 'OPEN'),
-  ('Incheon SSG Landers Field', '618 Maesohol-ro, Nam-gu (Munhak-dong), Incheon, Republic of Korea', 2002, 'OPEN'),
-  ('Sajik Baseball Stadium', '45 Sajik-ro, Dongnae-gu, Busan, Republic of Korea', 1985, 'OPEN'),
-  ('Daejeon Hanwha Life Ballpark', '373 Daejong-ro, Jung-gu, Daejeon, Republic of Korea', 2025, 'OPEN'),
-  ('Changwon NC Park', '63 Samho-ro, Masanhoewon-gu, Changwon, Gyeongsangnam-do, Republic of Korea', 2019, 'OPEN'),
-  ('Gocheok Sky Dome', '430 Gyeongin-ro, Guro-gu, Seoul, Republic of Korea', 2015, 'DOME'),
-  ('Ulsan Munsu Baseball Stadium', '44 Munsu-ro, Nam-gu, Ulsan, Republic of Korea', 2014, 'OPEN'),
-  ('Pohang Baseball Stadium', '790 Huimang-daero, Nam-gu, Pohang, Republic of Korea', 2012, 'OPEN'),
-  ('Cheongju Baseball Stadium', '229 Sajik-daero, Seowon-gu, Cheongju, Chungcheongbuk-do, Republic of Korea', 1979, 'OPEN')
-ON DUPLICATE KEY UPDATE stadium_name = stadiums.stadium_name;
-
--- teams 
-INSERT INTO teams (team_name, city, stadium_id, founded_year, winnings)
-WITH src AS (
-  SELECT 'KIA Tigers'     AS team_name, 'Gwangju'  AS city, 'Gwangju-KIA Champions Field'      AS stadium_name, 1982 AS founded_year, 12 AS winnings
-  UNION ALL SELECT 'Samsung Lions',  'Daegu',   'Daegu Samsung Lions Park',                      1982, 8
-  UNION ALL SELECT 'LG Twins',       'Seoul',   'Seoul Sports Complex Baseball Stadium',         1982, 3
-  UNION ALL SELECT 'Doosan Bears',   'Seoul',   'Seoul Sports Complex Baseball Stadium',         1982, 6
-  UNION ALL SELECT 'kt wiz',         'Suwon',   'Suwon kt wiz Park',                             2013, 1
-  UNION ALL SELECT 'SSG Landers',    'Incheon', 'Incheon SSG Landers Field',                     2000, 5
-  UNION ALL SELECT 'Lotte Giants',   'Busan',   'Sajik Baseball Stadium',                        1982, 2
-  UNION ALL SELECT 'Hanwha Eagles',  'Daejeon', 'Daejeon Hanwha Life Ballpark',                  1986, 1
-  UNION ALL SELECT 'NC Dinos',       'Changwon','Changwon NC Park',                              2011, 1
-  UNION ALL SELECT 'Kiwoom Heroes',  'Seoul',   'Gocheok Sky Dome',                              2008, 0
-)
-SELECT s.team_name, s.city, st.stadium_id, s.founded_year, s.winnings
-FROM src s
-JOIN stadiums st ON st.stadium_name = s.stadium_name
-ON DUPLICATE KEY UPDATE
-  city = VALUES(city),
-  stadium_id = VALUES(stadium_id),
-  founded_year = VALUES(founded_year),
-  winnings = VALUES(winnings);
-
-COMMIT;
-
-
--- 아래부터 각 팀 선수들 INSERT 
-
-
 /* ===== KIA Tigers ===== */
-START TRANSACTION;
+
 SET @team_name := 'KIA Tigers';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -132,11 +81,9 @@ FROM (
 CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
-COMMIT;
 
 
 /* ===== Samsung Lions ===== */
-START TRANSACTION;
 SET @team_name := 'Samsung Lions';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -148,7 +95,7 @@ FROM (
   UNION ALL SELECT 'Kim Seo-jun','pitcher',21,'Republic of Korea',34000000
   UNION ALL SELECT 'Kim Si-hyun','pitcher',22,'Republic of Korea',37000000
   UNION ALL SELECT 'Kim Jae-yoon','pitcher',24,'Republic of Korea',400000000
-  UNION ALL SELECT 'Kim Tae-hoon','pitcher',32,'Republic of Korea',170000000
+  UNION ALL SELECT 'Kim Tae-hoon (pitcher)','pitcher',32,'Republic of Korea',170000000
   UNION ALL SELECT 'Park Kwon-hoo','pitcher',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Park Jun-yong','pitcher',28,'Republic of Korea',30000000
   UNION ALL SELECT 'Baek Jung-hyun','pitcher',37,'Republic of Korea',400000000
@@ -158,7 +105,7 @@ FROM (
   UNION ALL SELECT 'Won Tae-in','pitcher',24,'Republic of Korea',430000000
   UNION ALL SELECT 'Yook Sun-yeop','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Sang-min','pitcher',34,'Republic of Korea',65000000
-  UNION ALL SELECT 'Lee Seung-min','pitcher',22,'Republic of Korea',41000000
+  UNION ALL SELECT 'Lee Seung-min (Samsung)','pitcher',22,'Republic of Korea',41000000
   UNION ALL SELECT 'Lee Seung-hyun (LH)','pitcher',22,'Republic of Korea',70000000
   UNION ALL SELECT 'Lee Seung-hyun (RH)','pitcher',33,'Republic of Korea',170000000
   UNION ALL SELECT 'Lee Jae-ik','pitcher',30,'Republic of Korea',82000000
@@ -199,7 +146,7 @@ FROM (
   UNION ALL SELECT 'Kim Dong-yeop','outfielder',30,'Republic of Korea',80000000
   UNION ALL SELECT 'Kim Sung-yoon','outfielder',25,'Republic of Korea',100000000
   UNION ALL SELECT 'Kim Jae-hyuk','outfielder',24,'Republic of Korea',30000000
-  UNION ALL SELECT 'Kim Tae-hoon','outfielder',24,'Republic of Korea',41000000
+  UNION ALL SELECT 'Kim Tae-hoon (batter)','outfielder',24,'Republic of Korea',41000000
   UNION ALL SELECT 'Kim Heon-gon','outfielder',22,'Republic of Korea',60000000
   UNION ALL SELECT 'Kim Hyun-joon','outfielder',22,'Republic of Korea',140000000
   UNION ALL SELECT 'Ryu Seung-min','outfielder',33,'Republic of Korea',35000000
@@ -219,11 +166,9 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 
 /* ===== LG Twins ===== */
-START TRANSACTION;
 SET @team_name := 'LG Twins';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -297,11 +242,9 @@ FROM (
 CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
-COMMIT;
 
 
 /* ===== Doosan Bears ===== */
-START TRANSACTION;
 SET @team_name := 'Doosan Bears';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -381,11 +324,9 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 
 /* ===== kt wiz ===== */
-START TRANSACTION;
 SET @team_name := 'kt wiz';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -397,7 +338,7 @@ FROM (
   UNION ALL SELECT 'Go Young-pyo','pitcher',33,'Republic of Korea',2000000000
   UNION ALL SELECT 'Kim Geon-ung','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Min','pitcher',25,'Republic of Korea',50000000
-  UNION ALL SELECT 'Kim Min-seong','pitcher',19,'Republic of Korea',30000000
+  UNION ALL SELECT 'Kim Min-seong (kt)','pitcher',19,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Min-soo','pitcher',32,'Republic of Korea',160000000
   UNION ALL SELECT 'Kim Young-hyun','pitcher',22,'Republic of Korea',41000000
   UNION ALL SELECT 'Kim Jung-woon','pitcher',20,'Republic of Korea',31000000
@@ -426,7 +367,7 @@ FROM (
   UNION ALL SELECT 'Wes Benjamin','pitcher',32,'United States of America',1857000000
   UNION ALL SELECT 'William Cuevas','pitcher',34,'Bolivarian Republic of Venezuela',1857000000
   UNION ALL SELECT 'Kang Hyun-woo','catcher',20,'Republic of Korea',50000000
-  UNION ALL SELECT 'Kim Min-seok','catcher',20,'Republic of Korea',30000000
+  UNION ALL SELECT 'Kim Min-seok (kt)','catcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Jun-tae','catcher',28,'Republic of Korea',100000000
   UNION ALL SELECT 'Jang Seong-woo','catcher',34,'Republic of Korea',500000000
   UNION ALL SELECT 'Jo Dae-hyeon','catcher',20,'Republic of Korea',31000000
@@ -463,10 +404,8 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 /* ===== SSG Landers ===== */
-START TRANSACTION;
 SET @team_name := 'SSG Landers';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -524,7 +463,7 @@ FROM (
   UNION ALL SELECT 'Kim Chang-pyeong','outfielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Ryu Hyo-seung','outfielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Oh Tae-gon','outfielder',20,'Republic of Korea',250000000
-  UNION ALL SELECT 'Lee Seung-min','outfielder',33,'Republic of Korea',30000000
+  UNION ALL SELECT 'Lee Seung-min (SSG)','outfielder',33,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Jeong-beom','outfielder',20,'Republic of Korea',32000000
   UNION ALL SELECT 'Chae Hyeon-woo','outfielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Choi Sang-min','outfielder',20,'Republic of Korea',32000000
@@ -545,10 +484,9 @@ FROM (
 CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
-COMMIT;
+
 
 /* ===== Lotte Giants ===== */
-START TRANSACTION;
 SET @team_name := 'Lotte Giants';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -594,7 +532,7 @@ FROM (
   UNION ALL SELECT 'Ji Si-wan','catcher',29,'Republic of Korea',58000000
   UNION ALL SELECT 'Kang Seong-woo','infielder',30,'Republic of Korea',30000000
   UNION ALL SELECT 'Go Seung-min','infielder',20,'Republic of Korea',80000000
-  UNION ALL SELECT 'Kim Min-seong','infielder',25,'Republic of Korea',200000000
+  UNION ALL SELECT 'Kim Min-seong (Lotte)','infielder',25,'Republic of Korea',200000000
   UNION ALL SELECT 'Na Seung-yeop','infielder',32,'Republic of Korea',40000000
   UNION ALL SELECT 'Noh Jin-hyuk','infielder',22,'Republic of Korea',600000000
   UNION ALL SELECT 'Park Seung-wook','infielder',34,'Republic of Korea',135000000
@@ -609,7 +547,7 @@ FROM (
   UNION ALL SELECT 'Choi Hang','infielder',29,'Republic of Korea',31000000
   UNION ALL SELECT 'Han Dong-hee','infielder',25,'Republic of Korea',162000000
   UNION ALL SELECT 'Kim Dong-hyuk','outfielder',20,'Republic of Korea',31000000
-  UNION ALL SELECT 'Kim Min-seok','outfielder',20,'Republic of Korea',85000000
+  UNION ALL SELECT 'Kim Min-seok (Lotte)','outfielder',20,'Republic of Korea',85000000
   UNION ALL SELECT 'Yoon Dong-hee','outfielder',21,'Republic of Korea',90000000
   UNION ALL SELECT 'Lee Seon-woo','outfielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Jeong-hoon','outfielder',20,'Republic of Korea',60000000
@@ -630,10 +568,8 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 /* ===== Hanwha Eagles ===== */
-START TRANSACTION;
 SET @team_name := 'Hanwha Eagles';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -712,10 +648,8 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 /* ===== NC Dinos ===== */
-START TRANSACTION;
 SET @team_name := 'NC Dinos';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -794,11 +728,9 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 
 /* ===== Kiwoom Heroes ===== */
-START TRANSACTION;
 SET @team_name := 'Kiwoom Heroes';
 
 INSERT INTO players (player_name, position, age, nationality, team_id, team_name, salary)
@@ -875,6 +807,5 @@ CROSS JOIN (
   SELECT team_id FROM teams WHERE team_name = @team_name
 ) AS t;
 
-COMMIT;
 
 

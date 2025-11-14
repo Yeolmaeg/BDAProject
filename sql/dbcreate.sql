@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS players (
   CONSTRAINT fk_players_team
     FOREIGN KEY (team_id) REFERENCES teams(team_id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-  UNIQUE KEY uk_players_team_name (team_id, player_name),
   KEY idx_players_team (team_id),
   KEY idx_players_name (player_name),
   KEY idx_players_team_position (team_id, position)

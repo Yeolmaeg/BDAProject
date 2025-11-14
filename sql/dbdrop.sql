@@ -13,3 +13,4 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS player_weather_performance;
 
 SET FOREIGN_KEY_CHECKS = 1;
+                

@@ -264,3 +264,107 @@ body {
     /* ... (나머지 스타일 유지) ... */
     border-bottom: 2px solid var(--kbo-light-gray); 
 }
+
+/* 북마크 아이콘 스타일 */
+.bookmark-icon {
+    /* 별 아이콘의 기본 색상 (비활성 상태) */
+    color: #ccc; 
+    font-size: 18px; 
+    margin-right: 8px;
+    cursor: pointer; /* 클릭 가능한 요소임을 나타냄 */
+    transition: color 0.2s;
+    /* 인라인 블록으로 설정하여 텍스트 흐름을 깨지 않게 합니다. */
+    display: inline-block; 
+}
+
+/* 활성 북마크 스타일 (예: 클릭하여 북마크되었을 때) */
+/* JavaScript로 'is-bookmarked' 클래스를 추가하여 색상을 변경합니다. */
+.bookmark-icon.is-bookmarked {
+    color: #FFD700; /* 금색 */
+}
+
+/* 팀명 셀 내부의 아이콘들을 정렬하기 위해 셀의 text-align을 다시 설정합니다. */
+.team-table td {
+    padding: 12px 20px;
+    text-align: left; 
+    vertical-align: middle; /* 내용 중앙 정렬 */
+}
+
+/* kbo_style.css (또는 style.css) 파일에 추가 */
+
+/* 회원가입 페이지 컨테이너: 중앙 정렬 및 배경 */
+.signup-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 화면 높이만큼 중앙에 오도록 min-height 설정 (footer를 고려하여 조정) */
+    min-height: calc(100vh - 100px); 
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.modal-title {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 30px;
+    color: #333;
+}
+
+
+/* 폼 요소 스타일 */
+.signup-form label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"],
+.signup-form select {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background-color: var(--kbo-gray-bg); /* input 배경색 설정 */
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    appearance: none; /* select 드롭다운 화살표 커스텀을 위해 필요 */
+}
+
+/* 응원하는 팀 select 박스 스타일 (드롭다운 화살표 아이콘 추가) */
+.signup-form select {
+    /* 기본 화살표 숨기기 및 커스텀 화살표 설정 */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.9L146.2%20210.7%205.4%2069.9z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 10px auto;
+    padding-right: 40px; /* 화살표 공간 확보 */
+}
+
+
+/* 가입하기 버튼 */
+.signup-form .submit-btn {
+    width: 100%;
+    background-color: var(--kbo-dark-blue); /* 이미지처럼 검은색에 가까운 짙은 남색 */
+    color: var(--kbo-white);
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: 'KBO_Bold', sans-serif;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.3s;
+}
+
+.signup-form .submit-btn:hover {
+    background-color: #000; /* 호버 시 완전히 검은색으로 변경 */
+}

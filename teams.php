@@ -29,10 +29,10 @@ if ($conn->connect_error) {
     // 한글 깨짐 방지
     $conn->set_charset("utf8mb4");
 
-    // 2. SQL 쿼리 실행
-    // (컬럼명은 'teams' 테이블의 실제 스키마와 일치해야 합니다.)
+    // 2. SQL 쿼리 수정: t.team_id 추가
     $sql = "
         SELECT 
+            t.team_id,          -- **새로 추가**
             t.team_name, 
             t.city, 
             t.founded_year, 
@@ -51,6 +51,7 @@ if ($conn->connect_error) {
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $teams[] = [
+                'id' => $row['team_id'],       // **새로 추가**
                 'name' => $row['team_name'],
                 'location' => $row['city'],
                 'stadium' => $row['stadium_name'], 
@@ -63,7 +64,6 @@ if ($conn->connect_error) {
         $error_message = "팀 정보를 불러올 수 없습니다. 테이블을 확인하세요.";
     }
 
-    // 4. DB 연결 종료
     $conn->close();
 }
 
@@ -72,23 +72,17 @@ require_once 'header.php';
 ?>
 
 <div class="card-box team-list-card">
-    <h3>2024 KBO 리그 팀 정보</h3>
-    <p class="description">한국야구위원회(KBO) 정규리그 10개 구단 정보</p><br>
-
     <?php if ($error_message): ?>
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message); ?></p>
     <?php endif; ?>
 
+    <h3>2024 KBO 리그 팀 정보</h3>
+
+    <p class="description">한국야구위원회(KBO) 정규리그 10개 구단 정보</p><br>
+
     <table class="team-table">
         <thead>
-            <tr>
-                <th>팀명</th>
-                <th>연고지</th>
-                <th>홈구장</th>
-                <th>창단년도</th>
-                <th>우승횟수</th>
-            </tr>
-        </thead>
+            </thead>
         <tbody>
             <?php if (empty($teams)): ?>
             <tr>
@@ -97,7 +91,11 @@ require_once 'header.php';
             <?php else: ?>
                 <?php foreach ($teams as $team): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($team['name']); ?></td>
+                    <td data-team-id="<?php echo htmlspecialchars($team['id']); ?>">
+                        <span class="bookmark-icon" data-team-id="<?php echo htmlspecialchars($team['id']); ?>">★</span>
+                        <?php echo htmlspecialchars($team['name']); ?>
+                    </td>
+                    
                     <td><span class="icon">📍</span> <?php echo htmlspecialchars($team['location']); ?></td>
                     <td><?php echo htmlspecialchars($team['stadium']); ?></td>
                     <td><span class="icon">📅</span> <?php echo htmlspecialchars($team['founded']); ?>년</td>
@@ -118,3 +116,5 @@ require_once 'header.php';
 <?php
 require_once 'footer.php';
 ?>
+
+<script src="public/bookmark.js"></script>

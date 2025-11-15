@@ -6,7 +6,7 @@
     </main>
 
     <footer style="text-align: center; padding: 20px; color: #777;">
-        © 2025 Team04 KBO Statistics
+        © Team04 KBO Statistics
     </footer>
     
 </body>

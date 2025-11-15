@@ -190,7 +190,7 @@ FROM (
   UNION ALL SELECT 'Son Ju-young','pitcher',25,'Republic of Korea',43000000
   UNION ALL SELECT 'Yoo Young-chan','pitcher',20,'Republic of Korea',85000000
   UNION ALL SELECT 'Yoon Ho-sol','pitcher',29,'Republic of Korea',70000000
-  UNION ALL SELECT 'Lee Mid-Eum','pitcher',31,'Republic of Korea',30000000
+  UNION ALL SELECT 'Lee Mid-eum','pitcher',31,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Sang-young','pitcher',25,'Republic of Korea',50000000
   UNION ALL SELECT 'Lee Woo-chan','pitcher',29,'Republic of Korea',125000000
   UNION ALL SELECT 'Lee Jong-jun','pitcher',20,'Republic of Korea',30000000

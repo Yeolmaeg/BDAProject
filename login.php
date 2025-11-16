@@ -7,7 +7,7 @@ require_once 'header.php';
 // 로그인 처리
 $error_message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // config.php를 통해 데이터베이스 설정 로드
+    // 데이터베이스 설정 로드
     require_once 'config/config.php';
     
     $email = trim($_POST['email'] ?? '');

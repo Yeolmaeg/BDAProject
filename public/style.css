@@ -368,3 +368,103 @@ body {
 .signup-form .submit-btn:hover {
     background-color: #000; /* 호버 시 완전히 검은색으로 변경 */
 }
+
+/* 로그인 페이지 전용 BODY/배경 설정*/
+body.login-body {
+    background: linear-gradient(135deg, var(--kbo-light-blue) 0%, var(--kbo-dark-blue) 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden; /* 스크롤 방지 */
+    padding: 0;
+    display: block;
+}
+
+/* SVG 패턴 */
+body.login-body::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    
+    /* URL 인코딩된 SVG 패턴 */
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810"><path fill="%23ffffff" fill-opacity="0.1" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,810L1392,810C1344,810,1248,810,1152,810C1056,810,960,810,864,810C768,810,672,810,576,810C480,810,384,810,288,810C192,810,96,810,48,810L0,810Z"></path></svg>') no-repeat;
+    
+    background-size: cover;
+    opacity: 0.3; 
+    transform: rotate(-5deg); 
+    z-index: 0; 
+}
+
+/* 로그인 박스 중앙 고정 */
+.login-page {
+    width: 100%;
+    max-width: 450px;
+    background: var(--kbo-white-bg);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 50px 40px;
+    z-index: 10; 
+
+    /* 중앙 고정 */
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+}
+
+/* 로그인 폼 내부 스타일 */
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#login-heading {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #757575;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--kbo-light-gray); 
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    width: 100%;
+    background-color: var(--kbo-dark-blue);
+    color: var(--kbo-white);
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: 'KBO_Bold', sans-serif;
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-link a {
+    color: var(--kbo-dark-blue);
+    text-decoration: none;
+    font-size: 14px;
+}

@@ -2,12 +2,10 @@
 session_start();
 
 $page_title = "login";
-// NOTE: config.php가 header.php보다 먼저 필요할 경우 위치를 조정하세요.
-// 이 예시에서는 로그인 처리 로직 내에서만 사용되므로 그대로 둡니다.
 
 // --- 로그인 처리 PHP 로직 (변경 없음) ---
 $error_message = "";
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!isset($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once 'config/config.php';
     
     $email = trim($_POST['email'] ?? '');
@@ -64,6 +62,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'header.php';
 ?>
 
+<?php if (isset($_SESSION['user_id'])): ?>
+    
+    <div class="login-page">
+        <div class="login-header">
+            <h1 id="login-heading">로그인</h1>
+            <p class="subtitle">Best way to look up for baseball records</p>
+        </div>
+        <div class="already-logged-in-message" style="text-align: center; padding: 40px; margin-top: 20px;">
+            <h2 style="font-size: 24px; color: var(--kbo-dark-blue); margin-bottom: 15px;">이미 로그인되어 있습니다.</h2>
+            <p style="margin-top: 15px; color: #555;">로그아웃 후 다시 시도하거나, 메인 페이지로 이동해주세요.</p>
+            <a href="public/index.php" class="btn-primary" style="display: inline-block; width: 100%; margin-top: 30px; text-decoration: none; padding: 15px;">메인 페이지로 이동</a>
+        </div>
+    </div>
+
+<?php else: ?>
+
 <div class="login-page">
         <div class="login-header">
             <h1 id="login-heading">로그인</h1>
@@ -88,7 +102,7 @@ require_once 'header.php';
                     placeholder=" "
                     value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
                 />
-                <label for="email" class="form-label">EMAIL ADDRESS</label>
+                <label for="email" class="form-label">이메일</label>
             </div>
 
             <div class="form-group">
@@ -102,7 +116,7 @@ require_once 'header.php';
                         autocomplete="current-password"
                         placeholder=" "
                     />
-                    <label for="password" class="form-label">PASSWORD</label>
+                    <label for="password" class="form-label">비밀번호</label>
                     <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="비밀번호 표시">
                         <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -178,6 +192,7 @@ require_once 'header.php';
             });
         });
     </script>
+<?php endif; ?>
 <?php
     require_once 'footer.php';
 ?>

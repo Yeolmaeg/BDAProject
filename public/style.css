@@ -15,7 +15,6 @@
 
 @font-face {
     font-family: 'KBO_Light';
-    /* 이 경로가 정확한지 확인하세요. CSS 파일 기준 상대 경로입니다. */
     src: url('public/KBO_Dia_Gothic_light.ttf') format('truetype'); 
     font-weight: 300;
     font-style: normal;
@@ -290,8 +289,6 @@ body {
     vertical-align: middle; /* 내용 중앙 정렬 */
 }
 
-/* kbo_style.css (또는 style.css) 파일에 추가 */
-
 /* 회원가입 페이지 컨테이너: 중앙 정렬 및 배경 */
 .signup-page-container {
     display: flex;
@@ -328,7 +325,9 @@ body {
 .signup-form input[type="text"],
 .signup-form input[type="email"],
 .signup-form input[type="password"],
-.signup-form select {
+.signup-form select,
+.signup-form input[type="date"], 
+.signup-form input[type="tel"] {
     width: 100%;
     padding: 12px 15px;
     border: none;
@@ -336,7 +335,14 @@ body {
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
-    appearance: none; /* select 드롭다운 화살표 커스텀을 위해 필요 */
+    /* appearance: none; */ /* select에만 적용 */
+}
+
+/* --- 날짜 입력 필드의 기본 스타일 재정의 (선택 사항) --- */
+/* 일부 브라우저에서 날짜 입력 필드의 높이를 맞추기 위해 필요할 수 있습니다. */
+.signup-form input[type="date"] {
+    /* 날짜 입력 필드의 아이콘을 오른쪽으로 정렬하거나 제거할 경우 추가 스타일이 필요합니다. */
+    line-height: normal;
 }
 
 /* 응원하는 팀 select 박스 스타일 (드롭다운 화살표 아이콘 추가) */
@@ -367,6 +373,26 @@ body {
 
 .signup-form .submit-btn:hover {
     background-color: #000; /* 호버 시 완전히 검은색으로 변경 */
+}
+
+/* kbo_style.css (또는 style.css) 파일에 추가 */
+
+/* 성공 메시지 카드 스타일 */
+.signup-success-card {
+    background-color: var(--kbo-white-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+    text-align: center;
+}
+
+.signup-success-card h2 {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 26px;
+    color: var(--kbo-dark-blue);
+    margin-bottom: 15px;
 }
 
 /* 로그인 페이지 전용 BODY/배경 설정*/
@@ -469,59 +495,51 @@ body.login-body::before {
     font-size: 14px;
 }
 
-.form-group {
-    position: relative; 
-    padding-top: 15px; 
-    margin-bottom: 20px;
-}
-
-/* 레이블 기본 스타일 및 초기 위치 지정 (입력 필드 중앙) */
-.form-label {
-    position: absolute;
-    top: 39px; 
-    left: 15px;
-    transform: translateY(-50%) translateY(1px);
-    
-    color: #757575; 
+.success-message {
     font-size: 16px;
-    transition: all 0.2s ease-out; /* 애니메이션 효과 */
-    pointer-events: none;
-    font-family: 'KBO_Medium', sans-serif;
-    text-transform: uppercase;
-    line-height: 1; 
-    z-index: 5; 
+    color: #333;
+    margin-bottom: 10px;
 }
 
-.form-control:not(:placeholder-shown) + .form-label,
-.form-control:focus + .form-label {
-    top: 0; 
-    left: 0;
-    font-size: 12px; 
-    color: var(--kbo-dark-blue);
-    background-color: var(--kbo-white-bg);
-    padding: 0 5px;
-    transform: translateY(-50%); 
-    font-family: 'KBO_Bold', sans-serif;
+.sub-message {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 30px;
 }
 
-/* 입력 필드 스타일 (회색 텍스트 추가) */
-.form-control {
+/* 로그인 버튼 스타일 */
+.go-to-login-btn {
     width: 100%;
-    padding: 12px 15px;
+    background-color: var(--kbo-dark-blue);
+    color: var(--kbo-white);
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: 'KBO_Bold', sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.go-to-login-btn:hover {
+    background-color: #000;
+}
+
+/* 메인 페이지 버튼 스타일 (보조 버튼) */
+.go-to-home-btn {
+    width: 100%;
+    background-color: var(--kbo-light-gray);
+    color: #333;
+    padding: 10px;
     border: 1px solid var(--kbo-light-gray);
     border-radius: 8px;
     font-size: 16px;
-    color: #757575; 
-}
-.form-control:focus {
-    outline: none;
-    box-shadow: none !important;
-    border-color: var(--kbo-dark-blue); 
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.toggle-password {
-    border: none;
-    background: none;
-    outline: none !important; /* 버튼 윤곽선 강제 제거 */
-    box-shadow: none !important;
+.go-to-home-btn:hover {
+    background-color: #ccc;
 }

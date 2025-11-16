@@ -61,6 +61,12 @@ require_once 'header.php';
             
             <label for="email">이메일</label>
             <input type="email" id="email" name="email" placeholder="example@email.com" required>
+
+            <label for="bdate">생년월일</label>
+            <input type="date" id="bdate" name="bdate" required>
+
+            <label for="phone">휴대폰 번호</label>
+            <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required>
             
             <label for="password">비밀번호</label>
             <input type="password" id="password" name="password" placeholder="비밀번호 (4자 이상)" minlength="4" required>

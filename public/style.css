@@ -468,3 +468,60 @@ body.login-body::before {
     text-decoration: none;
     font-size: 14px;
 }
+
+.form-group {
+    position: relative; 
+    padding-top: 15px; 
+    margin-bottom: 20px;
+}
+
+/* 레이블 기본 스타일 및 초기 위치 지정 (입력 필드 중앙) */
+.form-label {
+    position: absolute;
+    top: 39px; 
+    left: 15px;
+    transform: translateY(-50%) translateY(1px);
+    
+    color: #757575; 
+    font-size: 16px;
+    transition: all 0.2s ease-out; /* 애니메이션 효과 */
+    pointer-events: none;
+    font-family: 'KBO_Medium', sans-serif;
+    text-transform: uppercase;
+    line-height: 1; 
+    z-index: 5; 
+}
+
+.form-control:not(:placeholder-shown) + .form-label,
+.form-control:focus + .form-label {
+    top: 0; 
+    left: 0;
+    font-size: 12px; 
+    color: var(--kbo-dark-blue);
+    background-color: var(--kbo-white-bg);
+    padding: 0 5px;
+    transform: translateY(-50%); 
+    font-family: 'KBO_Bold', sans-serif;
+}
+
+/* 입력 필드 스타일 (회색 텍스트 추가) */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--kbo-light-gray);
+    border-radius: 8px;
+    font-size: 16px;
+    color: #757575; 
+}
+.form-control:focus {
+    outline: none;
+    box-shadow: none !important;
+    border-color: var(--kbo-dark-blue); 
+}
+
+.toggle-password {
+    border: none;
+    background: none;
+    outline: none !important; /* 버튼 윤곽선 강제 제거 */
+    box-shadow: none !important;
+}

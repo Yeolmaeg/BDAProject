@@ -2,12 +2,12 @@
 session_start();
 
 $page_title = "login";
-require_once 'header.php';
+// NOTE: config.php가 header.php보다 먼저 필요할 경우 위치를 조정하세요.
+// 이 예시에서는 로그인 처리 로직 내에서만 사용되므로 그대로 둡니다.
 
-// 로그인 처리
+// --- 로그인 처리 PHP 로직 (변경 없음) ---
 $error_message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 데이터베이스 설정 로드
     require_once 'config/config.php';
     
     $email = trim($_POST['email'] ?? '');
@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "이메일과 비밀번호를 입력해주세요.";
     } else {
         try {
+            // 데이터베이스 연결 및 로그인 로직 (생략: 기존 코드와 동일)
             $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, defined('DB_PORT') ? DB_PORT : 3306);
             
             if ($mysqli->connect_errno) {
@@ -25,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $mysqli->set_charset('utf8mb4');
             
-            // 사용자 정보 조회
             $stmt = $mysqli->prepare("SELECT user_id, username, password FROM users WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
@@ -33,12 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $result->fetch_assoc();
             
             if ($user && password_verify($password, $user['password'])) {
-                // 로그인 성공
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $email;
                 
-                // 로그인 기록 업데이트
                 $update_stmt = $mysqli->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
                 $update_stmt->bind_param("i", $user['user_id']);
                 $update_stmt->execute();
@@ -62,266 +60,284 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+require_once 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <title>로그인 - Baseball Records</title>
-    <style>
-        /* KBO 폰트 적용 */
-        @font-face {
-            font-family: 'KBO Dia Gothic';
-            src: url('/BDAProject/public/KBO Dia Gothic_light.ttf') format('truetype');
-            font-weight: 300;
-            font-style: normal;
-        }
-        
-        @font-face {
-            font-family: 'KBO Dia Gothic';
-            src: url('BDAProject/public/KBO Dia Gothic_medium.ttf') format('truetype');
-            font-weight: 500;
-            font-style: normal;
-        }
-        
-        @font-face {
-            font-family: 'KBO Dia Gothic';
-            src: url('BDAProject/public/KBO Dia Gothic_bold.ttf') format('truetype');
-            font-weight: 700;
-            font-style: normal;
-        }
+<style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    body {
+        font-family: 'KBO Dia Gothic', sans-serif;
+        background: linear-gradient(135deg, #8AB4F8 0%, #001F63 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden !important;
+        padding: 0 !important;
+        display: block !important;
+    }
 
-        body {
-            font-family: 'KBO Dia Gothic', sans-serif;
-            background: linear-gradient(135deg, #8AB4F8 0%, #001F63 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
+    .header, .nav-bar {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    .login-page {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 50px 40px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+    }
 
-        /* 배경 장식 요소 */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810"><path fill="%23ffffff" fill-opacity="0.1" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,810L1392,810C1344,810,1248,810,1152,810C1056,810,960,810,864,810C768,810,672,810,576,810C480,810,384,810,288,810C192,810,96,810,48,810L0,810Z"></path></svg>') no-repeat;
-            background-size: cover;
-            opacity: 0.3;
-            transform: rotate(-5deg);
-        }
+    /* KBO 폰트 적용 */
+    @font-face {
+        font-family: 'KBO Dia Gothic';
+        src: url('/BDAProject/public/KBO Dia Gothic_light.ttf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'KBO Dia Gothic';
+        src: url('BDAProject/public/KBO Dia Gothic_medium.ttf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'KBO Dia Gothic';
+        src: url('BDAProject/public/KBO Dia Gothic_bold.ttf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+    }
 
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* 배경 장식 요소 */
+    body::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810"><path fill="%23ffffff" fill-opacity="0.1" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,810L1392,810C1344,810,1248,810,1152,810C1056,810,960,810,864,810C768,810,672,810,576,810C480,810,384,810,288,810C192,810,96,810,48,810L0,810Z"></path></svg>') no-repeat;
+        background-size: cover;
+        opacity: 0.3;
+        transform: rotate(-5deg);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    #login-heading {
+        font-family: 'KBO Dia Gothic', sans-serif;
+        font-size: 52px;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 5px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+        color: #757575;
+        font-weight: 300;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 20px 20px;
+        font-size: 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background: #f8f8f8;
+        transition: all 0.3s ease;
+        font-family: 'KBO Dia Gothic', sans-serif;
+        font-weight: 500;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-label {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        color: #999;
+        font-weight: 500;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        padding: 0 5px;
+    }
+    
+    .form-control:focus + .form-label,
+    .form-control:not(:placeholder-shown) + .form-label {
+        top: 0;
+        font-size: 12px;
+        color: #667eea;
+        background: white;
+    }
+    
+    .password-wrapper {
+        position: relative;
+    }
+    
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        color: #999;
+        transition: color 0.3s ease;
+    }
+    
+    .toggle-password:hover {
+        color: #667eea;
+    }
+    
+    .toggle-password svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, #000000 0%, #000000 100%);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        font-family: 'KBO Dia Gothic', sans-serif;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    .signup-link {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .signup-link a {
+        color: #616161;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .signup-link a:hover {
+        color: #001F63;
+        text-decoration: underline;
+    }
+    
+    .error-message {
+        background: #fee;
+        color: #c33;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .error-message::before {
+        content: '⚠';
+        font-size: 18px;
+    }
+
+       .footer {
+        position: fixed !important;
+        bottom: 0 !important;  
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 9999 !important;
+
+        text-align: center !important;
+        padding: 20px !important;
+        color: #777 !important;
+        height: 50px;
+        background-color: white;
+    }
+    
+    /* 로딩 상태 */
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    /* 반응형 디자인 */
+    @media (max-width: 480px) {
         .login-page {
-            width: 100%;
-            max-width: 450px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 50px 40px;
-            position: relative;
-            z-index: 1;
+            margin: 20px auto; /* 중앙 정렬 유지 */
+            padding: 40px 30px;
         }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
+        
         #login-heading {
-            font-family: 'KBO Dia Gothic', sans-serif;
-            font-size: 52px;
-            font-weight: 700;
-            color: #000000;
-            margin-bottom: 5px;
+            font-size: 28px;
         }
-
-        .subtitle {
-            font-size: 14px;
-            color: #757575;
-            font-weight: 300;
-            margin-bottom: 20px;
+    }
+    
+    /* 애니메이션 */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
-
-        .form-group {
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 20px 20px;
-            font-size: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background: #f8f8f8;
-            transition: all 0.3s ease;
-            font-family: 'KBO Dia Gothic', sans-serif;
-            font-weight: 500;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-label {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: #999;
-            font-weight: 500;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            padding: 0 5px;
-        }
-
-        .form-control:focus + .form-label,
-        .form-control:not(:placeholder-shown) + .form-label {
-            top: 0;
-            font-size: 12px;
-            color: #667eea;
-            background: white;
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            color: #999;
-            transition: color 0.3s ease;
-        }
-
-        .toggle-password:hover {
-            color: #667eea;
-        }
-
-        .toggle-password svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(135deg, #000000 0%, #000000 100%);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            font-family: 'KBO Dia Gothic', sans-serif;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:active {
+        to {
+            opacity: 1;
             transform: translateY(0);
         }
+    }
+    
+    .login-page {
+        animation: fadeIn 0.6s ease;
+    }
 
-        .signup-link {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
+</style>
 
-        .signup-link a {
-            color: #616161;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .signup-link a:hover {
-            color: #001F63;
-            text-decoration: underline;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-message::before {
-            content: '⚠';
-            font-size: 18px;
-        }
-
-        /* 로딩 상태 */
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 480px) {
-            .login-page {
-                margin: 20px;
-                padding: 40px 30px;
-            }
-
-            #login-heading {
-                font-size: 28px;
-            }
-        }
-
-        /* 애니메이션 */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-page {
-            animation: fadeIn 0.6s ease;
-        }
-    </style>
-</head>
-<body>
-    <main class="login-page">
+<main class="login-page">
         <div class="login-header">
             <h1 id="login-heading">로그인</h1>
             <p class="subtitle">Best way to look up for baseball records</p>
@@ -409,21 +425,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return false;
             }
             
-            // 이메일 형식 검증
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email)) {
                 alert('올바른 이메일 형식을 입력해주세요.');
                 return false;
             }
             
-            // 로딩 상태 표시
             submitBtn.disabled = true;
             submitBtn.textContent = '로그인 중...';
             
             return true;
         }
 
-        // Enter 키 처리
         document.addEventListener('DOMContentLoaded', function() {
             const inputs = document.querySelectorAll('.form-control');
             inputs.forEach(input => {
@@ -438,9 +451,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
     </script>
-</body>
-</html>
-
 <?php
     require_once 'footer.php';
 ?>

@@ -167,7 +167,7 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     
     // 직전 3경기가 없으면 추세 없음
     if (count($prev_matches) < 3) {
-        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd'];
+        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd']; // N/A 아이콘 및 색상
     }
     
     // 직전 3경기 승률 계산
@@ -243,7 +243,6 @@ if ($conn_matches) {
 require_once 'header.php'; 
 ?>
 
- <!-- 3. 페이지의 본문 내용 -->
 <div class="card-box matches-card">
     <?php if ($error_message_matches): ?>
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message_matches); ?></p>
@@ -252,13 +251,10 @@ require_once 'header.php';
     <h3>2024 KBO League Match Records</h3>
     <p class="description">Match Results and Trend Analysis (Based on the selected team's win rate in the last 3 matches)</p>
 
-    <!-- 필터 섹션 -->
     <div class="filter-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
         <form method="GET" action="matches.php" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-            <label style="display: flex; align-items: center; gap: 5px;">
-                <input type="checkbox" id="filter-toggle" <?php echo ($month_matches || $team_id_matches) ? 'checked' : ''; ?>>
-                <strong>Filter</strong>
-            </label>
+            
+            <strong style="display: flex; align-items: center; gap: 5px;">Filter</strong>
             
             <select name="month" id="month-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
                 <option value="0">Select Month</option>
@@ -288,43 +284,37 @@ require_once 'header.php';
         </form>
     </div>
 
-    <!-- 정렬 및 통계 -->
     <div style="margin: 15px 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
             <strong>정렬:</strong>
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'desc'])); ?>" 
                style="margin: 0 5px; <?php echo $sort_order_matches === 'DESC' ? 'font-weight: bold;' : ''; ?>">
-                Latest
+               Latest
             </a>
             |
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'asc'])); ?>" 
                style="margin: 0 5px; <?php echo $sort_order_matches === 'ASC' ? 'font-weight: bold;' : ''; ?>">
-                Oldest
+               Oldest
             </a>
         </div>
         <div>
-            <strong>Total <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
+            <strong>총 <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
         </div>
     </div>
 
-    <!-- 경기 테이블 -->
     <table class="matches-table" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
         <thead style="background: #f1f3f5;">
             <tr>
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">
-                    <input type="checkbox" id="select-all">
-                </th>
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Date</th>
                 <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Stadium</th>
-                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Match Team</th>
-                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Score</th>
+                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Matchup</th> <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Score</th>
                 <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Trend</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($matches_matches)): ?>
             <tr>
-                <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
                     <?php if ($month_matches || $team_id_matches): ?>
                         No matches found for the selected criteria.
                     <?php else: ?>
@@ -335,9 +325,6 @@ require_once 'header.php';
             <?php else: ?>
                 <?php foreach ($matches_matches as $match): ?>
                 <tr style="border-bottom: 1px solid #e9ecef;">
-                    <td style="padding: 12px;">
-                        <input type="checkbox" class="match-checkbox">
-                    </td>
                     <td style="padding: 12px;">
                         <?php echo date('Y-m-d H:i', strtotime($match['match_date'])); ?>
                     </td>
@@ -388,7 +375,6 @@ require_once 'header.php';
         </tbody>
     </table>
 
-    <!-- 페이지네이션 -->
     <?php if (isset($total_pages) && $total_pages > 1): ?>
     <div class="pagination" style="margin: 20px 0; text-align: center;">
         <?php

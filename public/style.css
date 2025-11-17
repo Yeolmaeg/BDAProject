@@ -545,294 +545,210 @@ body.login-body::before {
 }
 
 
-/* bug_report.php */
+/* ========================================= player_rank.php 스타일 ========================================= */
 
-
-.report-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: calc(100vh - 200px);
+.page-title {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 30px;
+    line-height: 1.2;
+    color: var(--kbo-dark-blue); /* = #001F63 */
+    margin-bottom: 12px;
 }
 
-.rectangle {
-    height: 5px;
-    background: #001F63;
-    margin-bottom: 30px;
-    border-radius: 3px;
+.page-description {
+    font-family: 'KBO_Light', sans-serif;
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 40px;
 }
 
-.inquiry-form {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.section-title {
+    font-family: 'KBO_Bold', sans-serif;
+    font-size: 26px;
+    color: var(--kbo-dark-blue); /* = #001F63 */
+    margin: 40px 0 10px;
 }
 
-.report {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    color: #333;
-    text-align: center;
+/* 필터 바: 한 줄 전체를 6등분해서 균일하게 배치 */
+.filter-bar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+    gap: 12px;
+    align-items: stretch;
+    margin: 12px 0 4px;
+    width: 100%;
 }
 
-.form-group {
-    margin-bottom: 25px;
-}
-
-.div {
+.filter-dropdown {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
+}
+
+.filter-dropdown .filter-toggle,
+.filter-apply-button {
+    width: 100%;
+}
+
+
+.filter-toggle {
+    padding: 8px 18px;
+    border-radius: 0px;
+    border: 1px solid var(--kbo-dark-blue);
+    background-color: #ffffff;
+    color: var(--kbo-dark-blue);
+    font-size: 11px;
+    cursor: pointer;
+    outline: none;
+}
+
+
+.filter-toggle:hover {
+    background-color: rgba(0, 31, 99, 0.06);
+}
+
+/* Apply 버튼 */
+.filter-bar button.filter-toggle {
+    background-color: var(--kbo-dark-blue);
+    color: var(--kbo-white);
+}
+
+.filter-bar button.filter-toggle:hover {
+    background-color: #000;
+}
+
+select.filter-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* 화살표 아이콘 */
+    background-image: url("data:image/svg+xml;utf8,\<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'>\<path fill='%23001F63' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 10px 6px;
+
+    padding-left: 20px;
+    padding-right: 48px;
+
+    text-align: center;
+    text-align-last: center;   /* 선택된 값(제목) 정렬 */
+}
+
+select.filter-toggle option {
+    text-align: left;
+}
+
+
+/* 랭킹 테이블 카드 영역 */
+.player-rank-card {
+    background-color: rgba(0, 31, 99, 0.06);  
+    border-radius: 2px;
+    padding: 5px 5px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.player-rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 2px;
+    overflow: hidden;     
     font-size: 14px;
 }
 
-/* 텍스트 입력 필드 스타일 추가 */
-.input-field {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 15px;
-    background: white;
-    transition: border-color 0.3s;
-    font-family: 'KBO Dia Gothic', sans-serif;
+/* 헤더 라인 */
+.player-rank-table thead {
+    background-color: rgba(0, 31, 99, 0.06);  
+    border-bottom: 2px solid var(--kbo-dark-blue);
 }
 
-.input-field:focus {
-    outline: none;
-    border-color: #001F63;
+.player-rank-table th,
+.player-rank-table td {
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--kbo-dark-blue);
 }
 
-.input-field::placeholder {
-    color: #aaa;
-    font-weight: 300;
+/* 헤더는 볼드 */
+.player-rank-table th {
+    font-family: 'KBO_Bold', sans-serif;
 }
 
-.listbox-component {
-    position: relative;
+/* 줄 구분 스트라이프 */
+.player-rank-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
 }
 
-.listbox-main {
-    position: relative;
+.player-rank-table tbody tr:nth-child(even) {
+    background-color: #f6f8ff;   
+}
+
+
+.player-rank-table tbody tr:hover {
+    background-color: rgba(138, 180, 248, 0.30);
+}
+
+.table-header-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 24px 0 12px;  
+    flex-wrap: wrap;     
 }
 
-.select-occupation {
-    width: 100%;
-    padding: 12px 40px 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 15px;
-    background: white;
-    appearance: none;
-    cursor: pointer;
-    transition: border-color 0.3s;
-    font-family: 'KBO Dia Gothic', sans-serif;
+.table-header-row .section-title {
+    margin: 0;
 }
 
-.select-occupation:focus {
-    outline: none;
-    border-color: #001F63;
+/* 제목 아래 검색줄: 오른쪽 정렬 */
+.search-row {
+    display: flex;
+    justify-content: flex-end;  
+    margin: 12px 0 2px;
 }
 
-.chevron {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    width: 12px;
-    height: 12px;
-}
-
-.text-wrapper {
-    margin-top: 8px;
-    font-size: 13px;
-    color: #888;
-    font-weight: 300;
-}
-
-.view-2 {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 15px;
-    resize: vertical;
-    min-height: 200px;
-    transition: border-color 0.3s;
-    font-family: 'KBO Dia Gothic', sans-serif;
-}
-
-.view-2:focus {
-    outline: none;
-    border-color: #001F63;
-}
-
-.view-2::placeholder {
-    color: #aaa;
-    font-weight: 300;
-}
-
-.view {
-    text-align: center;
-    margin-top: 30px;
-}
-
-.rectangle-2 {
-    background:#001F63;
-    color: white;
-    border: none;
-    padding: 15px 50px;
-    font-size: 18px;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.rectangle-2:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-}
-
-.rectangle-2:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.text-wrapper-2 {
-    display: inline-block;
-}
-
-/* 알림 메시지 스타일 */
-.alert {
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 8px;
-    font-size: 14px;
-    animation: slideDown 0.3s ease-out;
-    font-weight: 400;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert a {
-    color: inherit;
-    text-decoration: underline;
-}
-
-/* 글자 수 카운터 */
-.char-counter {
-    text-align: right;
-    font-size: 12px;
-    color: #888;
-    margin-top: 5px;
-    font-weight: 300;
-}
-
-.char-counter.warning {
-    color: #ffc107;
-    font-weight: 400;
-}
-
-.char-counter.danger {
-    color: #dc3545;
-    font-weight: 400;
-}
-
-/* 로딩 오버레이 */
-.loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    justify-content: center;
+.player-search-form {
+    display: flex;
     align-items: center;
+    gap: 6px;
 }
 
-.loading-content {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+.player-search-input {
+    width: 220px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--kbo-dark-blue);
+    font-size: 11px;
 }
 
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+.player-search-button {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: none;
+    background-color: var(--kbo-dark-blue);
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Salary 열 오른쪽 정렬 */
+.player-rank-table th.col-salary,
+.player-rank-table td.col-salary {
+    text-align: right;
+    padding-right: 16px; 
+    font-variant-numeric: tabular-nums; 
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .report-page {
-        padding: 15px;
-    }
-    
-    .inquiry-form {
-        padding: 20px;
-    }
-    
-    .report {
-        font-size: 24px;
-    }
-    
-    .rectangle-2 {
-        width: 100%;
-        padding: 15px 30px;
-    }
-}
 
-/* 접근성 - 숨김 텍스트 */
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
+.player-rank-table td.col-nationality {
     white-space: nowrap;
-    border: 0;
 }
+
+.flag-emoji {
+    font-size: 18px;
+    text-align: center;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+

@@ -250,7 +250,7 @@ require_once 'header.php';
     <?php endif; ?>
 
     <h3>2024 KBO 리그 경기 기록</h3>
-    <p class="description">경기 결과 및 추세 분석 (직전 3경기 승률 기준)</p>
+    <p class="description">경기 결과 및 추세 분석 (선택하나 팀의 직전 3경기 승률 기준)</p>
 
     <!-- 필터 섹션 -->
     <div class="filter-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">

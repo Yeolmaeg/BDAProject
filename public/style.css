@@ -545,7 +545,7 @@ body.login-body::before {
 }
 
 
-/* ========================================= player_rank.php 스타일 ========================================= */
+/* ======= player_rank.php, team_rank.php 스타일 ============= */
 
 .page-title {
     font-family: 'KBO_Bold', sans-serif;
@@ -740,15 +740,36 @@ select.filter-toggle option {
     font-variant-numeric: tabular-nums; 
 }
 
-
+/* 국적 칸 가운데 정렬 */
+.player-rank-table th.col-nationality,
 .player-rank-table td.col-nationality {
-    white-space: nowrap;
+    text-align: center;
 }
 
-.flag-emoji {
-    font-size: 18px;
-    text-align: center;
-    margin-right: 4px;
+/* 국기 이미지 */
+.flag-icon {
+    width: 20px;    
+    height: 16px;
+    object-fit: cover; 
+    display: inline-block;
+    border-radius: 2px; 
+}
+
+
+.col-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-logo {
+    width: 15px;
+    height: 15px;
+    object-fit: cover;  
+    display: inline-block;
+}
+
+.team-name {
     vertical-align: middle;
 }
 

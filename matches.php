@@ -167,7 +167,7 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     
     // 직전 3경기가 없으면 추세 없음
     if (count($prev_matches) < 3) {
-        return ['trend' => 'N/A', 'icon' => '➖', 'color' => '#adb5bd'];
+        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd'];
     }
     
     // 직전 3경기 승률 계산

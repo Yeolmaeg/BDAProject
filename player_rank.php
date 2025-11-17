@@ -6,37 +6,34 @@ session_start();
 $page_title = "player_rank";
 
 // =======================
-// 0. 국기 이모지 매핑 함수
+// 0. 국기 이미지 매핑 함수
 // =======================
-function getFlagEmoji($codeOrName) {
-    $key = strtolower(trim($codeOrName));
+function getFlagHtml($nationality) {
+    $key = strtolower(trim($nationality));
 
     $map = [
-        // 코드 기준
-        'kr' => '🇰🇷',
-        'us' => '🇺🇸',
-        'do' => '🇩🇴',
-        'pr' => '🇵🇷',
-        'ca' => '🇨🇦',
-        've' => '🇻🇪',
-        'cu' => '🇨🇺',
-        'pa' => '🇵🇦',
-        'jp' => '🇯🇵',
-
-        // 전체 이름으로 들어온 경우도 같이 처리
-        'republic of korea'                => '🇰🇷',
-        'united states of america'         => '🇺🇸',
-        'dominican republic'               => '🇩🇴',
-        'commonwealth of puerto rico'      => '🇵🇷',
-        'canada'                           => '🇨🇦',
-        'bolivarian republic of venezuela' => '🇻🇪',
-        'republic of cuba'                 => '🇨🇺',
-        'republic of panama'               => '🇵🇦',
-        'japan'                            => '🇯🇵',
+        'republic of korea'                => 'kr',
+        'united states of america'         => 'us',
+        'dominican republic'               => 'do',
+        'commonwealth of puerto rico'      => 'pr',
+        'canada'                           => 'ca',
+        'bolivarian republic of venezuela' => 've',
+        'republic of cuba'                 => 'cu',
+        'republic of panama'               => 'pa',
+        'japan'                            => 'jp',
     ];
 
-    return $map[$key] ?? htmlspecialchars($codeOrName); // 모르는 값이면 원래 글자 출력
+    if (!isset($map[$key])) {
+        // 매핑 안 된 국가는 그냥 텍스트로 보여주기
+        return htmlspecialchars($nationality);
+    }
+
+    $code = $map[$key];
+    $src  = "flags/{$code}.png"; // 실제 파일 경로에 맞게 수정
+
+    return '<img src="' . $src . '" alt="' . strtoupper($code) . ' flag" class="flag-icon">';
 }
+
 
 
 
@@ -331,7 +328,7 @@ require_once 'header.php';
 ?>
 
 <div class="card-box">
-    <h1 class="page-title">⚾ Player Ranking by Weather ⚾</h1>
+    <h1 class="page-title">Player Ranking by Weather</h1>
     <p class="page-description">
         Set weather conditions to discover<br>
         which players perform best under each climate.
@@ -468,7 +465,7 @@ require_once 'header.php';
                         <td><?php echo htmlspecialchars($p['position']); ?></td>
                         <td><?php echo $p['age']; ?></td>
                         <td class="col-nationality">
-                            <?php echo getFlagEmoji($p['nationality']); ?>
+                            <?php echo getFlagHtml($p['nationality']); ?>
                         </td>
                         <td class="col-salary">
                             <?php

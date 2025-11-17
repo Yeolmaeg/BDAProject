@@ -286,7 +286,7 @@ require_once 'header.php';
 
     <div style="margin: 15px 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <strong>정렬:</strong>
+            <strong>Sort by:</strong>
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'desc'])); ?>" 
                style="margin: 0 5px; <?php echo $sort_order_matches === 'DESC' ? 'font-weight: bold;' : ''; ?>">
                Latest

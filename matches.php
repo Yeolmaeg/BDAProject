@@ -167,7 +167,7 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     
     // 직전 3경기가 없으면 추세 없음
     if (count($prev_matches) < 3) {
-        return ['trend' => 'N/A', 'icon' => '➖', 'color' => '#999'];
+        return ['trend' => 'N/A', 'icon' => '➖', 'color' => '#adb5bd'];
     }
     
     // 직전 3경기 승률 계산
@@ -249,7 +249,7 @@ require_once 'header.php';
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message_matches); ?></p>
     <?php endif; ?>
 
-    <h3>2024 KBO 리그 경기 기록</h3>
+    <h3>2024 KBO League Match Records</h3>
     <p class="description">Match Results and Trend Analysis (Based on the selected team's win rate in the last 3 matches)</p>
 
     <!-- 필터 섹션 -->
@@ -278,11 +278,11 @@ require_once 'header.php';
                 <?php endforeach; ?>
             </select>
             
-            <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
                 Apply
             </button>
             
-            <a href="matches.php" style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">
+            <a href="matches.php" style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
                 Reset
             </a>
         </form>
@@ -434,14 +434,6 @@ require_once 'header.php';
     </div>
     <?php endif; ?>
 </div>
-
-<script>
-// 전체 선택 체크박스
-document.getElementById('select-all')?.addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.match-checkbox');
-    checkboxes.forEach(cb => cb.checked = this.checked);
-});
-</script>
 
 <?php
 // 4. 푸터 파일 포함

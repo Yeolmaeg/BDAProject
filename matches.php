@@ -230,9 +230,9 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
 // 각 경기에 대한 추세 계산
 foreach ($matches_matches as &$match) {
     $trend_data = calculateTrend($conn_matches, $match, $team_id_matches);
-    $match['trend'] = $trend_data['trend'];
-    $match['trend_icon'] = $trend_data['icon'];
-    $match['trend_color'] = $trend_data['color'];
+    $match['trend'] = isset($trend_data['trend']) ? $trend_data['trend'] : '';
+    $match['trend_icon'] = isset($trend_data['icon']) ? $trend_data['icon'] : '';
+    $match['trend_color'] = isset($trend_data['color']) ? $trend_data['color'] : '#999';
 }
 
 if ($conn_matches) {

@@ -26,7 +26,6 @@ FROM (
   UNION ALL SELECT 'Yoo Seung-cheol','pitcher',21,'Republic of Korea',36000000
   UNION ALL SELECT 'Yoo Ji-seong','pitcher',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Yoon Young-cheol','pitcher',20,'Republic of Korea',90000000
-  UNION ALL SELECT 'Yoon Jung-hyun','pitcher',24,'Republic of Korea',65000000
   UNION ALL SELECT 'Lee Eui-ri','pitcher',22,'Republic of Korea',170000000
   UNION ALL SELECT 'Lee Jun-young','pitcher',25,'Republic of Korea',140000000
   UNION ALL SELECT 'Lee Hyeong-beom','pitcher',30,'Republic of Korea',70000000
@@ -546,7 +545,7 @@ FROM (
   UNION ALL SELECT 'Jeong Hoon','infielder',30,'Republic of Korea',300000000
   UNION ALL SELECT 'Choi Hang','infielder',29,'Republic of Korea',31000000
   UNION ALL SELECT 'Han Dong-hee','infielder',25,'Republic of Korea',162000000
-  UNION ALL SELECT 'Kim Dong-hyuk','outfielder',20,'Republic of Korea',31000000
+  UNION ALL SELECT 'Kim Dong-hyeok (00.09.15)','outfielder',24,'Republic of Korea',31000000
   UNION ALL SELECT 'Kim Min-seok (04.05.09)','outfielder',20,'Republic of Korea',85000000
   UNION ALL SELECT 'Yoon Dong-hee','outfielder',21,'Republic of Korea',90000000
   UNION ALL SELECT 'Lee Seon-woo (05.02.22)','outfielder',19,'Republic of Korea',30000000
@@ -738,7 +737,7 @@ SELECT
   t.team_id, @team_name, s.salary
 FROM (
   SELECT 'Kim Dong-gyu' AS player_name, 'pitcher' AS position, 20 AS age, 'Republic of Korea' AS nationality, 31000000 AS salary
-  UNION ALL SELECT 'Kim Dong-hyeok','pitcher',22,'Republic of Korea',60000000
+  UNION ALL SELECT 'Kim Dong-hyeok (01.12.27)','pitcher',23,'Republic of Korea',60000000
   UNION ALL SELECT 'Kim Seon-gi','pitcher',33,'Republic of Korea',70000000
   UNION ALL SELECT 'Kim Yeon-ju','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim In-beom','pitcher',24,'Republic of Korea',33000000
@@ -760,6 +759,7 @@ FROM (
   UNION ALL SELECT 'Jo Sang-woo','pitcher',30,'Republic of Korea',340000000
   UNION ALL SELECT 'Jo Yeong-geon','pitcher',24,'Republic of Korea',40000000
   UNION ALL SELECT 'Joo Seung-woo','pitcher',25,'Republic of Korea',32000000
+  UNION ALL SELECT 'Yoon Jung-hyun','pitcher',31,'Republic of Korea',65000000  
   UNION ALL SELECT 'Ha Yeong-min','pitcher',25,'Republic of Korea',80000000
   UNION ALL SELECT 'Ariel Jurado','pitcher',28,'Republic of Panama',1715000000
   UNION ALL SELECT 'Emmanuel De Jesus','pitcher',27,'Bolivarian Republic of Venezuela',857000000

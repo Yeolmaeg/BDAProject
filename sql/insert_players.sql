@@ -291,7 +291,7 @@ FROM (
   UNION ALL SELECT 'Kim Min-hyeok (96.05.03)','infielder',28,'Republic of Korea',38000000
   UNION ALL SELECT 'Kim Jae-ho','infielder',38,'Republic of Korea',300000000
   UNION ALL SELECT 'Park Gye-beom','infielder',28,'Republic of Korea',85000000
-  UNION ALL SELECT 'Park Jun-young','infielder',21,'Republic of Korea',70000000
+  UNION ALL SELECT 'Park Jun-young','infielder',27,'Republic of Korea',70000000
   UNION ALL SELECT 'Park Ji-hoon','infielder',20,'Republic of Korea',36000000
   UNION ALL SELECT 'Seo Ye-il','infielder',20,'Republic of Korea',34000000
   UNION ALL SELECT 'Yang Seok-hwan','infielder',31,'Republic of Korea',300000000
@@ -311,7 +311,7 @@ FROM (
   UNION ALL SELECT 'Jung Soo-bin','outfielder',34,'Republic of Korea',600000000
   UNION ALL SELECT 'Cho Soo-haeng','outfielder',30,'Republic of Korea',95000000
   UNION ALL SELECT 'Hong Sung-ho','outfielder',27,'Republic of Korea',33000000
-  UNION ALL SELECT 'Henry Ramos','outfielder',24,'Commonwealth of Puerto Rico',857000000
+  UNION ALL SELECT 'Henry Ramos','outfielder',30,'Commonwealth of Puerto Rico',857000000
   UNION ALL SELECT 'Ryu Hyeon-jun', 'catcher', 19, 'Republic of Korea', 30000000 
   UNION ALL SELECT 'Chang Kyu-bin', 'catcher', 23, 'Republic of Korea', 31000000 
   UNION ALL SELECT 'Jared Young', 'infielder', 29, 'Canada', 434000000
@@ -368,7 +368,7 @@ FROM (
   UNION ALL SELECT 'Ha Jun-ho','pitcher',20,'Republic of Korea',45000000
   UNION ALL SELECT 'Wes Benjamin','pitcher',32,'United States of America',1857000000
   UNION ALL SELECT 'William Cuevas','pitcher',34,'Bolivarian Republic of Venezuela',1857000000
-  UNION ALL SELECT 'Kang Hyun-woo','catcher',20,'Republic of Korea',50000000
+  UNION ALL SELECT 'Kang Hyun-woo','catcher',23,'Republic of Korea',50000000
   UNION ALL SELECT 'Kim Min-seok (05.07.22)','catcher',19,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Jun-tae','catcher',28,'Republic of Korea',100000000
   UNION ALL SELECT 'Jang Seong-woo','catcher',34,'Republic of Korea',500000000
@@ -384,7 +384,7 @@ FROM (
   UNION ALL SELECT 'Lee Ho-yeon','infielder',29,'Republic of Korea',85000000
   UNION ALL SELECT 'Jang Jun-won','infielder',26,'Republic of Korea',53000000
   UNION ALL SELECT 'Cheon Seong-ho','infielder',27,'Republic of Korea',45000000
-  UNION ALL SELECT 'Hwang Jae-gyun','infielder',20,'Republic of Korea',1000000000
+  UNION ALL SELECT 'Hwang Jae-gyun','infielder',37,'Republic of Korea',1000000000
   UNION ALL SELECT 'Kim Geon-hyung','outfielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Min-hyeok (95.11.21)','outfielder',37,'Republic of Korea',240000000
   UNION ALL SELECT 'Kim Byeong-jun','outfielder',24,'Republic of Korea',31000000
@@ -392,7 +392,7 @@ FROM (
   UNION ALL SELECT 'Bae Jeong-dae','outfielder',30,'Republic of Korea',320000000
   UNION ALL SELECT 'An Chi-young','outfielder',32,'Republic of Korea',50000000
   UNION ALL SELECT 'Jeong Jun-young','outfielder',20,'Republic of Korea',42000000
-  UNION ALL SELECT 'Jo Yong-ho','outfielder',20,'Republic of Korea',150000000
+  UNION ALL SELECT 'Jo Yong-ho','outfielder',35,'Republic of Korea',150000000
   UNION ALL SELECT 'Hong Hyeon-bin','outfielder',34,'Republic of Korea',45000000
   UNION ALL SELECT 'Mel Rojas Jr.','outfielder',30,'Dominican Republic',857000000
   UNION ALL SELECT 'Kwon Dong-jin', 'infielder', 26, 'Republic of Korea', 46000000
@@ -451,27 +451,27 @@ FROM (
   UNION ALL SELECT 'Go Myeong-jun','infielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Min-jun','infielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Seong-min','infielder',30,'Republic of Korea',30000000
-  UNION ALL SELECT 'Kim Seong-hyeon','infielder',21,'Republic of Korea',200000000
+  UNION ALL SELECT 'Kim Seong-hyeon','infielder',37,'Republic of Korea',200000000
   UNION ALL SELECT 'Kim Chan-hyeong','infielder',28,'Republic of Korea',50000000
-  UNION ALL SELECT 'Park Seong-han','infielder',20,'Republic of Korea',300000000
+  UNION ALL SELECT 'Park Seong-han','infielder',26,'Republic of Korea',300000000
   UNION ALL SELECT 'Park Ji-hwan','infielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'An Sang-hyeon','infielder',20,'Republic of Korea',40000000
   UNION ALL SELECT 'Jeon Ui-san','infielder',20,'Republic of Korea',80000000
   UNION ALL SELECT 'Choi Jeong','infielder',25,'Republic of Korea',1000000000
   UNION ALL SELECT 'Choi Kyung-mo','infielder',37,'Republic of Korea',37000000
-  UNION ALL SELECT 'Choi Jun-woo','infielder',20,'Republic of Korea',45000000
-  UNION ALL SELECT 'Kang Jin-seong','outfielder',20,'Republic of Korea',85000000
+  UNION ALL SELECT 'Choi Jun-woo','infielder',25,'Republic of Korea',45000000
+  UNION ALL SELECT 'Kang Jin-seong','outfielder',31,'Republic of Korea',85000000
   UNION ALL SELECT 'Kim Jeong-min','outfielder',32,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim Chang-pyeong','outfielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Ryu Hyo-seung','outfielder',20,'Republic of Korea',31000000
-  UNION ALL SELECT 'Oh Tae-gon','outfielder',20,'Republic of Korea',250000000
+  UNION ALL SELECT 'Oh Tae-gon','outfielder',33,'Republic of Korea',250000000
   UNION ALL SELECT 'Lee Seung-min (05.01.06)','outfielder',19,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Jeong-beom','outfielder',20,'Republic of Korea',32000000
   UNION ALL SELECT 'Chae Hyeon-woo','outfielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Choi Sang-min','outfielder',20,'Republic of Korea',32000000
-  UNION ALL SELECT 'Choi Ji-hoon','outfielder',20,'Republic of Korea',250000000
+  UNION ALL SELECT 'Choi Ji-hoon','outfielder',27,'Republic of Korea',250000000
   UNION ALL SELECT 'Choo Shin-soo','outfielder',42,'Republic of Korea',30000000
-  UNION ALL SELECT 'Ha Jae-hoon','outfielder',23,'Republic of Korea',100000000
+  UNION ALL SELECT 'Ha Jae-hoon','outfielder',34,'Republic of Korea',100000000
   UNION ALL SELECT 'Han Yu-seom','outfielder',35,'Republic of Korea',900000000
   UNION ALL SELECT 'Guillermo Heredia','outfielder',33,'Republic of Cuba', 1857000000
   UNION ALL SELECT 'Jeong Jun-jae', 'infielder', 21, 'Republic of Korea', 30000000
@@ -528,14 +528,14 @@ FROM (
   UNION ALL SELECT 'Aaron Wilkerson','pitcher',20,'United States of America',1070000000
   UNION ALL SELECT 'Kang Tae-yul','catcher',20,'Republic of Korea',36000000
   UNION ALL SELECT 'Seo Dong-wook','catcher',20,'Republic of Korea',33000000
-  UNION ALL SELECT 'Son Seong-bin','catcher',20,'Republic of Korea',50000000
+  UNION ALL SELECT 'Son Seong-bin','catcher',22,'Republic of Korea',50000000
   UNION ALL SELECT 'Yoo Kang-nam','catcher',24,'Republic of Korea',1000000000
   UNION ALL SELECT 'Jeong Bo-geun','catcher',30,'Republic of Korea',75000000
   UNION ALL SELECT 'Ji Si-wan','catcher',29,'Republic of Korea',58000000
   UNION ALL SELECT 'Kang Seong-woo','infielder',30,'Republic of Korea',30000000
-  UNION ALL SELECT 'Go Seung-min','infielder',20,'Republic of Korea',80000000
+  UNION ALL SELECT 'Go Seung-min','infielder',24,'Republic of Korea',80000000
   UNION ALL SELECT 'Kim Min-seong (88.12.17)','infielder',36,'Republic of Korea',200000000
-  UNION ALL SELECT 'Na Seung-yeop','infielder',32,'Republic of Korea',40000000
+  UNION ALL SELECT 'Na Seung-yeop','infielder',22,'Republic of Korea',40000000
   UNION ALL SELECT 'Noh Jin-hyuk','infielder',22,'Republic of Korea',600000000
   UNION ALL SELECT 'Park Seung-wook','infielder',34,'Republic of Korea',135000000
   UNION ALL SELECT 'Shin Yoon-hoo','infielder',20,'Republic of Korea',52000000
@@ -554,9 +554,9 @@ FROM (
   UNION ALL SELECT 'Lee Seon-woo (05.02.22)','outfielder',19,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Jeong-hoon','outfielder',20,'Republic of Korea',60000000
   UNION ALL SELECT 'Jang Du-seong','outfielder',37,'Republic of Korea',40000000
-  UNION ALL SELECT 'Jeon Jun-woo','outfielder',20,'Republic of Korea',1300000000
+  UNION ALL SELECT 'Jeon Jun-woo','outfielder',38,'Republic of Korea',1300000000
   UNION ALL SELECT 'Hwang Seong-bin','outfielder',24,'Republic of Korea',76000000
-  UNION ALL SELECT 'Victor Reyes','outfielder',29,'Bolivarian Republic of Venezuela',1000000000
+  UNION ALL SELECT 'Victor Reyes','outfielder',30,'Bolivarian Republic of Venezuela',1000000000
   UNION ALL SELECT 'Kang Seung-gu','catcher',21,'Republic of Korea',30000000
   UNION ALL SELECT 'Baek Du-san','catcher',23,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee In-han','outfielder',26,'Republic of Korea',31000000
@@ -608,7 +608,7 @@ FROM (
   UNION ALL SELECT 'Hwang Jun-seo','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Ricardo Sánchez','pitcher',26,'Bolivarian Republic of Venezuela',857000000
   UNION ALL SELECT 'Felix Peña','pitcher',27,'Dominican Republic',1214000000
-  UNION ALL SELECT 'Park Sang-eon','catcher',20,'Republic of Korea',42000000
+  UNION ALL SELECT 'Park Sang-eon','catcher',27,'Republic of Korea',42000000
   UNION ALL SELECT 'Lee Jae-yong','catcher',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Lee Jae-won (88.02.24)','catcher',36,'Republic of Korea',50000000
   UNION ALL SELECT 'Jang Gyu-hyeon','catcher',20,'Republic of Korea',32000000
@@ -616,28 +616,28 @@ FROM (
   UNION ALL SELECT 'Heo Gwan-hoe','catcher',20,'Republic of Korea',33000000
   UNION ALL SELECT 'Kim Geon','infielder',20,'Republic of Korea',32000000
   UNION ALL SELECT 'Kim In-hwan','infielder',28,'Republic of Korea',69000000
-  UNION ALL SELECT 'Kim Tae-yeon','infielder',22,'Republic of Korea',78000000
-  UNION ALL SELECT 'Noh Si-hwan','infielder',23,'Republic of Korea',350000000
+  UNION ALL SELECT 'Kim Tae-yeon','infielder',27,'Republic of Korea',78000000
+  UNION ALL SELECT 'Noh Si-hwan','infielder',24,'Republic of Korea',350000000
   UNION ALL SELECT 'Moon Hyeon-bin','infielder',21,'Republic of Korea',80000000
-  UNION ALL SELECT 'An Chi-hong','infielder',20,'Republic of Korea',500000000
+  UNION ALL SELECT 'An Chi-hong','infielder',34,'Republic of Korea',500000000
   UNION ALL SELECT 'Lee Do-yoon','infielder',34,'Republic of Korea',75000000
   UNION ALL SELECT 'Lee Min-jun','infielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Jeong An-seok','infielder',20,'Republic of Korea',30000000
-  UNION ALL SELECT 'Jeong Eun-won','infielder',20,'Republic of Korea',178000000
+  UNION ALL SELECT 'Jeong Eun-won','infielder',24,'Republic of Korea',178000000
   UNION ALL SELECT 'Jo Han-min','infielder',24,'Republic of Korea',38000000
   UNION ALL SELECT 'Ha Ju-seok','infielder',26,'Republic of Korea',70000000
   UNION ALL SELECT 'Hwang Yeong-muk','infielder',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kwon Gwang-min','outfielder',30,'Republic of Korea',33000000
-  UNION ALL SELECT 'Kim Kang-min','outfielder',20,'Republic of Korea',110000000
+  UNION ALL SELECT 'Kim Kang-min','outfielder',42,'Republic of Korea',110000000
   UNION ALL SELECT 'Yu Ro-gyeol','outfielder',20,'Republic of Korea',33000000
   UNION ALL SELECT 'Lee Myeong-gi','outfielder',39,'Republic of Korea',50000000
   UNION ALL SELECT 'Lee Sang-hyeok','outfielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Lee Won-seok (99.03.31)','outfielder',25,'Republic of Korea',36000000
-  UNION ALL SELECT 'Lee Jin-yeong','outfielder',20,'Republic of Korea',70000000
+  UNION ALL SELECT 'Lee Jin-yeong','outfielder',27,'Republic of Korea',70000000
   UNION ALL SELECT 'Im Jong-chan','outfielder',20,'Republic of Korea',34000000
-  UNION ALL SELECT 'Jang Jin-hyeok','outfielder',20,'Republic of Korea',58000000
+  UNION ALL SELECT 'Jang Jin-hyeok','outfielder',31,'Republic of Korea',58000000
   UNION ALL SELECT 'Choi In-ho','outfielder',33,'Republic of Korea',48000000
-  UNION ALL SELECT 'Chae Eun-seong','outfielder',20,'Republic of Korea',1000000000
+  UNION ALL SELECT 'Chae Eun-seong','outfielder',34,'Republic of Korea',1000000000
   UNION ALL SELECT 'Yonathan Perlaza','outfielder',34,'Bolivarian Republic of Venezuela',1143000000
   UNION ALL SELECT 'Han Kyeong-bin','infielder', 26, 'Republic of Korea', 30000000
   UNION ALL SELECT 'Jaime Barría', 'pitcher', 28, 'Republic of Panama', 699000000
@@ -698,17 +698,17 @@ FROM (
   UNION ALL SELECT 'Kim Ju-won','infielder',30,'Republic of Korea',160000000
   UNION ALL SELECT 'Kim Han-byeol','infielder',20,'Republic of Korea',38000000
   UNION ALL SELECT 'Kim Hwi-jip','infielder',23,'Republic of Korea',110000000
-  UNION ALL SELECT 'Do Tae-hoon','infielder',21,'Republic of Korea',80000000
-  UNION ALL SELECT 'Park Min-woo','infielder',20,'Republic of Korea',1000000000
+  UNION ALL SELECT 'Do Tae-hoon','infielder',31,'Republic of Korea',80000000
+  UNION ALL SELECT 'Park Min-woo','infielder',31,'Republic of Korea',1000000000
   UNION ALL SELECT 'Park Ju-chan','infielder',26,'Republic of Korea',31000000
   UNION ALL SELECT 'Seo Ho-cheol','infielder',31,'Republic of Korea',120000000
   UNION ALL SELECT 'Oh Yeong-su','infielder',20,'Republic of Korea',72000000
   UNION ALL SELECT 'Yoon Hyeong-jun','infielder',26,'Republic of Korea',65000000
   UNION ALL SELECT 'Jo Hyeon-jin','infielder',22,'Republic of Korea',31000000
   UNION ALL SELECT 'Choi Bo-seong','infielder',20,'Republic of Korea',32000000
-  UNION ALL SELECT 'Choi Jeong-won','infielder',20,'Republic of Korea',66000000
-  UNION ALL SELECT 'Matt Davidson','infielder',20,'United States of America',1000000000
-  UNION ALL SELECT 'Kwon Hee-dong','outfielder',20,'Republic of Korea',150000000
+  UNION ALL SELECT 'Choi Jeong-won','infielder',24,'Republic of Korea',66000000
+  UNION ALL SELECT 'Matt Davidson','infielder',33,'United States of America',1000000000
+  UNION ALL SELECT 'Kwon Hee-dong','outfielder',34,'Republic of Korea',150000000
   UNION ALL SELECT 'Kim Seong-uk','outfielder',33,'Republic of Korea',95000000
   UNION ALL SELECT 'Park Geon-woo','outfielder',34,'Republic of Korea',800000000
   UNION ALL SELECT 'Park Si-won','outfielder',30,'Republic of Korea',30000000
@@ -771,7 +771,7 @@ FROM (
   UNION ALL SELECT 'Kim Dong-heon','catcher',23,'Republic of Korea',40000000
   UNION ALL SELECT 'Kim Si-ang','catcher',20,'Republic of Korea',36000000
   UNION ALL SELECT 'Kim Ji-seong','catcher',20,'Republic of Korea',30000000
-  UNION ALL SELECT 'Kim Jae-hyeon','catcher',20,'Republic of Korea',55000000
+  UNION ALL SELECT 'Kim Jae-hyeon','catcher',31,'Republic of Korea',55000000
   UNION ALL SELECT 'Park Seong-bin','catcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Park Jun-hyeong','catcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Go Yeong-woo','infielder',20,'Republic of Korea',30000000
@@ -787,13 +787,13 @@ FROM (
   UNION ALL SELECT 'Shin Jun-woo','infielder',20,'Republic of Korea',42000000
   UNION ALL SELECT 'Lee Won-seok (86.10.21)','infielder',38,'Republic of Korea',400000000
   UNION ALL SELECT 'Lee Jae-sang','infielder',38,'Republic of Korea',30000000
-  UNION ALL SELECT 'Im Ji-yeol','infielder',20,'Republic of Korea',72000000
+  UNION ALL SELECT 'Im Ji-yeol','infielder',29,'Republic of Korea',72000000
   UNION ALL SELECT 'Choi Joo-hwan','infielder',25,'Republic of Korea',650000000
   UNION ALL SELECT 'Park Su-jong','outfielder',36,'Republic of Korea',40000000
   UNION ALL SELECT 'Park Chan-hyeok','outfielder',20,'Republic of Korea',40000000
-  UNION ALL SELECT 'Byeon Sang-gwon','outfielder',20,'Republic of Korea',48000000
+  UNION ALL SELECT 'Byeon Sang-gwon','outfielder',37,'Republic of Korea',48000000
   UNION ALL SELECT 'Ye Jin-won','outfielder',20,'Republic of Korea',40000000
-  UNION ALL SELECT 'Lee Yong-gyu','outfielder',20,'Republic of Korea',200000000
+  UNION ALL SELECT 'Lee Yong-gyu','outfielder',39,'Republic of Korea',200000000
   UNION ALL SELECT 'Lee Joo-hyeong','outfielder',39,'Republic of Korea',66000000
   UNION ALL SELECT 'Lee Hyeong-jong','outfielder',28,'Republic of Korea',680000000
   UNION ALL SELECT 'Im Byeong-uk','outfielder',35,'Republic of Korea',70000000

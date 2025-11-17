@@ -303,7 +303,7 @@ require_once 'header.php';
             </a>
         </div>
         <div>
-            <strong>총 <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
+            <strong>Total <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
         </div>
     </div>
 

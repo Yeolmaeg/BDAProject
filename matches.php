@@ -243,14 +243,14 @@ if ($conn_matches) {
 require_once 'header.php'; 
 ?>
 
-<!-- 3. 페이지의 본문 내용 -->
+// 3. 페이지의 본문 내용
 <div class="card-box matches-card">
     <?php if ($error_message_matches): ?>
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message_matches); ?></p>
     <?php endif; ?>
 
     <h3>2024 KBO 리그 경기 기록</h3>
-    <p class="description">경기 결과 및 추세 분석 (선택하나 팀의 직전 3경기 승률 기준)</p>
+    <p class="description">Match Results and Trend Analysis (Based on the selected team's win rate in the last 3 matches)</p>
 
     <!-- 필터 섹션 -->
     <div class="filter-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -261,16 +261,16 @@ require_once 'header.php';
             </label>
             
             <select name="month" id="month-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                <option value="0">Month</option>
+                <option value="0">Select Month</option>
                 <?php for ($i = 1; $i <= 12; $i++): ?>
                     <option value="<?php echo $i; ?>" <?php echo $month_matches == $i ? 'selected' : ''; ?>>
-                        <?php echo $i; ?>월
+                        <?php echo $i; ?>
                     </option>
                 <?php endfor; ?>
             </select>
             
             <select name="team" id="team-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                <option value="0">Team</option>
+                <option value="0">Select Team</option>
                 <?php foreach ($teams_matches as $team): ?>
                     <option value="<?php echo $team['team_id']; ?>" <?php echo $team_id_matches == $team['team_id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($team['team_name']); ?>
@@ -279,7 +279,7 @@ require_once 'header.php';
             </select>
             
             <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                [Apply]
+                Apply
             </button>
             
             <a href="matches.php" style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">
@@ -294,16 +294,16 @@ require_once 'header.php';
             <strong>정렬:</strong>
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'desc'])); ?>" 
                style="margin: 0 5px; <?php echo $sort_order_matches === 'DESC' ? 'font-weight: bold;' : ''; ?>">
-                최신순
+                Latest
             </a>
             |
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'asc'])); ?>" 
                style="margin: 0 5px; <?php echo $sort_order_matches === 'ASC' ? 'font-weight: bold;' : ''; ?>">
-                과거순
+                Oldest
             </a>
         </div>
         <div>
-            <strong>총 <?php echo isset($total_records) ? $total_records : 0; ?>경기</strong>
+            <strong>총 <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
         </div>
     </div>
 
@@ -326,9 +326,9 @@ require_once 'header.php';
             <tr>
                 <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
                     <?php if ($month_matches || $team_id_matches): ?>
-                        선택한 조건에 해당하는 경기가 없습니다.
+                        No matches found for the selected criteria.
                     <?php else: ?>
-                        데이터가 없습니다. 데이터베이스를 확인하세요.
+                        No data available. Please check the database.
                     <?php endif; ?>
                 </td>
             </tr>
@@ -379,7 +379,7 @@ require_once 'header.php';
                                 </span>
                             </div>
                         <?php else: ?>
-                            <span style="color: #adb5bd;">팀 선택 필요</span>
+                            <span style="color: #adb5bd;">Select a team</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -399,7 +399,7 @@ require_once 'header.php';
             $query_params['page'] = $page_matches - 1;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                « 이전
+                « Previous
             </a>
         <?php endif; ?>
         
@@ -424,7 +424,7 @@ require_once 'header.php';
             $query_params['page'] = $page_matches + 1;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                다음 »
+                Next »
             </a>
         <?php endif; ?>
         

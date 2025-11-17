@@ -11,7 +11,7 @@ SELECT
   t.team_id, @team_name, s.salary
 FROM (
   SELECT 'Kang I-jun' AS player_name, 'pitcher' AS position, 25 AS age, 'Republic of Korea' AS nationality, 30000000 AS salary
-  UNION ALL SELECT 'Gwak Do-gyu','pitcher',20,'Republic of Korea',33000000
+  UNION ALL SELECT 'Kwak Do-gyu','pitcher',20,'Republic of Korea',33000000
   UNION ALL SELECT 'Kim Geon-guk','pitcher',19,'Republic of Korea',40000000
   UNION ALL SELECT 'Kim Ki-hoon','pitcher',24,'Republic of Korea',40000000
   UNION ALL SELECT 'Kim Dae-yu','pitcher',30,'Republic of Korea',110000000
@@ -101,6 +101,7 @@ FROM (
   UNION ALL SELECT 'Seo Hyun-won','pitcher',22,'Republic of Korea',30000000
   UNION ALL SELECT 'Yang Hyun','pitcher',32,'Republic of Korea',90000000
   UNION ALL SELECT 'Oh Seung-hwan','pitcher',42,'Republic of Korea',400000000
+  UNION ALL SELECT 'Oh Jae-il (Before Trade)','infielder',38,'Republic of Korea',500000000  
   UNION ALL SELECT 'Won Tae-in','pitcher',24,'Republic of Korea',430000000
   UNION ALL SELECT 'Yook Sun-yeop','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Lee Sang-min','pitcher',34,'Republic of Korea',65000000
@@ -135,7 +136,7 @@ FROM (
   UNION ALL SELECT 'Kim Jae-sang','infielder',22,'Republic of Korea',32000000
   UNION ALL SELECT 'Kim Ji-chan','infielder',24,'Republic of Korea',160000000
   UNION ALL SELECT 'Kim Ho-jin','infielder',25,'Republic of Korea',30000000
-  UNION ALL SELECT 'Park Byung-ho','infielder',38,'Republic of Korea',700000000
+  UNION ALL SELECT 'Park Byung-ho (After Trade)','infielder',38,'Republic of Korea',700000000
   UNION ALL SELECT 'Ryu Ji-hyeok','infielder',26,'Republic of Korea',200000000
   UNION ALL SELECT 'Ahn Joo-hyung','infielder',38,'Republic of Korea',52000000
   UNION ALL SELECT 'Lee Jae-hyun','infielder',29,'Republic of Korea',140000000
@@ -186,6 +187,7 @@ FROM (
   UNION ALL SELECT 'Bae Jae-joon','pitcher',30,'Republic of Korea',60000000
   UNION ALL SELECT 'Baek Seung-hyun','pitcher',29,'Republic of Korea',92000000
   UNION ALL SELECT 'Seong Dong-hyun','pitcher',20,'Republic of Korea',32000000
+  UNION ALL SELECT 'Son Ho-young (Before Trade)','infielder',30,'Republic of Korea',45000000  
   UNION ALL SELECT 'Son Ju-young','pitcher',25,'Republic of Korea',43000000
   UNION ALL SELECT 'Yoo Young-chan','pitcher',20,'Republic of Korea',85000000
   UNION ALL SELECT 'Yoon Ho-sol','pitcher',29,'Republic of Korea',70000000
@@ -344,6 +346,7 @@ FROM (
   UNION ALL SELECT 'Moon Yong-ik','pitcher',29,'Republic of Korea',63000000
   UNION ALL SELECT 'Park Se-jin','pitcher',27,'Republic of Korea',35000000
   UNION ALL SELECT 'Park Si-young','pitcher',31,'Republic of Korea',90000000
+  UNION ALL SELECT 'Park Byung-ho (Before Trade)','infielder',38,'Republic of Korea',700000000
   UNION ALL SELECT 'Park Young-hyun','pitcher',22,'Republic of Korea',160000000
   UNION ALL SELECT 'Seong Jae-heon','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'So Hyeong-jun','pitcher',23,'Republic of Korea',220000000
@@ -376,7 +379,7 @@ FROM (
   UNION ALL SELECT 'Park Kyung-soo','infielder',38,'Republic of Korea',200000000
   UNION ALL SELECT 'Park Min-seok','infielder',20,'Republic of Korea',31000000
   UNION ALL SELECT 'Shin Bon-gi','infielder',33,'Republic of Korea',130000000
-  UNION ALL SELECT 'Oh Jae-il','infielder',21,'Republic of Korea',500000000
+  UNION ALL SELECT 'Oh Jae-il (After Trade)','infielder',38,'Republic of Korea',500000000
   UNION ALL SELECT 'Oh Yoon-seok','infielder',33,'Republic of Korea',140000000
   UNION ALL SELECT 'Lee Ho-yeon','infielder',29,'Republic of Korea',85000000
   UNION ALL SELECT 'Jang Jun-won','infielder',26,'Republic of Korea',53000000
@@ -536,7 +539,7 @@ FROM (
   UNION ALL SELECT 'Noh Jin-hyuk','infielder',22,'Republic of Korea',600000000
   UNION ALL SELECT 'Park Seung-wook','infielder',34,'Republic of Korea',135000000
   UNION ALL SELECT 'Shin Yoon-hoo','infielder',20,'Republic of Korea',52000000
-  UNION ALL SELECT 'Son Ho-young','infielder',22,'Republic of Korea',45000000
+  UNION ALL SELECT 'Son Ho-young (After Trade)','infielder',30,'Republic of Korea',45000000
   UNION ALL SELECT 'Oh Sun-jin','infielder',36,'Republic of Korea',100000000
   UNION ALL SELECT 'Lee Joo-chan','infielder',33,'Republic of Korea',31000000
   UNION ALL SELECT 'Lee Hak-joo','infielder',32,'Republic of Korea',92000000
@@ -657,6 +660,7 @@ SELECT
 FROM (
   SELECT 'Kim Min-gyun' AS player_name, 'pitcher' AS position, 20 AS age, 'Republic of Korea' AS nationality, 30000000 AS salary
   UNION ALL SELECT 'Kim Si-hoon','pitcher',24,'Republic of Korea',110000000
+  UNION ALL SELECT 'Kim Whee-jip (After Trade)','pitcher',22,'Republic of Korea',110000000  
   UNION ALL SELECT 'Kim Young-gyu','pitcher',25,'Republic of Korea',225000000
   UNION ALL SELECT 'Kim Jae-yeol','pitcher',20,'Republic of Korea',60000000
   UNION ALL SELECT 'Kim Jin-ho','pitcher',20,'Republic of Korea',60000000
@@ -738,6 +742,7 @@ SELECT
 FROM (
   SELECT 'Kim Dong-gyu' AS player_name, 'pitcher' AS position, 20 AS age, 'Republic of Korea' AS nationality, 31000000 AS salary
   UNION ALL SELECT 'Kim Dong-hyeok (01.12.27)','pitcher',23,'Republic of Korea',60000000
+  UNION ALL SELECT 'Kim Whee-jip (Before Trade)','pitcher',22,'Republic of Korea',110000000  
   UNION ALL SELECT 'Kim Seon-gi','pitcher',33,'Republic of Korea',70000000
   UNION ALL SELECT 'Kim Yeon-ju','pitcher',20,'Republic of Korea',30000000
   UNION ALL SELECT 'Kim In-beom','pitcher',24,'Republic of Korea',33000000

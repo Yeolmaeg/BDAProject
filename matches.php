@@ -50,7 +50,7 @@ if ($conn_matches && !$error_message_matches) {
     $types = '';
     
     if ($month_matches > 0) {
-        $where_clauses[] = "MONTH(m.game_date) = ?";
+        $where_clauses[] = "MONTH(m.match_date) = ?";
         $params[] = $month_matches;
         $types .= 'i';
     }
@@ -86,11 +86,11 @@ if ($conn_matches && !$error_message_matches) {
     $sql_matches = "
         SELECT 
             m.match_id,
-            m.game_date,
+            m.match_date,
             m.away_team_id,
             m.home_team_id,
-            m.away_score,
-            m.home_score,
+            m.score_away,
+            m.score_home,
             s.stadium_name,
             t_away.team_name AS away_team_name,
             t_home.team_name AS home_team_name
@@ -100,7 +100,7 @@ if ($conn_matches && !$error_message_matches) {
         JOIN teams t_away ON m.away_team_id = t_away.team_id
         JOIN teams t_home ON m.home_team_id = t_home.team_id
         $where_sql
-        ORDER BY m.game_date $sort_order_matches
+        ORDER BY m.match_date $sort_order_matches
         LIMIT ? OFFSET ?
     ";
     
@@ -130,27 +130,27 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
         return ['trend' => '', 'icon' => ''];
     }
     
-    $match_date = $current_match['game_date'];
+    $match_date = $current_match['match_date'];
     $match_id = $current_match['match_id'];
     
     // 현재 경기의 승패 판정
     $is_away = ($current_match['away_team_id'] == $selected_team_id);
     $current_win = $is_away 
-        ? ($current_match['away_score'] > $current_match['home_score'])
-        : ($current_match['home_score'] > $current_match['away_score']);
+        ? ($current_match['score_away'] > $current_match['score_home'])
+        : ($current_match['score_home'] > $current_match['score_away']);
     
     // 직전 3경기 조회 (현재 경기 제외, 이전 경기만)
     $sql_prev = "
         SELECT 
             m.away_team_id,
             m.home_team_id,
-            m.away_score,
-            m.home_score
+            m.score_away,
+            m.score_home
         FROM matches m
         WHERE (m.away_team_id = ? OR m.home_team_id = ?)
-          AND m.game_date < ?
+          AND m.match_date < ?
           AND m.match_id != ?
-        ORDER BY m.game_date DESC
+        ORDER BY m.match_date DESC
         LIMIT 3
     ";
     
@@ -175,8 +175,8 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     foreach ($prev_matches as $match) {
         $is_away_prev = ($match['away_team_id'] == $selected_team_id);
         $win = $is_away_prev
-            ? ($match['away_score'] > $match['home_score'])
-            : ($match['home_score'] > $match['away_score']);
+            ? ($match['score_away'] > $match['score_home'])
+            : ($match['score_home'] > $match['score_away']);
         if ($win) $prev_wins++;
     }
     $prev_win_rate = ($prev_wins / 3) * 100;
@@ -186,12 +186,12 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
         SELECT 
             m.away_team_id,
             m.home_team_id,
-            m.away_score,
-            m.home_score
+            m.score_away,
+            m.score_home
         FROM matches m
         WHERE (m.away_team_id = ? OR m.home_team_id = ?)
-          AND m.game_date <= ?
-        ORDER BY m.game_date DESC
+          AND m.match_date <= ?
+        ORDER BY m.match_date DESC
         LIMIT 3
     ";
     
@@ -211,8 +211,8 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     foreach ($recent_matches as $match) {
         $is_away_recent = ($match['away_team_id'] == $selected_team_id);
         $win = $is_away_recent
-            ? ($match['away_score'] > $match['home_score'])
-            : ($match['home_score'] > $match['away_score']);
+            ? ($match['score_away'] > $match['score_home'])
+            : ($match['score_home'] > $match['score_away']);
         if ($win) $recent_wins++;
     }
     $recent_win_rate = ($recent_wins / 3) * 100;
@@ -339,7 +339,7 @@ require_once 'header.php';
                         <input type="checkbox" class="match-checkbox">
                     </td>
                     <td style="padding: 12px;">
-                        <?php echo date('Y-m-d H:i', strtotime($match['game_date'])); ?>
+                        <?php echo date('Y-m-d H:i', strtotime($match['match_date'])); ?>
                     </td>
                     <td style="padding: 12px;">
                         <?php echo htmlspecialchars($match['stadium_name']); ?>
@@ -356,12 +356,12 @@ require_once 'header.php';
                     </td>
                     <td style="padding: 12px; text-align: center;">
                         <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-                            <span style="font-weight: bold; <?php echo $match['away_score'] > $match['home_score'] ? 'color: #007bff;' : ''; ?>">
-                                <?php echo $match['away_score']; ?>
+                            <span style="font-weight: bold; <?php echo $match['score_away'] > $match['score_home'] ? 'color: #007bff;' : ''; ?>">
+                                <?php echo $match['score_away']; ?>
                             </span>
                             <span>:</span>
-                            <span style="font-weight: bold; <?php echo $match['home_score'] > $match['away_score'] ? 'color: #007bff;' : ''; ?>">
-                                <?php echo $match['home_score']; ?>
+                            <span style="font-weight: bold; <?php echo $match['score_home'] > $match['score_away'] ? 'color: #007bff;' : ''; ?>">
+                                <?php echo $match['score_home']; ?>
                             </span>
                         </div>
                         <div style="font-size: 0.85em; color: #6c757d; margin-top: 4px;">

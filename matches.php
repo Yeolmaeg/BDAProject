@@ -243,7 +243,7 @@ if ($conn_matches) {
 require_once 'header.php'; 
 ?>
 
-// 3. 페이지의 본문 내용
+ <!-- 3. 페이지의 본문 내용 -->
 <div class="card-box matches-card">
     <?php if ($error_message_matches): ?>
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message_matches); ?></p>

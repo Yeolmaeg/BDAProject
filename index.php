@@ -4,6 +4,31 @@
 // 1. 세션 시작 (로그인 상태를 사용하기 위해 필수)
 session_start();
 
+function getTeamLogoSrc($team_name) {
+    $key = strtolower(trim($team_name));
+
+    // 실제 teams 테이블의 team_name 과 최대한 맞춰서 작성
+    $map = [
+        'kia tigers'      => 'kia',
+        'kt wiz'          => 'kt',
+        'hanwha eagles'   => 'hanwha',
+        'doosan bears'    => 'doosan',
+        'samsung lions'   => 'samsung',
+        'ssg landers'     => 'ssg',
+        'kiwoom heroes'   => 'kiwoom',
+        'nc dinos'        => 'nc',
+        'lotte giants'    => 'lotte',
+        'lg twins'        => 'lg',
+    ];
+
+    if (!isset($map[$key])) {
+        return null; // 로고 없으면 null
+    }
+
+    $code = $map[$key];
+    return "logos/{$code}.png";  // team04/logos 안에 있는 파일
+}
+
 // 2. 로그인 상태 확인 및 사용자 ID 가져오기
 $is_logged_in = isset($_SESSION['user_id']); 
 $user_id = $_SESSION['user_id'] ?? null; 
@@ -88,16 +113,11 @@ if ($is_logged_in && $user_id && $pdo) {
             
             $match_date = date('Y. m. d', strtotime($match_data['match_date']));
             $is_win = ($favorite_score > $opponent_score);
-            $score_win = "{$favorite_score}:{$opponent_score} (" . ($is_win ? '승' : '패') . ")";
+            $score_win = "{$favorite_score}:{$opponent_score} (" . ($is_win ? 'Win' : 'Lose') . ")";
             
             $weather_temp_raw = $match_data['temp'] ?? 0;
             $weather_temp = floor($weather_temp_raw) . "°C"; 
-            
-            // ************ 임시 데이터 유지 (선수 정보는 복잡한 DB 쿼리가 필요함) ************
-            $winning_pitcher = "플럿코 (DB에서 가져와야 함)";
-            $best_hitter = "김현수 (4타수 2안타 2타점) (DB에서 가져와야 함)";
-            $weather_note = "다음 경기 실황의 기상 조건이 경기장에 미치는 영향 분석 예정."; 
-            // *************************************************************************
+
 
         } else {
             // 경기가 없는 경우 (대시보드 내용을 빈 값으로 설정)
@@ -128,24 +148,32 @@ require_once 'header.php';
         <?php if (!$is_logged_in): ?>
             
             <div class="card-box welcome-card">
-                            </div>
+                <h2>Welcome!</h2>
+                <p>Sign up and check out your favorite team's latest matches and weather analysis.</p>
+                <div class="login-actions">
+                    <button href="signup.php" class="welcome-card signup-btn">Sign Up</button>
+                    <button href="login.php" class="welcome-card login-btn">Log In</button>
+                </div>
+            </div>
 
         <?php else: ?>
             
             <?php if ($favorite_team_id): 
                 $score_class = ($is_win) ? 'win' : 'lose'; // 승패 클래스
+                $logo_src = getTeamLogoSrc($team_name);
+                $default_logo = 'logos/default.png'; 
+                $team_logo_src = $logo_src ?: $default_logo;
             ?>
 
             <div class="card-box dashboard-box">
-                <h2><?php echo $team_name; ?> 대시보드</h2>
-
-                                <div class="recent-match-summary">
+                <h2><?php echo $team_name; ?> Dashboard</h2>
+                <div class="recent-match-summary">
                     <div class="match-info">
-                        <p>최근 경기 요약</p>
-                        <p class="match-date"><?php echo $match_date; ?></p>
+                        <h3>Recent Match Summary</h3>
+                        <p class="match-date">Date: <?php echo $match_date; ?></p>
                         
                         <div class="score-and-logo">
-                            <img src="/assets/logos/<?php echo $team_name; ?>.png" alt="<?php echo $team_name; ?> 로고" class="team-logo">
+                            <img src="<?php echo $team_logo_src; ?>" alt="<?php echo $team_name; ?> Logo" class="team-logo-dashboard">
                             <div class="match-score <?php echo $score_class; ?>">
                                 <?php echo $score_win; ?>
                             </div>
@@ -154,19 +182,24 @@ require_once 'header.php';
                         <p>vs <?php echo $opponent; ?></p>
                     </div>
                     
-                                    </div>
+                </div>
                 
-                                <div class="weather-info">
-                    <h3>오늘의 경기장 날씨</h3>
-                    <div class="weather-details">
-                        <span></span>                         <span><?php echo $weather_temp; ?></span>
-                    </div>
-                                    </div>
+                    <div class="weather-info">
+                    <h3>Today's Stadium Weather</h3>
+                        <div class="weather-details">
+                            <span><?php echo $weather_temp; ?></span>
+                        </div>
+                    </div>
 
             <?php else: // 좋아하는 팀이 없는 경우 ?>
                 
                 <div class="card-box welcome-card">
-                                    </div>
+                    <h2>Need to set up a cheering team</h2>
+                    <p>Please select your favorite team on the team page.!</p> 
+                    <div class="button-container">
+                        <a href="teams.php" class="btn btn-signup">Go to Team Page</a>
+                    </div>
+                </div>
 
             <?php endif; ?>
         <?php endif; ?>

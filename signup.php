@@ -47,7 +47,7 @@ require_once 'header.php';
     <div class="signup-modal-card">
         
         <div class="modal-header">
-            <h1 class="modal-title">회원가입</h1>
+            <h1 class="modal-title">Sign Up</h1>
         </div>
                 
         <form action="process_signup.php" method="POST" class="signup-form">
@@ -56,23 +56,23 @@ require_once 'header.php';
                 <p style="color: red; text-align: center; margin-bottom: 15px;"><?php echo htmlspecialchars($error_message); ?></p>
             <?php endif; ?>
 
-            <label for="name">이름</label>
-            <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
             
-            <label for="email">이메일</label>
+            <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="example@email.com" required>
 
-            <label for="bdate">생년월일</label>
+            <label for="bdate">Date of Birth</label>
             <input type="date" id="bdate" name="bdate" required>
 
-            <label for="phone">휴대폰 번호</label>
+            <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required>
             
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" placeholder="비밀번호 (4자 이상)" minlength="4" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password (4 characters or more)" minlength="4" required>
             
             
-            <button type="submit" class="submit-btn">가입하기</button>
+            <button type="submit" class="submit-btn">Sign Up</button>
             
         </form>
     </div>

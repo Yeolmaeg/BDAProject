@@ -166,6 +166,7 @@ body {
 .welcome-card .login-btn {
     background-color: var(--kbo-white); 
     color: #333;
+    border:2px solid var(--kbo-light-gray);
 }
 .welcome-card .signup-btn:hover {
     background-color: var(--kbo-light-blue); /* 마우스 올렸을 때 밝은 파랑으로 변경 */
@@ -177,14 +178,7 @@ body {
     color: #333;
     transition: background-color 0.3s; /* 부드러운 전환 효과 추가 */
 }
-/* kbo-light-gray 변수가 정의되지 않아 추가합니다. */
-:root {
-    --kbo-dark-blue: #001F63;
-    --kbo-light-blue: #8AB4F8;
-    --kbo-white: #F5F7FA;
-    --kbo-white-bg: #FFFFFF;
-    --kbo-light-gray: #E0E0E0; /* kbo-light-gray 변수 추가 */
-}
+
 
 /* Dashboard Styles */
 .dashboard-box {
@@ -195,16 +189,37 @@ body {
 .dashboard-box h2 {
     font-family: 'KBO_Bold', sans-serif;
     color: var(--kbo-dark-blue);
-    margin-bottom: 25px;
+    margin-bottom: -35px;
 }
 
 .recent-match-summary {
-    display: flex;
     justify-content: space-between;
     align-items: flex-start;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--kbo-light-blue);
     margin-bottom: 20px;
+    margin-left: 30px;
+}
+
+.recent-match-summary p{
+    margin-left: 30px;
+}
+
+.team-logo-dashboard {
+    width: 100px; /* 원하는 너비로 조절 (예: 60px에서 100px로 증가) */
+    height: 100px; /* 원하는 높이로 조절 (예: 60px에서 100px로 증가) */
+    border-radius: 50%; /* 로고가 원형일 경우 대비 */
+    margin-right: -450px; /* 로고와 점수 사이 간격 조절 (선택 사항) */
+    margin-left: 30px;
+}
+
+/* Flexbox 컨테이너인 .score-and-logo의 gap 속성을 사용해도 좋습니다. */
+.score-and-logo {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 15px 0;
+    gap: 0px; /* 로고와 점수 사이의 간격을 CSS flexbox gap으로 설정 */
 }
 
 .match-info {
@@ -225,7 +240,8 @@ body {
 }
 
 .weather-info {
-    margin-top: 20px;
+    margin-top: -20px;
+    margin-left: 30px;
 }
 
 .weather-info h3 {
@@ -235,9 +251,8 @@ body {
 }
 
 .weather-details {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
+    margin-left: -250px;
+    font-size: 36px;
 }
 /* 팀 테이블 스타일 */
 .team-table {

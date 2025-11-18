@@ -104,25 +104,25 @@ require_once 'header.php';
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message); ?></p>
     <?php endif; ?>
 
-    <h3>2024 KBO 리그 팀 정보</h3>
+    <h3>2024 KBO League Team Information</h3>
 
-    <p class="description">한국야구위원회(KBO) 정규리그 10개 구단 정보</p><br>
+    <p class="description">Korea Baseball Organization (KBO) Regular League 10 Teams Information</p><br>
 
     <table class="team-table">
         <thead>
             <tr>
                 <!-- 헤더 추가 (가독성 향상) -->
-                <th>팀 이름</th>
-                <th>연고지</th>
-                <th>홈 구장</th>
-                <th>창단 연도</th>
-                <th>우승 횟수</th>
+                <th>Team Name</th>
+                <th>Location</th>
+                <th>Home Stadium</th>
+                <th>Founded Year</th>
+                <th>Championships</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($teams)): ?>
             <tr>
-                <td colspan="5" style="text-align: center;">데이터가 없습니다. 데이터베이스를 확인하세요.</td>
+                <td colspan="5" style="text-align: center;">No data available. Please check the database.</td>
             </tr>
             <?php else: ?>
                 <?php foreach ($teams as $team): ?>
@@ -139,12 +139,12 @@ require_once 'header.php';
                     
                     <td><span class="icon">📍</span> <?php echo htmlspecialchars($team['location']); ?></td>
                     <td><?php echo htmlspecialchars($team['stadium']); ?></td>
-                    <td><span class="icon">📅</span> <?php echo htmlspecialchars($team['founded']); ?>년</td>
+                    <td>Since </span> <?php echo htmlspecialchars($team['founded']); ?></td>
                     <td>
                         <!-- 우승 횟수 중복 출력 로직 수정 -->
                         <span class="icon">🏆</span> 
                         <span class="<?php if ($team['championships'] == 0) echo 'zero-championships'; ?>">
-                            <?php echo htmlspecialchars($team['championships']); ?>회
+                            <?php echo htmlspecialchars($team['championships']); ?>
                         </span>
                     </td>
                 </tr>

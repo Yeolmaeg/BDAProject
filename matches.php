@@ -167,7 +167,7 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     
     // 직전 3경기가 없으면 추세 없음
     if (count($prev_matches) < 3) {
-        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd']; // N/A 아이콘 및 색상
+        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd'];
     }
     
     // 직전 3경기 승률 계산
@@ -181,7 +181,7 @@ function calculateTrend($conn, $current_match, $selected_team_id) {
     }
     $prev_win_rate = ($prev_wins / 3) * 100;
     
-    // 현재 경기 포함 최근 3경기 조회 (현재 경기 + 직전 2경기)
+    // 현재 경기 포함 최근 3경기 조회
     $sql_recent = "
         SELECT 
             m.away_team_id,
@@ -243,146 +243,146 @@ if ($conn_matches) {
 require_once 'header.php'; 
 ?>
 
-<div class="card-box matches-card">
+<div class="card-box">
+    <h1 class="page-title">2024 KBO League Match Records</h1>
+    <p class="page-description">
+        Match Results and Trend Analysis<br>
+        (Based on the selected team's win rate in the last 3 matches)
+    </p>
+
     <?php if ($error_message_matches): ?>
         <p style="color: red; padding: 10px;"><?php echo htmlspecialchars($error_message_matches); ?></p>
     <?php endif; ?>
 
-    <h3>2024 KBO League Match Records</h3>
-    <p class="description">Match Results and Trend Analysis (Based on the selected team's win rate in the last 3 matches)</p>
+    <div class="table-header-row">
+        <h2 class="section-title">Match List</h2>
+    </div>
 
-    <div class="filter-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-        <form method="GET" action="matches.php" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-            
-            <strong style="display: flex; align-items: center; gap: 5px;">Filter</strong>
-            
-            <select name="month" id="month-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                <option value="0">Select Month</option>
+    <!-- 필터 바 -->
+    <form method="GET" action="matches.php" class="filter-bar">
+        <div class="filter-dropdown">
+            <select name="month" class="filter-toggle">
+                <option value="0">📅 Select Month</option>
                 <?php for ($i = 1; $i <= 12; $i++): ?>
                     <option value="<?php echo $i; ?>" <?php echo $month_matches == $i ? 'selected' : ''; ?>>
-                        <?php echo $i; ?>
+                        <?php echo $i; ?>월
                     </option>
                 <?php endfor; ?>
             </select>
-            
-            <select name="team" id="team-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                <option value="0">Select Team</option>
+        </div>
+        
+        <div class="filter-dropdown">
+            <select name="team" class="filter-toggle">
+                <option value="0">⚾ Select Team</option>
                 <?php foreach ($teams_matches as $team): ?>
                     <option value="<?php echo $team['team_id']; ?>" <?php echo $team_id_matches == $team['team_id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($team['team_name']); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
-            
-            <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                Apply
-            </button>
-            
-            <a href="matches.php" style="padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
-                Reset
-            </a>
-        </form>
-    </div>
+        </div>
+        
+        <button type="submit" class="filter-toggle">Apply</button>
+        
+        <a href="matches.php" class="filter-toggle" style="text-decoration: none; text-align: center; line-height: 38px;">
+            Reset
+        </a>
+    </form>
 
     <div style="margin: 15px 0; display: flex; justify-content: space-between; align-items: center;">
         <div>
             <strong>Sort by:</strong>
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'desc'])); ?>" 
-               style="margin: 0 5px; <?php echo $sort_order_matches === 'DESC' ? 'font-weight: bold;' : ''; ?>">
+               style="margin: 0 5px; <?php echo $sort_order_matches === 'DESC' ? 'font-weight: bold; color: #007bff;' : 'color: #6c757d;'; ?>">
                Latest
             </a>
             |
             <a href="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'asc'])); ?>" 
-               style="margin: 0 5px; <?php echo $sort_order_matches === 'ASC' ? 'font-weight: bold;' : ''; ?>">
+               style="margin: 0 5px; <?php echo $sort_order_matches === 'ASC' ? 'font-weight: bold; color: #007bff;' : 'color: #6c757d;'; ?>">
                Oldest
             </a>
         </div>
         <div>
-            <strong>총 <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
+            <strong>Total <?php echo isset($total_records) ? $total_records : 0; ?> Matches</strong>
         </div>
     </div>
 
-    <table class="matches-table" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-        <thead style="background: #f1f3f5;">
-            <tr>
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Date</th>
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Stadium</th>
-                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Matchup</th> <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Score</th>
-                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Trend</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($matches_matches)): ?>
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
-                    <?php if ($month_matches || $team_id_matches): ?>
-                        No matches found for the selected criteria.
-                    <?php else: ?>
-                        No data available. Please check the database.
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <?php else: ?>
-                <?php foreach ($matches_matches as $match): ?>
-                <tr style="border-bottom: 1px solid #e9ecef;">
-                    <td style="padding: 12px;">
-                        <?php echo date('Y-m-d H:i', strtotime($match['match_date'])); ?>
-                    </td>
-                    <td style="padding: 12px;">
-                        <?php echo htmlspecialchars($match['stadium_name']); ?>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        <a href="match_detail.php?match_id=<?php echo $match['match_id']; ?>" 
-                           style="text-decoration: none; color: inherit; display: block;"
-                           onmouseover="this.style.backgroundColor='#f8f9fa';"
-                           onmouseout="this.style.backgroundColor='transparent';">
-                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                                <span style="font-weight: 500; color: #007bff;">
-                                    <?php echo htmlspecialchars($match['away_team_name']); ?>
-                                </span>
-                                <span style="color: #6c757d;">vs</span>
-                                <span style="font-weight: 500; color: #007bff;">
-                                    <?php echo htmlspecialchars($match['home_team_name']); ?>
-                                </span>
-                            </div>
-                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 4px;">
-                                Away vs Home
-                            </div>
-                        </a>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-                            <span style="font-weight: bold; <?php echo $match['score_away'] > $match['score_home'] ? 'color: #007bff;' : ''; ?>">
-                                <?php echo $match['score_away']; ?>
-                            </span>
-                            <span>:</span>
-                            <span style="font-weight: bold; <?php echo $match['score_home'] > $match['score_away'] ? 'color: #007bff;' : ''; ?>">
-                                <?php echo $match['score_home']; ?>
-                            </span>
-                        </div>
-                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 4px;">
-                            Away : Home
-                        </div>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        <?php if ($team_id_matches > 0): ?>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                                <span style="font-size: 1.5em; color: <?php echo $match['trend_color']; ?>;">
-                                    <?php echo $match['trend_icon']; ?>
-                                </span>
-                                <span style="font-size: 0.9em; color: <?php echo $match['trend_color']; ?>; font-weight: 500;">
-                                    <?php echo $match['trend']; ?>
-                                </span>
-                            </div>
+    <div class="player-rank-card">
+        <table class="player-rank-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Stadium</th>
+                    <th>Matchup</th>
+                    <th>Score</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($matches_matches)): ?>
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <?php if ($month_matches || $team_id_matches): ?>
+                            No matches found for the selected criteria.
                         <?php else: ?>
-                            <span style="color: #adb5bd;">Select a team</span>
+                            No data available. Please check the database.
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php else: ?>
+                    <?php foreach ($matches_matches as $match): ?>
+                    <tr>
+                        <td>
+                            <?php echo date('Y-m-d H:i', strtotime($match['match_date'])); ?>
+                        </td>
+                        <td>
+                            <?php echo htmlspecialchars($match['stadium_name']); ?>
+                        </td>
+                        <td>
+                            <a href="match_detail.php?match_id=<?php echo $match['match_id']; ?>" 
+                               style="text-decoration: none; color: inherit; display: block;">
+                                <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                    <span style="font-weight: 500;">
+                                        <?php echo htmlspecialchars($match['away_team_name']); ?>
+                                    </span>
+                                    <span style="color: #6c757d;">vs</span>
+                                    <span style="font-weight: 500;">
+                                        <?php echo htmlspecialchars($match['home_team_name']); ?>
+                                    </span>
+                                </div>
+                            </a>
+                        </td>
+                        <td>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <span style="font-weight: bold; <?php echo $match['score_away'] > $match['score_home'] ? 'color: #007bff;' : ''; ?>">
+                                    <?php echo $match['score_away']; ?>
+                                </span>
+                                <span>:</span>
+                                <span style="font-weight: bold; <?php echo $match['score_home'] > $match['score_away'] ? 'color: #007bff;' : ''; ?>">
+                                    <?php echo $match['score_home']; ?>
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <?php if ($team_id_matches > 0): ?>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                    <span style="font-size: 1.5em; color: <?php echo $match['trend_color']; ?>;">
+                                        <?php echo $match['trend_icon']; ?>
+                                    </span>
+                                    <span style="font-size: 0.9em; color: <?php echo $match['trend_color']; ?>; font-weight: 500;">
+                                        <?php echo $match['trend']; ?>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <span style="color: #adb5bd;">Select a team</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
     <?php if (isset($total_pages) && $total_pages > 1): ?>
     <div class="pagination" style="margin: 20px 0; text-align: center;">

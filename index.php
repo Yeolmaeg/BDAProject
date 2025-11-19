@@ -197,7 +197,7 @@ require_once 'header.php';
                     <h2>Need to set up a cheering team</h2>
                     <p>Please select your favorite team on the team page.!</p> 
                     <div class="button-container">
-                        <a href="teams.php" class="btn btn-signup">Go to Team Page</a>
+                        <button onclick="location.href='teams.php'" class="signup-btn">Go to Team Page</button>
                     </div>
                 </div>
 

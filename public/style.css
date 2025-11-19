@@ -410,15 +410,17 @@ body {
     margin-bottom: 15px;
 }
 
-/* 로그인 페이지 전용 BODY/배경 설정*/
+/* login.php */
+
+/* 로그인 페이지 전용 BODY/배경 설정 */
 body.login-body {
     background: linear-gradient(135deg, var(--kbo-light-blue) 0%, var(--kbo-dark-blue) 100%);
     min-height: 100vh;
     position: relative;
-    overflow: hidden; /* 스크롤 방지 */
+    overflow: hidden;
     padding: 0;
     display: block;
-}
+} 
 
 /* SVG 패턴 */
 body.login-body::before {
@@ -447,10 +449,10 @@ body.login-body::before {
     z-index: 10; 
 
     /* 중앙 고정 */
-    position: absolute; 
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); 
+    transform: translate(-50%, -50%);
 }
 
 /* 로그인 폼 내부 스타일 */
@@ -496,7 +498,7 @@ body.login-body::before {
     font-size: 18px;
     font-family: 'KBO_Bold', sans-serif;
     cursor: pointer;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .signup-link {
@@ -510,6 +512,63 @@ body.login-body::before {
     font-size: 14px;
 }
 
+.form-group {
+    position: relative; 
+    padding-top: 15px; 
+    margin-bottom: 20px;
+}
+
+.form-label {
+    position: absolute;
+    top: 39px; 
+    left: 15px;
+    transform: translateY(-50%) translateY(1px);
+    
+    color: #757575;
+    font-size: 16px;
+    transition: all 0.2s ease-out;
+    pointer-events: none; /* 레이블을 클릭해도 입력 필드가 선택되도록 */
+    font-family: 'KBO_Medium', sans-serif;
+    text-transform: uppercase;
+    line-height: 1; 
+    z-index: 5;
+}
+
+/* 입력 필드에 포커스가 있거나(focus) 내용이 있을 때(not(:placeholder-shown)) 레이블 위치 조정 */
+.form-control:not(:placeholder-shown) + .form-label,
+.form-control:focus + .form-label {
+    top: 0; 
+    left: 0;
+    font-size: 12px; 
+    color: var(--kbo-dark-blue);
+    background-color: var(--kbo-white-bg);
+    padding: 0 5px;
+    transform: translateY(-50%);
+    font-family: 'KBO_Bold', sans-serif;
+}
+
+/* 입력 필드 스타일 */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--kbo-light-gray);
+    border-radius: 8px;
+    font-size: 16px;
+    color: #757575; 
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: non !important;
+    border-color: var(--kbo-dark-blue);
+}
+
+.toggle-password {
+    border: none;
+    background: none;
+    outline: none !important; /* 버튼 윤곽선 강제 제거 */
+    box-shadow: none !important; /* 버튼 그림자 강제 제거 */
+}
 .success-message {
     font-size: 16px;
     color: #333;

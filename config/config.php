@@ -5,7 +5,7 @@ $DB_USER = 'team04';
 $DB_PASS = 'team04';
 $DB_PORT = 3306;
 
-// 로컬 작업시 덮어쓸 분만 쓰시면 됩니다
+// 로컬 작업시
 $local = __DIR__ . '/config.local.php';
 if (file_exists($local)) require $local; 
 

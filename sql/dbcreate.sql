@@ -1,3 +1,5 @@
+-- author: Sumin Son
+
 SET NAMES utf8mb4;
 SET time_zone = '+09:00';
 

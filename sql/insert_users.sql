@@ -1,3 +1,6 @@
+-- author: Sumin Son
+
+
 USE team04;
 
 INSERT INTO users (

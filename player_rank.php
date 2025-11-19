@@ -1,11 +1,12 @@
 <?php
+// author: Sumin Son
 // player_rank.php
 
 session_start();
 $page_title = "player_rank";
 
 // =======================
-// 0. 국기 이미지 매핑 함수
+// 0. 국기 이미지 매핑
 // =======================
 function getFlagHtml($nationality) {
     $key = strtolower(trim($nationality));
@@ -56,13 +57,13 @@ $wind_bucket    = isset($_GET['wind'])     ? $_GET['wind']     : 'ALL';
 $rain_bucket    = isset($_GET['rain'])     ? $_GET['rain']     : 'ALL';
 $player_keyword = isset($_GET['player'])   ? trim($_GET['player']) : '';
 
-// ▽▽▽ 날씨 중 하나라도 ALL 인지 체크 ▽▽▽
+// 날씨 중 하나라도 ALL 인지 체크
 $has_any_all_weather =
     ($temp_bucket  === 'ALL') ||
     ($humid_bucket === 'ALL') ||
     ($wind_bucket  === 'ALL') ||
     ($rain_bucket  === 'ALL');
-// △△△ NEW △△△
+
 
 // 버킷 옵션 (폼 렌더링용)
 $temp_options  = ['ALL','<10','10-15','15-20','20-25','25-30','>=30'];
@@ -320,7 +321,7 @@ if ($conn->connect_error) {
                 ORDER BY rank
             ";
         }
-    }   // ← if ($has_any_all_weather) 닫는 중괄호
+    }
 
     // =======================
     // 4-1. 쿼리 실행
@@ -336,7 +337,6 @@ if ($conn->connect_error) {
             $result = $stmt->get_result();
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    // rank는 DB에서 넘어온 값 그대로 사용
                     $players[] = $row;
                 }
             } else {
@@ -351,6 +351,7 @@ if ($conn->connect_error) {
 
     $conn->close();
 }
+
 
 // =======================
 // 5. 화면 출력
@@ -375,7 +376,6 @@ require_once 'header.php';
 
     <div class="search-row">
         <form method="get" class="player-search-form">
-            <!-- 지금 쓰고 있는 hidden 필터들 그대로 유지 -->
             <input type="hidden" name="position" value="<?php echo htmlspecialchars($position); ?>">
             <input type="hidden" name="temp"     value="<?php echo htmlspecialchars($temp_bucket); ?>">
             <input type="hidden" name="humid"    value="<?php echo htmlspecialchars($humid_bucket); ?>">
@@ -393,7 +393,7 @@ require_once 'header.php';
         </form>
     </div>
 
-    <!-- 필터 폼 -->
+    
     <form method="get" class="filter-bar">
         <!-- Player Position -->
         <div class="filter-dropdown">

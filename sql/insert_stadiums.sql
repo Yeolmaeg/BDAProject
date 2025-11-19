@@ -1,4 +1,4 @@
--- stadiums 데이터 삽입
+-- author: Sumin Son
 
 USE team04;
 

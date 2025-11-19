@@ -1,3 +1,6 @@
+-- author: Sumin Son
+
+
 USE team04;
 
 INSERT INTO teams (team_name, city, stadium_id, founded_year, winnings)

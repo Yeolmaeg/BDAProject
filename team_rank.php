@@ -1,4 +1,5 @@
 <?php
+// author: Sumin Son
 // team_rank.php
 
 session_start();

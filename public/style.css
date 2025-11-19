@@ -855,11 +855,17 @@ select.filter-toggle option {
     max-width: 1200px; 
     margin: 0 auto; 
     padding: 40px 20px 50px 20px; 
+    background-color: var(--kbo-gray-bg); 
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);    
+    flex: 1; 
     display: flex !important; 
     gap: 30px; 
     justify-content: center;
     align-items: flex-start;
     box-sizing: border-box;
+    max-height: calc(100vh - 80px); 
+    overflow-y: auto;
 }
 
 /* 공통 패널 스타일 */

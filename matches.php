@@ -389,12 +389,22 @@ require_once 'header.php';
         <?php
         $query_params = $_GET;
         
+        // 맨 처음 페이지
+        if ($page_matches > 1):
+            $query_params['page'] = 1;
+        ?>
+            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
+                &lt;&lt; First
+            </a>
+        <?php endif; ?>
+        
+        <?php
         // 이전 페이지
         if ($page_matches > 1):
             $query_params['page'] = $page_matches - 1;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                « Previous
+                &lt; Previous
             </a>
         <?php endif; ?>
         
@@ -419,7 +429,17 @@ require_once 'header.php';
             $query_params['page'] = $page_matches + 1;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                Next »
+                Next &gt;
+            </a>
+        <?php endif; ?>
+        
+        <?php
+        // 맨 마지막 페이지
+        if ($page_matches < $total_pages):
+            $query_params['page'] = $total_pages;
+        ?>
+            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
+                Last &gt;&gt;
             </a>
         <?php endif; ?>
         
@@ -428,7 +448,6 @@ require_once 'header.php';
         </div>
     </div>
     <?php endif; ?>
-</div>
 
 <?php
 // 4. 푸터 파일 포함

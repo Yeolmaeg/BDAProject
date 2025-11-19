@@ -32,6 +32,31 @@ if ($match_id_detail <= 0) {
     $error_message_detail = "유효하지 않은 경기 ID입니다.";
 }
 
+// 팀 로고 매핑 함수
+function getTeamLogoSrc_detail($team_name) {
+    $key = strtolower(trim($team_name));
+
+    $map = [
+        'kia tigers'      => 'kia',
+        'kt wiz'          => 'kt',
+        'hanwha eagles'   => 'hanwha',
+        'doosan bears'    => 'doosan',
+        'samsung lions'   => 'samsung',
+        'ssg landers'     => 'ssg',
+        'kiwoom heroes'   => 'kiwoom',
+        'nc dinos'        => 'nc',
+        'lotte giants'    => 'lotte',
+        'lg twins'        => 'lg',
+    ];
+
+    if (!isset($map[$key])) {
+        return null;
+    }
+
+    $code = $map[$key];
+    return "logos/{$code}.png";
+}
+
 // 경기 기본 정보 조회
 if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     $sql_match = "
@@ -175,27 +200,37 @@ require_once 'header.php';
             </div>
 
             <div style="display: flex; justify-content: center; align-items: center; gap: 40px; font-size: 1.2em;">
-                <div style="text-align: center; flex: 1; max-width: 200px;">
-                    <div style="font-weight: bold; font-size: 1.3em; margin-bottom: 10px;">
-                        <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?>
+            <div style="text-align: center; flex: 1; max-width: 200px;">
+                <?php
+                $away_logo = getTeamLogoSrc_detail($match_info_detail['away_team_name']);
+                if ($away_logo):
+                ?>
+                    <div style="margin-bottom: 15px;">
+                        <img src="<?php echo $away_logo; ?>" 
+                             alt="<?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> logo"
+                             style="width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
                     </div>
-                    <div style="font-size: 2.5em; font-weight: bold;">
-                        <?php echo $match_info_detail['score_away']; ?>
-                    </div>
-                    <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Away</div>
+                <?php endif; ?>
+                <div style="font-weight: bold; font-size: 1.3em; margin-bottom: 10px;">
+                    <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?>
                 </div>
 
                 <div style="font-size: 2em; font-weight: bold;">VS</div>
 
                 <div style="text-align: center; flex: 1; max-width: 200px;">
+                    <?php
+                    $home_logo = getTeamLogoSrc_detail($match_info_detail['home_team_name']);
+                    if ($home_logo):
+                    ?>
+                        <div style="margin-bottom: 15px;">
+                            <img src="<?php echo $home_logo; ?>" 
+                                 alt="<?php echo htmlspecialchars($match_info_detail['home_team_name']); ?> logo"
+                                 style="width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        </div>
+                    <?php endif; ?>
                     <div style="font-weight: bold; font-size: 1.3em; margin-bottom: 10px;">
                         <?php echo htmlspecialchars($match_info_detail['home_team_name']); ?>
                     </div>
-                    <div style="font-size: 2.5em; font-weight: bold;">
-                        <?php echo $match_info_detail['score_home']; ?>
-                    </div>
-                    <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Home</div>
-                </div>
             </div>
 
             <!-- 날씨 정보 -->

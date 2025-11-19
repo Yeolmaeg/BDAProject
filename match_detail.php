@@ -186,10 +186,6 @@ require_once 'header.php';
             <a href="matches.php" style="color: #004085;">← Back to Matches</a>
         </div>
     <?php elseif ($match_info_detail): ?>
-        
-        <a href="matches.php" style="color: #007bff; text-decoration: none; font-size: 0.9em; margin-bottom: 20px; display: inline-block;">
-            ← Back to Matches
-        </a>
 
         <!-- 경기 헤더 -->
         <h1 class="page-title">

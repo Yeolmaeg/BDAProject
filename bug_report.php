@@ -1,3 +1,5 @@
+<!-- author: Seolah Yang-->
+
 <?php
 // 페이지 제목 설정
 $page_title = "bug_report";
@@ -10,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 로그인 체크 로직
+로그인 체크 로직
 if (!isset($_SESSION['user_id'])) {
     echo "<script>
         alert('You need to log in before using this service.');
@@ -39,8 +41,8 @@ function getCurrentUserInfo($user_id) {
     $mysqli = getDBConnection();
     if (!$mysqli) return false;
 
-    // users 테이블에서 이름(name)과 이메일(email)을 가져옴
-    $stmt = $mysqli->prepare("SELECT name, email FROM users WHERE id = ?");
+    // users 테이블에서 이름(user_name)과 이메일(user_email)을 가져옴
+    $stmt = $mysqli->prepare("SELECT user_name, user_email FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -64,12 +66,18 @@ function saveInquiry($user_id, $email, $name, $inquiry_type, $message) {
     
     $stmt = $mysqli->prepare("INSERT INTO inquiries (user_id, email, name, inquiry_type, message, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', NOW())");
     if (!$stmt) {
+        error_log("Prepare failed: " . $mysqli->error);
         $mysqli->close();
         return false;
     }
     
     $stmt->bind_param("issss", $user_id, $email, $name, $inquiry_type, $message);
     $success = $stmt->execute();
+    
+    if (!$success) {
+        error_log("Execute failed: " . $stmt->error);
+    }
+    
     $inquiry_id = $success ? $mysqli->insert_id : false;
     
     $stmt->close();
@@ -85,7 +93,7 @@ function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $messa
     
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: support@team04.com" . "\r\n"; // 보내는 사람 주소 확인 필요
+    $headers .= "From: support@team04.com" . "\r\n";
     
     $inquiry_types = [
         'technical' => 'Bug Report',
@@ -117,38 +125,44 @@ function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $messa
 
 // POST 요청 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF 토큰 검증
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $error_message = "Security Authentification failed. Please try again.";
+        $error_message = "Invalid request. Please try again.";
     } else {
-        $user_id = $_SESSION['user_id'];
+        // 폼 데이터 받기
+        $user_id = $_SESSION['user_id'] ?? null; // 로그인한 경우 user_id
         
-        // DB에서 사용자 정보 자동 조회
-        $userInfo = getCurrentUserInfo($user_id);
+        // 사용자 정보 가져오기 (로그인한 경우)
+        $user_info = null;
+        if ($user_id) {
+            $user_info = getCurrentUserInfo($user_id);
+        }
         
-        if (!$userInfo) {
-            $error_message = "Could not load the user information. Please try again.";
+        $name = $user_info['user_name'] ?? 'Guest';
+        $email = $user_info['user_email'] ?? 'guest@unknown.com';
+        $inquiry_type = $_POST['inquiry-type'] ?? '';
+        $message = $_POST['inquiry-message'] ?? '';
+        
+        // 데이터 유효성 검사
+        if (empty($inquiry_type)) {
+            $error_message = "Please select an inquiry type.";
+        } elseif (empty($message) || strlen($message) < 10) {
+            $error_message = "Please enter at least 10 characters for the inquiry.";
+        } elseif (strlen($message) > 5000) {
+            $error_message = "Message is too long. Maximum 5000 characters.";
         } else {
-            $name = $userInfo['name'];
-            $email = $userInfo['email'];
-            $inquiry_type = isset($_POST['inquiry-type']) ? trim($_POST['inquiry-type']) : '';
-            $message = isset($_POST['inquiry-message']) ? trim($_POST['inquiry-message']) : '';
+            // DB에 문의 내용 저장
+            $inquiry_id = saveInquiry($user_id, $email, $name, $inquiry_type, $message);
             
-            $valid_types = ['technical', 'wrongInfo', 'other'];
-            
-            if (empty($inquiry_type) || !in_array($inquiry_type, $valid_types)) {
-                $error_message = "Please select the inquiry type.";
-            } elseif (empty($message) || mb_strlen($message) < 10) {
-                $error_message = "Please enter the details with at least 10 characters";
-            } else {
-                $inquiry_id = saveInquiry($user_id, $email, $name, $inquiry_type, $message);
+            if ($inquiry_id) {
+                // 이메일 전송 (선택사항 - 필요시 주석 해제)
+                // sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $message);
                 
-                if ($inquiry_id) {
-                    sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $message);
-                    $success_message = "Your inquiry has been successfully received. \nThe response will be sent via {$email}.";
-                    $_POST = array();
-                } else {
-                    $error_message = "An error occurred. Please try again.";
-                }
+                $success_message = "Your inquiry has been successfully sent. (Inquiry #$inquiry_id)";
+                // 성공 후 폼 데이터 초기화
+                $_POST = [];
+            } else {
+                $error_message = "Failed to submit inquiry. Please try again.";
             }
         }
     }
@@ -167,11 +181,15 @@ require_once 'header.php';
 <div class="report-page bug-report-scope">
     
     <?php if ($error_message): ?>
-        <div class="alert alert-error" id="errorAlert"><?php echo nl2br(htmlspecialchars($error_message)); ?></div>
+        <div class="alert alert-error" id="errorAlert">
+            <?php echo htmlspecialchars($error_message); ?>
+        </div>
     <?php endif; ?>
-    
+
     <?php if ($success_message): ?>
-        <div class="alert alert-success" id="successAlert"><?php echo nl2br(htmlspecialchars($success_message)); ?></div>
+        <div class="alert alert-success" id="successAlert">
+            <?php echo htmlspecialchars($success_message); ?>
+        </div>
     <?php endif; ?>
     
     <form class="inquiry-form" action="" method="post" id="inquiryForm">
@@ -212,23 +230,45 @@ require_once 'header.php';
 // 글자수 세기 및 폼 제출 제어
 const textarea = document.getElementById('inquiry-message');
 textarea.addEventListener('input', function() {
-    document.getElementById('charCount').textContent = this.value.length;
+    const count = this.value.length;
+    document.getElementById('charCount').textContent = count;
+    
+    // 5000자 초과 방지
+    if (count > 5000) {
+        this.value = this.value.substring(0, 5000);
+        document.getElementById('charCount').textContent = '5000';
+    }
 });
 
 document.getElementById('inquiryForm').addEventListener('submit', function(e) {
-    if (textarea.value.trim().length < 10) {
+    const message = textarea.value.trim();
+    const inquiryType = document.getElementById('inquiry-type').value;
+    
+    if (!inquiryType) {
+        e.preventDefault();
+        alert('Please select an inquiry type');
+        return;
+    }
+    
+    if (message.length < 10) {
         e.preventDefault();
         alert('Please enter at least 10 characters');
         textarea.focus();
-    } else {
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        return;
     }
+    
+    document.getElementById('loadingOverlay').style.display = 'flex';
 });
 
 // 알림 메시지 자동 숨김
 setTimeout(() => {
     const success = document.getElementById('successAlert');
     if(success) success.style.display = 'none';
+}, 5000);
+
+setTimeout(() => {
+    const error = document.getElementById('errorAlert');
+    if(error) error.style.display = 'none';
 }, 5000);
 </script>
 

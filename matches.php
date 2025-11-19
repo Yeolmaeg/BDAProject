@@ -1,3 +1,4 @@
+// author: Eunhyeon Kwon
 <?php
 // 1. 페이지 제목 설정 (header.php의 <title> 태그에 사용됨)
 $page_title = "matches";

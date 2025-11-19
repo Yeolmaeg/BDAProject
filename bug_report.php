@@ -164,7 +164,7 @@ require_once 'header.php';
     </div>
 </div>
 
-<div class="report-page">
+<div class="report-page bug-report-scope">
     
     <?php if ($error_message): ?>
         <div class="alert alert-error" id="errorAlert"><?php echo nl2br(htmlspecialchars($error_message)); ?></div>

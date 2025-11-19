@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     
     if (empty($email) || empty($password)) {
-        $error_message = "이메일과 비밀번호를 입력해주세요.";
+        $error_message = "Please Enter your email and password.";
     } else {
         try {
             // 데이터베이스 연결 및 로그인 로직 (생략: 기존 코드와 동일)
@@ -46,14 +46,14 @@ if (!isset($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: public/index.php");
                 exit();
             } else {
-                $error_message = "이메일 또는 비밀번호가 올바르지 않습니다.";
+                $error_message = "Your email or password is not valid.";
             }
             
             $stmt->close();
             $mysqli->close();
             
         } catch (Exception $e) {
-            $error_message = "로그인 처리 중 오류가 발생했습니다.";
+            $error_message = "Error occurred while logging in.";
             error_log("Login error: " . $e->getMessage());
         }
     }
@@ -66,13 +66,13 @@ require_once 'header.php';
     
     <div class="login-page">
         <div class="login-header">
-            <h1 id="login-heading">로그인</h1>
+            <h1 id="login-heading">LOGIN</h1>
             <p class="subtitle">Best way to look up for baseball records</p>
         </div>
         <div class="already-logged-in-message" style="text-align: center; padding: 40px; margin-top: 20px;">
-            <h2 style="font-size: 24px; color: var(--kbo-dark-blue); margin-bottom: 15px;">이미 로그인되어 있습니다.</h2>
-            <p style="margin-top: 15px; color: #555;">로그아웃 후 다시 시도하거나, 메인 페이지로 이동해주세요.</p>
-            <a href="public/index.php" class="btn-primary" style="display: inline-block; width: 100%; margin-top: 30px; text-decoration: none; padding: 15px;">메인 페이지로 이동</a>
+            <h2 style="font-size: 24px; color: var(--kbo-dark-blue); margin-bottom: 15px;">You are already logged in.</h2>
+            <p style="margin-top: 15px; color: #555;">Please try after logging in.</p>
+            <a href="public/index.php" class="btn-primary" style="display: inline-block; width: 100%; margin-top: 30px; text-decoration: none; padding: 15px;">Back to the main page</a>
         </div>
     </div>
 
@@ -80,7 +80,7 @@ require_once 'header.php';
 
 <div class="login-page">
         <div class="login-header">
-            <h1 id="login-heading">로그인</h1>
+            <h1 id="login-heading">LOGIN</h1>
             <p class="subtitle">Best way to look up for baseball records</p>
         </div>
 
@@ -102,7 +102,7 @@ require_once 'header.php';
                     placeholder=" "
                     value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
                 />
-                <label for="email" class="form-label">이메일</label>
+                <label for="email" class="form-label">EMAIL</label>
             </div>
 
             <div class="form-group">
@@ -116,7 +116,7 @@ require_once 'header.php';
                         autocomplete="current-password"
                         placeholder=" "
                     />
-                    <label for="password" class="form-label">비밀번호</label>
+                    <label for="password" class="form-label">PASSWORD</label>
                     <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="비밀번호 표시">
                         <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -130,12 +130,12 @@ require_once 'header.php';
             </div>
 
             <button type="submit" class="btn-primary" id="submit-btn">
-                다음
+                CONTINUE
             </button>
         </form>
 
         <div class="signup-link">
-            <a href="signup.php">아직 회원이 아니신가요?</a>
+            <a href="signup.php">Not a member yet?</a>
         </div>
     </div>
 
@@ -162,18 +162,18 @@ require_once 'header.php';
             const submitBtn = document.getElementById('submit-btn');
             
             if (!email || !password) {
-                alert('이메일과 비밀번호를 모두 입력해주세요.');
+                alert('Please enter both your email and password');
                 return false;
             }
             
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(email)) {
-                alert('올바른 이메일 형식을 입력해주세요.');
+                alert('Please enter valid form of email.');
                 return false;
             }
             
             submitBtn.disabled = true;
-            submitBtn.textContent = '로그인 중...';
+            submitBtn.textContent = 'Logging in...';
             
             return true;
         }

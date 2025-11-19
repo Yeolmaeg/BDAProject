@@ -4,7 +4,9 @@
 session_start();
 $page_title = "match_detail";
 
-// 데이터베이스 연결
+// ===========================================
+// 1. 데이터베이스 연결
+// ===========================================
 $DB_HOST = '127.0.0.1';
 $DB_NAME = 'team04';
 $DB_USER = 'root';
@@ -20,22 +22,26 @@ $error_message_detail = null;
 $conn_detail = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 
 if ($conn_detail->connect_error) {
-    $error_message_detail = "데이터베이스 연결 실패: " . $conn_detail->connect_error;
+    $error_message_detail = "Database connection failed: " . $conn_detail->connect_error;
 } else {
     $conn_detail->set_charset("utf8mb4");
 }
 
-// match_id 파라미터 확인
+// ===========================================
+// 2. match_id 파라미터 확인
+// ===========================================
 $match_id_detail = isset($_GET['match_id']) ? intval($_GET['match_id']) : 0;
 
 if ($match_id_detail <= 0) {
-    $error_message_detail = "유효하지 않은 경기 ID입니다.";
+    $error_message_detail = "Invalid match ID.";
 }
 
-// 팀 로고 매핑 함수
+// ===========================================
+// 3. 팀 로고 매핑 함수
+// ===========================================
 function getTeamLogoSrc_detail($team_name) {
     $key = strtolower(trim($team_name));
-
+    
     $map = [
         'kia tigers'      => 'kia',
         'kt wiz'          => 'kt',
@@ -48,16 +54,18 @@ function getTeamLogoSrc_detail($team_name) {
         'lotte giants'    => 'lotte',
         'lg twins'        => 'lg',
     ];
-
+    
     if (!isset($map[$key])) {
         return null;
     }
-
+    
     $code = $map[$key];
     return "logos/{$code}.png";
 }
 
-// 경기 기본 정보 조회
+// ===========================================
+// 4. 경기 기본 정보 조회
+// ===========================================
 if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     $sql_match = "
         SELECT 
@@ -90,13 +98,15 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
         if ($result_match && $result_match->num_rows > 0) {
             $match_info_detail = $result_match->fetch_assoc();
         } else {
-            $error_message_detail = "해당 경기를 찾을 수 없습니다.";
+            $error_message_detail = "Match not found.";
         }
         $stmt_match->close();
     }
 }
 
-// 타자 기록 조회
+// ===========================================
+// 5. 타자 기록 조회
+// ===========================================
 if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     $sql_batting = "
         SELECT 
@@ -130,7 +140,9 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     }
 }
 
-// 투수 기록 조회
+// ===========================================
+// 6. 투수 기록 조회
+// ===========================================
 if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     $sql_pitching = "
         SELECT 
@@ -147,7 +159,7 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
         WHERE ps.match_id = ?
         ORDER BY p.team_name, p.player_name ASC
     ";
-        
+    
     if ($stmt_pitching = $conn_detail->prepare($sql_pitching)) {
         $stmt_pitching->bind_param('i', $match_id_detail);
         $stmt_pitching->execute();
@@ -172,9 +184,9 @@ require_once 'header.php';
 <div class="card-box match-detail-card">
     <?php if ($error_message_detail): ?>
         <div style="padding: 20px; background: #f8d7da; color: #721c24; border-radius: 8px; margin: 20px 0;">
-            <strong>오류:</strong> <?php echo htmlspecialchars($error_message_detail); ?>
+            <strong>Error:</strong> <?php echo htmlspecialchars($error_message_detail); ?>
             <br><br>
-            <a href="matches.php" style="color: #004085; text-decoration: underline;">경기 목록으로 돌아가기</a>
+            <a href="matches.php" style="color: #004085; text-decoration: underline;">← Back to Matches</a>
         </div>
     <?php elseif ($match_info_detail): ?>
         
@@ -197,25 +209,32 @@ require_once 'header.php';
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: center; align-items: center; gap: 40px; font-size: 1.2em;">
-            <div style="text-align: center; flex: 1; max-width: 200px;">
-                <?php
-                $away_logo = getTeamLogoSrc_detail($match_info_detail['away_team_name']);
-                if ($away_logo):
-                ?>
-                    <div style="margin-bottom: 15px;">
-                        <img src="<?php echo $away_logo; ?>" 
-                             alt="<?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> logo"
-                             style="width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-around; align-items: center; max-width: 900px; margin: 0 auto;">
+                <!-- Away Team -->
+                <div style="text-align: center; min-width: 200px;">
+                    <?php
+                    $away_logo = getTeamLogoSrc_detail($match_info_detail['away_team_name']);
+                    if ($away_logo):
+                    ?>
+                        <div style="margin-bottom: 15px;">
+                            <img src="<?php echo $away_logo; ?>" 
+                                 alt="<?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> logo"
+                                 style="width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        </div>
+                    <?php endif; ?>
+                    <div style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px;">
+                        <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?>
                     </div>
-                <?php endif; ?>
-                <div style="font-weight: bold; font-size: 1.3em; margin-bottom: 10px;">
-                    <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?>
+                    <div style="font-size: 2.5em; font-weight: bold;">
+                        <?php echo $match_info_detail['score_away']; ?>
+                    </div>
+                    <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Away</div>
                 </div>
 
-                <div style="font-size: 2em; font-weight: bold;">VS</div>
+                <div style="font-size: 2em; font-weight: bold; padding: 0 30px;">VS</div>
 
-                <div style="text-align: center; flex: 1; max-width: 200px;">
+                <!-- Home Team -->
+                <div style="text-align: center; min-width: 200px;">
                     <?php
                     $home_logo = getTeamLogoSrc_detail($match_info_detail['home_team_name']);
                     if ($home_logo):
@@ -226,13 +245,18 @@ require_once 'header.php';
                                  style="width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
                         </div>
                     <?php endif; ?>
-                    <div style="font-weight: bold; font-size: 1.3em; margin-bottom: 10px;">
+                    <div style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px;">
                         <?php echo htmlspecialchars($match_info_detail['home_team_name']); ?>
                     </div>
+                    <div style="font-size: 2.5em; font-weight: bold;">
+                        <?php echo $match_info_detail['score_home']; ?>
+                    </div>
+                    <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Home</div>
+                </div>
             </div>
 
             <!-- 날씨 정보 -->
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); display: flex; justify-content: center; gap: 25px; font-size: 0.9em;">
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); display: flex; justify-content: center; gap: 25px; font-size: 0.9em; flex-wrap: wrap;">
                 <div>🌡️ <?php echo number_format($match_info_detail['temp'], 1); ?>°C</div>
                 <div>💧 <?php echo number_format($match_info_detail['humidity'], 1); ?>%</div>
                 <div>🌬️ <?php echo number_format($match_info_detail['wind_speed'], 1); ?>m/s</div>
@@ -248,22 +272,22 @@ require_once 'header.php';
             
             <?php if (empty($batting_stats_detail)): ?>
                 <div style="padding: 30px; text-align: center; background: #f8f9fa; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px;">
-                    <p style="color: #6c757d; margin: 0;">타자 기록이 없습니다.</p>
+                    <p style="color: #6c757d; margin: 0;">No batting records available.</p>
                 </div>
             <?php else: ?>
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #dee2e6;">
                         <thead style="background: #f8f9fa;">
                             <tr>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">타순</th>
-                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">팀</th>
-                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">선수명</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">안타</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">홈런</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">타점</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">타율</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">출루율</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">장타율</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">Order</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Team</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Player</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">Hits</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">HR</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">RBI</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">AVG</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">OBP</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">SLG</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -323,20 +347,20 @@ require_once 'header.php';
             
             <?php if (empty($pitching_stats_detail)): ?>
                 <div style="padding: 30px; text-align: center; background: #f8f9fa; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px;">
-                    <p style="color: #6c757d; margin: 0;">투수 기록이 없습니다.</p>
+                    <p style="color: #6c757d; margin: 0;">No pitching records available.</p>
                 </div>
             <?php else: ?>
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #dee2e6;">
                         <thead style="background: #f8f9fa;">
                             <tr>
-                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">팀</th>
-                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">선수명</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">이닝</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Team</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Player</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">IP</th>
                                 <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">ERA</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">삼진</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">투구수</th>
-                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">승/패</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">K</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">Pitches</th>
+                                <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">W/L</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -1,6 +1,6 @@
 <?php
 // 페이지 제목 설정
-$page_title = "문의사항";
+$page_title = "bug_report";
 
 // 설정 파일 포함
 require_once __DIR__ . '/config/config.php';
@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 로그인 체크 로직
+로그인 체크 로직
 if (!isset($_SESSION['user_id'])) {
     echo "<script>
         alert('로그인이 필요한 서비스입니다.');
@@ -81,30 +81,30 @@ function saveInquiry($user_id, $email, $name, $inquiry_type, $message) {
 // 이메일 전송 함수
 function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $message) {
     $to = $email;
-    $subject = "=?UTF-8?B?" . base64_encode("문의사항 접수 확인 - #" . $inquiry_id) . "?=";
+    $subject = "=?UTF-8?B?" . base64_encode("Inquiry Received - #" . $inquiry_id) . "?=";
     
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     $headers .= "From: support@team04.com" . "\r\n"; // 보내는 사람 주소 확인 필요
     
     $inquiry_types = [
-        'technical' => '오류 신고',
-        'wrongInfo' => '잘못된 정보 정정 요청',
-        'other' => '기타'
+        'technical' => 'Bug Report',
+        'wrongInfo' => 'Request Data Correction',
+        'other' => 'Others'
     ];
     
-    $type_text = $inquiry_types[$inquiry_type] ?? '기타';
+    $type_text = $inquiry_types[$inquiry_type] ?? 'Others';
     
     $body = "
     <!DOCTYPE html>
     <html>
     <head><meta charset='UTF-8'></head>
     <body>
-        <h2>문의사항이 접수되었습니다</h2>
-        <p>문의번호: <strong>#$inquiry_id</strong></p>
-        <p>안녕하세요, <strong>$name</strong>님</p>
-        <p><strong>문의 종류:</strong> $type_text</p>
-        <p><strong>문의 내용:</strong></p>
+        <h2>Your Inquiry has been successfully received.</h2>
+        <p>Inquiry No: <strong>#$inquiry_id</strong></p>
+        <p>Hi, <strong>$name</strong>님</p>
+        <p><strong>Inquiry Type:</strong> $type_text</p>
+        <p><strong>Details:</strong></p>
         <div style='background: #f8f9fa; padding: 15px;'>
             " . nl2br(htmlspecialchars($message)) . "
         </div>
@@ -118,7 +118,7 @@ function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $messa
 // POST 요청 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $error_message = "보안 검증에 실패했습니다. 다시 시도해주세요.";
+        $error_message = "Security Authentification failed. Please try again.";
     } else {
         $user_id = $_SESSION['user_id'];
         
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userInfo = getCurrentUserInfo($user_id);
         
         if (!$userInfo) {
-            $error_message = "사용자 정보를 불러올 수 없습니다. 다시 로그인해주세요.";
+            $error_message = "Could not load the user information. Please try again.";
         } else {
             $name = $userInfo['name'];
             $email = $userInfo['email'];
@@ -136,18 +136,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $valid_types = ['technical', 'wrongInfo', 'other'];
             
             if (empty($inquiry_type) || !in_array($inquiry_type, $valid_types)) {
-                $error_message = "문의 종류를 선택해주세요.";
+                $error_message = "Please select the inquiry type.";
             } elseif (empty($message) || mb_strlen($message) < 10) {
-                $error_message = "문의 내용을 10자 이상 입력해주세요.";
+                $error_message = "Please enter the details with at least 10 characters";
             } else {
                 $inquiry_id = saveInquiry($user_id, $email, $name, $inquiry_type, $message);
                 
                 if ($inquiry_id) {
                     sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $message);
-                    $success_message = "문의사항이 성공적으로 접수되었습니다.\n답변은 {$email}로 전송됩니다.";
+                    $success_message = "Your inquiry has been successfully received. \nThe response will be sent via {$email}.";
                     $_POST = array();
                 } else {
-                    $error_message = "오류가 발생했습니다. 다시 시도해주세요.";
+                    $error_message = "An error occurred. Please try again.";
                 }
             }
         }
@@ -160,7 +160,7 @@ require_once 'header.php';
 <div class="loading-overlay" id="loadingOverlay">
     <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
         <div class="spinner" style="margin: 0 auto 20px;"></div>
-        <p>전송 중입니다...</p>
+        <p>Sending...</p>
     </div>
 </div>
 
@@ -177,33 +177,33 @@ require_once 'header.php';
     <form class="inquiry-form" action="" method="post" id="inquiryForm">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         
-        <h1 class="report">문의사항</h1>
+        <h1 class="report">INQUIRY</h1>
         
         <div class="form-group">
-            <label for="inquiry-type" class="div">문의 종류</label>
+            <label for="inquiry-type" class="div">Inquiry Type</label>
             <select id="inquiry-type" name="inquiry-type" class="select-occupation" required>
-                <option value="" disabled selected>선택</option>
-                <option value="technical">오류 신고</option>
-                <option value="wrongInfo">잘못된 정보 정정 요청</option>
-                <option value="other">기타</option>
+                <option value="" disabled selected>Select</option>
+                <option value="technical">Bug Report</option>
+                <option value="wrongInfo">Request Data Correction</option>
+                <option value="other">Others</option>
             </select>
         </div>
         
         <div class="form-group">
             <label for="inquiry-message" class="div">
-                문의 내용 
+                Details 
                 <span style="color: #959595ff; font-size: 11px; font-weight: 400; margin-left: 3px;">
-                    문의 내용에 대한 답변은 이메일로 발송됩니다.
+                    The response to your inquiry will be sent via email.
                 </span>
             </label>
-            <textarea id="inquiry-message" name="inquiry-message" class="view-2" placeholder="문의 내용을 입력해주세요 (최소 10자)" required rows="10"></textarea>
+            <textarea id="inquiry-message" name="inquiry-message" class="view-2" placeholder="Please provide the details (At least 10 characters)" required rows="10"></textarea>
             <div style="text-align: right; font-size: 12px; color: #888; margin-top: 5px;">
                 <span id="charCount">0</span> / 5000
             </div>
         </div>
         
         <div style="text-align: center; margin-top: 30px;">
-            <button type="submit" class="rectangle-2">전송</button>
+            <button type="submit" class="rectangle-2">SEND</button>
         </div>
     </form>
 </div>
@@ -218,7 +218,7 @@ textarea.addEventListener('input', function() {
 document.getElementById('inquiryForm').addEventListener('submit', function(e) {
     if (textarea.value.trim().length < 10) {
         e.preventDefault();
-        alert('문의 내용을 10자 이상 입력해주세요.');
+        alert('Please enter at least 10 characters');
         textarea.focus();
     } else {
         document.getElementById('loadingOverlay').style.display = 'flex';

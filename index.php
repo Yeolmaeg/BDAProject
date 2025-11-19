@@ -151,8 +151,8 @@ require_once 'header.php';
                 <h2>Welcome!</h2>
                 <p>Sign up and check out your favorite team's latest matches and weather analysis.</p>
                 <div class="login-actions">
-                    <button href="signup.php" class="welcome-card signup-btn">Sign Up</button>
-                    <button href="login.php" class="welcome-card login-btn">Log In</button>
+                    <button onclick="location.href='signup.php'" class="welcome-card signup-btn">Sign Up</button>
+                    <button onclick="location.href='login.php'" class="welcome-card login-btn">Log In</button>
                 </div>
             </div>
 

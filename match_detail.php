@@ -206,7 +206,7 @@ require_once 'header.php';
 
         <!-- 타자 기록 -->
         <div class="table-header-row">
-            <h2 class="section-title">⚾ Batting Statistics</h2>
+            <h2 class="section-title">🏏 Batting Statistics</h2>
         </div>
         
         <!-- Away 팀 타자 -->

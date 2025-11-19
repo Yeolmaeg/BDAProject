@@ -1,4 +1,3 @@
-
 <?php
 // player_rank.php
 
@@ -301,6 +300,13 @@ if ($conn->connect_error) {
             if ($result && $result->num_rows > 0) {
                 $rank = 1;
                 while ($row = $result->fetch_assoc()) {
+                    // 투수일 때 avg_era가 0.00인 행은 순위에 표시 안 함
+                    if ($position === 'pitchers'){
+                        if(!is_null($row['avg_era']) && (float)$row['avg_era'] == 0.0){
+                            continue;
+                        }
+                    }
+                    
                     $row['rank'] = $rank++;
                     $players[] = $row;
                 }

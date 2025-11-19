@@ -332,7 +332,7 @@ require_once 'header.php';
                 <?php else: ?>
                     <?php foreach ($matches_matches as $match): ?>
                     <tr>
-                        <td>
+                        <td style="white-space: nowrap;">
                             <?php echo date('Y-m-d H:i', strtotime($match['match_date'])); ?>
                         </td>
                         <td>

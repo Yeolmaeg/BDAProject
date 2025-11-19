@@ -332,14 +332,23 @@ require_once 'header.php';
                         <?php echo htmlspecialchars($match['stadium_name']); ?>
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                            <span style="font-weight: 500;"><?php echo htmlspecialchars($match['away_team_name']); ?></span>
-                            <span style="color: #6c757d;">vs</span>
-                            <span style="font-weight: 500;"><?php echo htmlspecialchars($match['home_team_name']); ?></span>
-                        </div>
-                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 4px;">
-                            Away vs Home
-                        </div>
+                        <a href="match_detail.php?match_id=<?php echo $match['match_id']; ?>" 
+                           style="text-decoration: none; color: inherit; display: block;"
+                           onmouseover="this.style.backgroundColor='#f8f9fa';"
+                           onmouseout="this.style.backgroundColor='transparent';">
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                <span style="font-weight: 500; color: #007bff;">
+                                    <?php echo htmlspecialchars($match['away_team_name']); ?>
+                                </span>
+                                <span style="color: #6c757d;">vs</span>
+                                <span style="font-weight: 500; color: #007bff;">
+                                    <?php echo htmlspecialchars($match['home_team_name']); ?>
+                                </span>
+                            </div>
+                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 4px;">
+                                Away vs Home
+                            </div>
+                        </a>
                     </td>
                     <td style="padding: 12px; text-align: center;">
                         <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">

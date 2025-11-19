@@ -328,14 +328,17 @@ require_once 'header.php';
                             <td><?php echo $pitcher['strikeouts']; ?></td>
                             <td><?php echo $pitcher['pitch_count']; ?></td>
                             <td>
-                                <?php if (!empty($pitcher['win_lost']) && $pitcher['win_lost'] !== '-'): ?>
-                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; 
-                                        <?php echo $pitcher['win_lost'] === 'W' ? 'background: #28a745; color: white;' : 'background: #dc3545; color: white;'; ?>">
-                                        <?php echo htmlspecialchars($pitcher['win_lost']); ?>
+                                <?php if ($pitcher['win_lost'] === 'W'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #28a745; color: white;">
+                                        W
+                                    </span>
+                                <?php elseif ($pitcher['win_lost'] === 'L'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #dc3545; color: white;">
+                                        L
                                     </span>
                                 <?php else: ?>
                                     <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #adb5bd; color: white;">
-                                        -
+                                        <?php echo !empty($pitcher['win_lost']) ? htmlspecialchars($pitcher['win_lost']) : '-'; ?>
                                     </span>
                                 <?php endif; ?>
                             </td>
@@ -378,13 +381,18 @@ require_once 'header.php';
                             <td><?php echo $pitcher['strikeouts']; ?></td>
                             <td><?php echo $pitcher['pitch_count']; ?></td>
                             <td>
-                                <?php if (!empty($pitcher['win_lost']) && $pitcher['win_lost'] !== '-'): ?>
-                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; 
-                                        <?php echo $pitcher['win_lost'] === 'W' ? 'background: #28a745; color: white;' : 'background: #dc3545; color: white;'; ?>">
-                                        <?php echo htmlspecialchars($pitcher['win_lost']); ?>
+                                <?php if ($pitcher['win_lost'] === 'W'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #28a745; color: white;">
+                                        W
+                                    </span>
+                                <?php elseif ($pitcher['win_lost'] === 'L'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #dc3545; color: white;">
+                                        L
                                     </span>
                                 <?php else: ?>
-                                    <span style="color: #adb5bd;">-</span>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #adb5bd; color: white;">
+                                        <?php echo !empty($pitcher['win_lost']) ? htmlspecialchars($pitcher['win_lost']) : '-'; ?>
+                                    </span>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -81,9 +81,9 @@ $position_result = $conn->query($position_query);
             <div class="panel-title">Teams Overview</div>
             <div class="panel-subtitle">
                 <?php 
-                $subtitle = "팀별 연봉 현황 및 선수단 규모";
+                $subtitle = "Team Salary Status and Roster Size";
                 if ($selected_position) {
-                    $subtitle = "선택된 포지션 (" . htmlspecialchars($selected_position) . ") 기준 통계";
+                    $subtitle = "Result on the selected position " . htmlspecialchars($selected_position) . "";
                 }
                 echo $subtitle; 
                 ?>
@@ -92,11 +92,11 @@ $position_result = $conn->query($position_query);
 
         <div class="custom-table">
             <div class="table-head">
-                <div class="t-cell col-team">팀명</div>
-                <div class="t-cell col-count">인원</div>
-                <div class="t-cell col-salary">평균 연봉</div>
-                <div class="t-cell col-salary">최소 연봉</div>
-                <div class="t-cell col-salary">최대 연봉</div>
+                <div class="t-cell col-team">Team</div>
+                <div class="t-cell col-count">Capacity</div>
+                <div class="t-cell col-salary">Average Salary</div>
+                <div class="t-cell col-salary">Minimum Salary</div>
+                <div class="t-cell col-salary">Maximum Salary</div>
             </div>
             <div class="table-body">
                 <?php 
@@ -111,7 +111,7 @@ $position_result = $conn->query($position_query);
                         </div>
                         
                         <div class="t-cell col-count">
-                            <?php echo number_format((int)$team['player_count']); ?>명 
+                            <?php echo number_format((int)$team['player_count']); ?> 
                         </div>
                         
                         <div class="t-cell col-salary">
@@ -131,23 +131,23 @@ $position_result = $conn->query($position_query);
                 else:
                 ?>
                     <div class="t-row">
-                        <div class="t-cell" style="width:100%; padding:20px;">데이터가 없습니다.</div>
+                        <div class="t-cell" style="width:100%; padding:20px;">There is no data.</div>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
-        <div class="info-text">* 팀 이름을 클릭하여 해당 팀의 선수 목록을 조회하세요.</div>
+        <div class="info-text">* Click on a team name to see the roster.</div>
     </div>
 
     <div class="panel right">
         <div class="panel-header">
             <div class="panel-title">
-                <?php echo $selected_team ? htmlspecialchars($selected_team) . " 선수 목록" : "All Players"; ?>
+                <?php echo $selected_team ? htmlspecialchars($selected_team) . " Roaster" : "All Players"; ?>
             </div>
             <div class="filter-box">
-                <label>포지션:</label>
+                <label>Position: </label>
                 <select id="positionFilter" onchange="applyFilter()">
-                    <option value="">모든 포지션</option>
+                    <option value="">All</option>
                     <?php 
                     // 쿼리 결과를 처음부터 다시 가져와서 사용
                     $position_result->data_seek(0); 
@@ -164,7 +164,7 @@ $position_result = $conn->query($position_query);
                     onclick="resetFilters()" 
                     style="<?php echo (!$selected_team && !$selected_position) ? 'visibility: hidden;' : ''; ?>"
                 >
-                    초기화
+                    RESET
                 </button>
             </div>
         </div>
@@ -172,10 +172,10 @@ $position_result = $conn->query($position_query);
         <div class="custom-table">
             <div class="table-head">
                 <div class="t-cell col-id">ID</div>
-                <div class="t-cell col-name">이름</div>
-                <div class="t-cell col-team">소속 팀</div>
-                <div class="t-cell col-pos">포지션</div>
-                <div class="t-cell col-sal">연봉</div>
+                <div class="t-cell col-name">Name</div>
+                <div class="t-cell col-team">Team</div>
+                <div class="t-cell col-pos">Position</div>
+                <div class="t-cell col-sal">Salary</div>
             </div>
             
             <div class="table-body">
@@ -191,7 +191,7 @@ $position_result = $conn->query($position_query);
                     <?php endwhile; ?>
                 <?php else: ?>
                     <div class="t-row">
-                        <div class="t-cell" style="width:100%; padding:20px;">해당 조건의 선수가 없습니다.</div>
+                        <div class="t-cell" style="width:100%; padding:20px;">No players found under the condition.</div>
                     </div>
                 <?php endif; ?>
             </div>

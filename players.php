@@ -2,13 +2,20 @@
 // 페이지 제목 설정
 $page_title = "Players";
 require_once 'header.php'; 
-require_once __DIR__ . '/config/config.php';
 
-// DB 연결
-$conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, defined('DB_PORT') ? DB_PORT : 3306);
+// DB 연결 정보 설정 (로컬 환경, root 사용자)
+// team04 사용자 대신 로컬에서 일반적으로 비밀번호가 없는 root 사용자를 사용합니다.
+$DB_HOST = 'localhost';
+$DB_NAME = 'team04';
+$DB_USER = 'root'; // <-- 사용자 이름 변경
+$DB_PASS = '';     // <-- 비밀번호 없음 설정
+$DB_PORT = 3306;
+
+// 데이터베이스 연결
+$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+
+// 연결 실패 시 처리
 if ($conn->connect_errno) die("Database connection failed: " . $conn->connect_error);
-$conn->set_charset('utf8mb4'); 
-$conn->query("SET NAMES 'utf8mb4' COLLATE 'utf8mb4_general_ci'"); 
 
 
 // 파라미터 처리

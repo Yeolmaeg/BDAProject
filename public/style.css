@@ -51,7 +51,7 @@ body {
 }
 
 .header-logo-img {
-    height: 60px;
+    height: 45px;
     width: auto;
     display: block;
     padding: 1px 0;
@@ -134,7 +134,7 @@ body {
 }
 
 .welcome-card {
-    text-align: left;
+    text-align: center;
     max-width: 1000px;
     margin: 100px auto; 
 }
@@ -164,7 +164,7 @@ body {
 }
 
 .welcome-card .login-btn {
-    background-color: var(--kbo-white); 
+    background-color: var(--kbo-white-bg); 
     color: #333;
     border:2px solid var(--kbo-light-gray);
 }
@@ -179,81 +179,147 @@ body {
     transition: background-color 0.3s; /* 부드러운 전환 효과 추가 */
 }
 
-
 /* Dashboard Styles */
 .dashboard-box {
-    border: 2px solid var(--kbo-light-blue);
-    padding: 30px;
+    padding: 3%; /* 부모 너비의 3% */
+    display: flex; /* 내부 요소를 flex로 정렬하기 위해 추가 (제목과 콘텐츠 래퍼) */
+    flex-direction: column; /* 기본적으로 세로 정렬 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    max-width: 900px; /* 대시보드 박스 전체의 최대 너비를 설정 */
+    margin: 5% auto; /* 가운데 정렬 및 상하 마진 */
+    min-height: 250px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3%; /* 제목과 로고 아래 간격 */
+    width: 100%; /* 너비 100% 차지 */
+}
+
+.team-logo-main-dashboard { /* 대시보드 상단 로고용 클래스 추가 */
+    width: 10%; /* 로고 크기 조정 (예: 부모 너비의 6%) */
+    height: auto; /* 비율 유지 */
+    border-radius: 50%;
+    margin-right: 2%; /* 로고와 제목 사이 간격 */
 }
 
 .dashboard-box h2 {
     font-family: 'KBO_Bold', sans-serif;
     color: var(--kbo-dark-blue);
-    margin-bottom: -35px;
+    margin: 0; /* 기존 margin-bottom 제거 */
+    font-size: 2.5em; /* 글자 크기 조정 */
 }
+
+
+/* 새로운 Flex 컨테이너 */
+.dashboard-content-wrapper {
+    display: flex; /* Flex 컨테이너 */
+    justify-content: space-between;
+    align-items: stretch; 
+    width: 100%;
+    min-height: 200px;
+    margin-top: 3%;
+}
+
 
 .recent-match-summary {
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--kbo-light-blue);
-    margin-bottom: 20px;
-    margin-left: 30px;
+    flex: 1; /* 남은 공간을 채우도록 함 */
+    /* 기존 padding-bottom과 border-bottom은 match-info에 있었으므로 옮김 */
+    padding-bottom: 1.5%; 
+    margin-bottom: 2%;
+    margin-right: 3%; /* 날씨 정보와의 간격 */
 }
 
-.recent-match-summary p{
-    margin-left: 30px;
+.recent-match-summary h3 {
+    margin-top: 0;
+    margin-bottom: 2%;
+    font-size: 2em; /* 크기 조정 */
 }
 
-.team-logo-dashboard {
-    width: 100px; /* 원하는 너비로 조절 (예: 60px에서 100px로 증가) */
-    height: 100px; /* 원하는 높이로 조절 (예: 60px에서 100px로 증가) */
-    border-radius: 50%; /* 로고가 원형일 경우 대비 */
-    margin-right: -450px; /* 로고와 점수 사이 간격 조절 (선택 사항) */
-    margin-left: 30px;
+.match-info p { /* match-date, vs opponent 등 */
+    margin-left: 0; /* 더 이상 왼쪽 마진 필요 없음 */
+    margin-bottom: 1%;
+    font-size: 1.2em;
 }
 
-/* Flexbox 컨테이너인 .score-and-logo의 gap 속성을 사용해도 좋습니다. */
-.score-and-logo {
+.score-and-opponent { /* 점수, 상대팀, 승패를 묶는 컨테이너 */
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    margin: 15px 0;
-    gap: 0px; /* 로고와 점수 사이의 간격을 CSS flexbox gap으로 설정 */
-}
-
-.match-info {
-    line-height: 1.8;
+    gap: 1.5%; /* 점수와 상대팀 사이 간격 */
+    margin-top: 1%;
+    margin-bottom: 1%;
 }
 
 .match-score {
-    font-size: 36px;
+    font-size: 3.5em; /* 매우 크게 */
     font-family: 'KBO_Bold', sans-serif;
-    color: #c00; 
-    margin: 5px 0;
+    color: var(--kbo-dark-blue); /* 기본 색상을 진한 파랑으로 변경 */
+    margin: 0; /* 기존 마진 제거 */
+}
+.match-score.win {
+    color: #c00; /* 승리 시 붉은색 */
+}
+.match-score.lose {
+    color: #0000FF; /* 패배 시 파란색 (예시) */
+}
+
+.vs-opponent {
+    font-size: 1.5em; /* 상대팀 이름 크기 */
+    margin: 0;
+    font-weight: bold;
+}
+
+.match-result { /* WIN/LOSE 텍스트 */
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 1%;
+}
+
+.stats-label {
+    font-weight: bold;
+    margin-right: 5px;
+    margin-top: 10%;
 }
 
 .player-stats {
-    font-size: 14px;
+    font-size: 1.2em; /* 텍스트 크기 조정 */
     color: #555;
     line-height: 1.6;
+    margin-top: 2%; /* 스코어와의 간격 */
+}
+.player-stats p {
+    margin-left: 0; /* 내부 p 태그 마진 초기화 */
+}
+
+.vertical-divider { /* 구분선 스타일 */
+    width: 1px; /* 얇은 수직선 */
+    background-color: var(--kbo-dark-blue);
+    height: 400px; /* 높이 조정 */
+    margin: 0 5%; /* 양 옆 여백 */
+    padding: 0;
+    z-index: 10;
 }
 
 .weather-info {
-    margin-top: -20px;
-    margin-left: 30px;
+    flex: 0 0 30%; /* 날씨 정보가 차지할 고정 너비 (예: 부모 너비의 30%) */
+    text-align: center; /* 날씨 정보 내부 텍스트 가운데 정렬 */
+    padding-top: 1%; /* 상단 패딩 */
 }
 
 .weather-info h3 {
-    font-size: 18px;
+    font-size: 1.8em;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 2%;
 }
 
 .weather-details {
-    margin-left: -250px;
-    font-size: 36px;
+    margin-left: 0; /* 기존 음수 마진 제거 */
+    font-size: 4em; /* 온도 글자 크기 매우 크게 */
+    font-family: 'KBO_Bold', sans-serif;
+    color: var(--kbo-dark-blue);
 }
+
 /* 팀 테이블 스타일 */
 .team-table {
     width: 100%;

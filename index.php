@@ -54,6 +54,11 @@ try {
 // --- [DB 연동 로직 시작] ---
 $favorite_team_id = null;
 $team_name = null;
+// 성능 지표 변수 초기화
+$team_rbi = "N/A";
+$team_homeruns = "N/A";
+$team_errors = "N/A";
+
 
 if ($is_logged_in && $user_id && $pdo) {
     
@@ -78,9 +83,10 @@ if ($is_logged_in && $user_id && $pdo) {
         // === 좋아하는 팀이 설정되었을 때 필요한 DB 데이터 설정 ===
         $page_title = "응원팀 대시보드";
         
-        // 2. 좋아하는 팀의 가장 최근 경기 정보 조회
+        // 2. 좋아하는 팀의 가장 최근 경기 정보 조회 (match_id 추가)
         $stmt_match = $pdo->prepare("
             SELECT 
+                m.match_id, /* <<< match_id 추가 */
                 m.match_date, 
                 m.score_home, 
                 m.score_away, 
@@ -113,10 +119,34 @@ if ($is_logged_in && $user_id && $pdo) {
             
             $match_date = date('Y. m. d', strtotime($match_data['match_date']));
             $is_win = ($favorite_score > $opponent_score);
-            $score_win = "{$favorite_score}:{$opponent_score} (" . ($is_win ? 'Win' : 'Lose') . ")";
+            $score_win = "{$favorite_score}:{$opponent_score}";
             
             $weather_temp_raw = $match_data['temp'] ?? 0;
             $weather_temp = floor($weather_temp_raw) . "°C"; 
+            
+            // 5. team_match_performance에서 팀별 기록 조회 (새로운 로직)
+            $match_id = $match_data['match_id']; 
+
+            $stmt_performance = $pdo->prepare("
+                SELECT 
+                    team_rbi, 
+                    team_homeruns, 
+                    team_errors
+                FROM team_match_performance
+                WHERE match_id = :match_id AND team_id = :team_id
+            ");
+            $stmt_performance->execute([
+                'match_id' => $match_id,
+                'team_id' => $favorite_team_id
+            ]);
+            $performance_data = $stmt_performance->fetch();
+
+            if ($performance_data) {
+                $team_rbi = $performance_data['team_rbi'];
+                $team_homeruns = $performance_data['team_homeruns'];
+                $team_errors = $performance_data['team_errors'];
+            }
+            // --- 새로운 로직 끝 ---
 
 
         } else {
@@ -124,10 +154,7 @@ if ($is_logged_in && $user_id && $pdo) {
             $match_date = "최근 경기 없음";
             $score_win = "N/A";
             $opponent = "없음";
-            $winning_pitcher = "-";
-            $best_hitter = "-";
             $weather_temp = "-";
-            $weather_note = "등록된 최근 경기 정보가 없습니다.";
         }
 
     } else {
@@ -145,64 +172,76 @@ require_once 'header.php';
 
 ?>
 
-        <?php if (!$is_logged_in): ?>
-            
-            <div class="card-box welcome-card">
-                <h2>Welcome!</h2>
-                <p>Sign up and check out your favorite team's latest matches and weather analysis.</p>
-                <div class="login-actions">
-                    <button onclick="location.href='signup.php'" class="welcome-card signup-btn">Sign Up</button>
-                    <button onclick="location.href='login.php'" class="welcome-card login-btn">Log In</button>
-                </div>
-            </div>
+        <?php if (!$is_logged_in): ?>
+            
+            <div class="card-box welcome-card">
+                <h2>Welcome!</h2>
+                <p>Sign up and check out your favorite team's latest matches and weather analysis.</p>
+                <div class="login-actions">
+                    <button onclick="location.href='signup.php'" class="welcome-card signup-btn">Sign Up</button>
+                    <button onclick="location.href='login.php'" class="welcome-card login-btn">Log In</button>
+                </div>
+            </div>
 
-        <?php else: ?>
-            
-            <?php if ($favorite_team_id): 
+        <?php else: ?>
+            
+            <?php if ($favorite_team_id): 
                 $score_class = ($is_win) ? 'win' : 'lose'; // 승패 클래스
                 $logo_src = getTeamLogoSrc($team_name);
                 $default_logo = 'logos/default.png'; 
                 $team_logo_src = $logo_src ?: $default_logo;
             ?>
-
-            <div class="card-box dashboard-box">
-                <h2><?php echo $team_name; ?> Dashboard</h2>
-                <div class="recent-match-summary">
-                    <div class="match-info">
-                        <h3>Recent Match Summary</h3>
-                        <p class="match-date">Date: <?php echo $match_date; ?></p>
-                        
-                        <div class="score-and-logo">
-                            <img src="<?php echo $team_logo_src; ?>" alt="<?php echo $team_name; ?> Logo" class="team-logo-dashboard">
-                            <div class="match-score <?php echo $score_class; ?>">
-                                <?php echo $score_win; ?>
-                            </div>
-                        </div>
-
-                        <p>vs <?php echo $opponent; ?></p>
-                    </div>
-                    
-                </div>
-                
-                    <div class="weather-info">
-                    <h3>Today's Stadium Weather</h3>
-                        <div class="weather-details">
-                            <span><?php echo $weather_temp; ?></span>
-                        </div>
+                <div class="card-box dashboard-box">
+                    <div class="dashboard-header"> <img src="<?php echo $team_logo_src; ?>" alt="<?php echo $team_name; ?> Logo" class="team-logo-main-dashboard"> <h2><?php echo $team_name; ?> Dashboard</h2>
                     </div>
 
-            <?php else: // 좋아하는 팀이 없는 경우 ?>
-                
-                <div class="card-box welcome-card">
+                    <div class="dashboard-content-wrapper"> 
+                        <div class="recent-match-summary">
+                            <div class="match-info">
+                                <h3>Recent Match Summary</h3>
+                                <p class="match-date">Date: <?php echo $match_date; ?></p>
+                                <p class="vs-opponent">vs <?php echo $opponent; ?></p>
+
+                                <div class="score-and-opponent"> 
+                                    <div class="match-score <?php echo $score_class; ?>">
+                                        <?php echo $score_win; ?>
+                                    </div>
+                                    <p class="match-score <?php echo $score_class; ?>">(<?php echo ($is_win ? 'WIN' : 'LOSE'); ?>)</p>
+                                </div>
+                                
+                                <div class="player-stats">
+                                    <p class="stats-label">Performance</p>
+                                    
+                                    <p>RBI: <?php echo $team_rbi; ?></p>
+                                    <p>Homeruns: <?php echo $team_homeruns; ?></p>
+                                    <p>Errors: <?php echo $team_errors; ?></p>
+                                    </div>
+                            </div>
+                        </div>
+                        
+                        <div class="vertical-divider"></div> 
+                        
+                        <div class="weather-info">
+                            <h3>Today's Stadium Weather</h3>
+                            <div class="weather-details">
+                                <span><?php echo $weather_temp; ?></span>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+
+            <?php else: // 좋아하는 팀이 없는 경우 ?>
+                
+                <div class="card-box welcome-card">
                     <h2>Need to set up a cheering team</h2>
-                    <p>Please select your favorite team on the team page.!</p> 
+                    <p>Please select your favorite team on the team page!</p> 
                     <div class="button-container">
                         <button onclick="location.href='teams.php'" class="signup-btn">Go to Team Page</button>
                     </div>
                 </div>
 
-            <?php endif; ?>
-        <?php endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
 
 <?php
 // 4. 푸터 파일 포함

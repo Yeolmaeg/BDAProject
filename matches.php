@@ -7,7 +7,7 @@ $DB_HOST = '127.0.0.1';
 $DB_NAME = 'team04';
 $DB_USER = 'root';
 $DB_PASS = '';
-$DB_PORT = 3307; // 본인의 XAMPP MySQL 포트에 맞게 설정
+$DB_PORT = 3306; // 본인의 XAMPP MySQL 포트에 맞게 설정
 
 $conn_matches = null;
 $matches_matches = [];
@@ -265,7 +265,7 @@ require_once 'header.php';
                 <option value="0">📅 Select Month</option>
                 <?php for ($i = 1; $i <= 12; $i++): ?>
                     <option value="<?php echo $i; ?>" <?php echo $month_matches == $i ? 'selected' : ''; ?>>
-                        <?php echo $i; ?>월
+                        <?php echo $i; ?>
                     </option>
                 <?php endfor; ?>
             </select>
@@ -282,9 +282,9 @@ require_once 'header.php';
             </select>
         </div>
         
-        <button type="submit" class="filter-toggle">Apply</button>
+        <button type="submit" class="filter-toggle" style="padding: 8px 16px;">Apply</button>
         
-        <a href="matches.php" class="filter-toggle" style="text-decoration: none; text-align: center; line-height: 38px;">
+        <a href="matches.php" class="filter-toggle" style="text-decoration: none; text-align: center; padding: 8px 16px; display: inline-block;">
             Reset
         </a>
     </form>

@@ -6,12 +6,12 @@ session_start();
 $page_title = "team_rank";
 
 // =======================
-// 0. 팀 로고 매핑 함수
+// 0. 팀 로고 매핑핑
 // =======================
 function getTeamLogoSrc($team_name) {
     $key = strtolower(trim($team_name));
 
-    // 실제 teams 테이블의 team_name 과 최대한 맞춰서 작성
+
     $map = [
         'kia tigers'      => 'kia',
         'kt wiz'          => 'kt',
@@ -30,7 +30,7 @@ function getTeamLogoSrc($team_name) {
     }
 
     $code = $map[$key];
-    return "logos/{$code}.png";  // team04/logos 안에 있는 파일
+    return "logos/{$code}.png";  //
 }
 
 // =======================
@@ -49,7 +49,7 @@ $error_message = null;
 // =======================
 // 2. 필터 값 받기 (GET)
 // =======================
-$month        = isset($_GET['month']) ? $_GET['month'] : 'ALL';  // 'ALL', '3'~'10'
+$month        = isset($_GET['month']) ? $_GET['month'] : 'ALL';
 $temp_bucket  = isset($_GET['temp'])  ? $_GET['temp']  : 'ALL';
 $humid_bucket = isset($_GET['humid']) ? $_GET['humid'] : 'ALL';
 $wind_bucket  = isset($_GET['wind'])  ? $_GET['wind']  : 'ALL';
@@ -74,7 +74,7 @@ $humid_options = ['ALL','<50','50-60','60-70','70-80','>=80'];
 $wind_options  = ['ALL','<1','1-2','2-3','3-5','>=5'];
 $rain_options  = ['ALL','0','0-1','1-5','5-10','>10','UNK'];
 
-// label 들도 player_rank.php 와 맞추기
+
 $temp_labels = [
     'ALL' => '🌡️ Temperature (All)',
     '<10' => 'Below 10℃',
@@ -229,8 +229,7 @@ if ($conn->connect_error) {
 
     // =======================
     // 4. 팀별 승수/경기 수 집계
-    //    (matches에서 직접 GROUP BY)
-// =======================
+    // =======================
     $sql = "
         SELECT
             t.team_id,
@@ -293,7 +292,7 @@ if ($conn->connect_error) {
     $conn->close();
 }
 
-// 테이블 colspan (열 개수)
+
 $colspan = 7;
 
 require_once 'header.php';

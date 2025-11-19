@@ -283,7 +283,7 @@ body {
 }
 
 .player-stats {
-    font-size: 1.2em; /* 텍스트 크기 조정 */
+    font-size: 1em; /* 텍스트 크기 조정 */
     color: #555;
     line-height: 1.6;
     margin-top: 2%; /* 스코어와의 간격 */

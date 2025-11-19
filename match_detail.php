@@ -334,7 +334,9 @@ require_once 'header.php';
                                         <?php echo htmlspecialchars($pitcher['win_lost']); ?>
                                     </span>
                                 <?php else: ?>
-                                    <span style="color: #adb5bd;">-</span>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #adb5bd; color: white;">
+                                        -
+                                    </span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -376,10 +378,14 @@ require_once 'header.php';
                             <td><?php echo $pitcher['strikeouts']; ?></td>
                             <td><?php echo $pitcher['pitch_count']; ?></td>
                             <td>
-                                <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; 
-                                    <?php echo $pitcher['win_lost'] === 'W' ? 'background: #28a745; color: white;' : 'background: #dc3545; color: white;'; ?>">
-                                    <?php echo htmlspecialchars($pitcher['win_lost']); ?>
-                                </span>
+                                <?php if (!empty($pitcher['win_lost']) && $pitcher['win_lost'] !== '-'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; 
+                                        <?php echo $pitcher['win_lost'] === 'W' ? 'background: #28a745; color: white;' : 'background: #dc3545; color: white;'; ?>">
+                                        <?php echo htmlspecialchars($pitcher['win_lost']); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span style="color: #adb5bd;">-</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>

@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-로그인 체크 로직
+// 로그인 체크 로직
 if (!isset($_SESSION['user_id'])) {
     echo "<script>
         alert('로그인이 필요한 서비스입니다.');

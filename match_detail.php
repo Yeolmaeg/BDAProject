@@ -102,7 +102,7 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
         SELECT 
             b.batting_number,
             p.player_name,
-            t.team_name,
+            p.team_name,
             b.hits,
             b.homeruns,
             b.rbi,
@@ -112,9 +112,8 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
         FROM 
             batting_stats b
         JOIN players p ON b.player_id = p.player_id
-        JOIN teams t ON p.team_id = t.team_id
         WHERE b.match_id = ?
-        ORDER BY t.team_name, b.batting_number ASC
+        ORDER BY p.team_name, b.batting_number ASC
     ";
     
     if ($stmt_batting = $conn_detail->prepare($sql_batting)) {
@@ -136,7 +135,7 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
     $sql_pitching = "
         SELECT 
             p.player_name,
-            t.team_name,
+            p.team_name,
             ps.innings_pitched,
             ps.era,
             ps.strikeouts,
@@ -145,11 +144,10 @@ if ($conn_detail && !$error_message_detail && $match_id_detail > 0) {
         FROM 
             pitching_stats ps
         JOIN players p ON ps.player_id = p.player_id
-        JOIN teams t ON p.team_id = t.team_id
         WHERE ps.match_id = ?
-        ORDER BY t.team_name, p.player_name ASC
+        ORDER BY p.team_name, p.player_name ASC
     ";
-    
+        
     if ($stmt_pitching = $conn_detail->prepare($sql_pitching)) {
         $stmt_pitching->bind_param('i', $match_id_detail);
         $stmt_pitching->execute();

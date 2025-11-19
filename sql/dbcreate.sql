@@ -194,8 +194,21 @@ CREATE TABLE IF NOT EXISTS users (
   KEY idx_users_fav_player (favorite_player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-
+-- inquiries
+CREATE TABLE IF NOT EXISTS inquiries (
+  inquiry_id    INT AUTO_INCREMENT PRIMARY KEY,
+  user_id       BIGINT NULL, 
+  name          VARCHAR(120) NOT NULL,
+  email         VARCHAR(120) NOT NULL,
+  inquiry_type  ENUM('technical', 'wrongInfo', 'other') NOT NULL, 
+  message       TEXT NOT NULL,
+  status        ENUM('pending', 'in_progress', 'completed', 'closed') DEFAULT 'pending', 
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  
+  CONSTRAINT fk_inquiries_user 
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- player_weather_performance (고정 버킷)
 CREATE TABLE IF NOT EXISTS player_weather_performance (

@@ -1,3 +1,4 @@
+-- author: Jwa Yeonjoo
 INSERT INTO team_match_performance (match_id, team_id, score, team_rbi, team_homeruns, team_errors, home_or_away) SELECT 1, (SELECT team_id FROM teams WHERE team_name = 'Hanwha Eagles'), 2, 2, 0, 1, 'AWAY';
 INSERT INTO team_match_performance (match_id, team_id, score, team_rbi, team_homeruns, team_errors, home_or_away) SELECT 1, (SELECT team_id FROM teams WHERE team_name = 'LG Twins'), 8, 8, 0, 0, 'HOME';
 INSERT INTO team_match_performance (match_id, team_id, score, team_rbi, team_homeruns, team_errors, home_or_away) SELECT 2, (SELECT team_id FROM teams WHERE team_name = 'Lotte Giants'), 3, 3, 2, 1, 'AWAY';

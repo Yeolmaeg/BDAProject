@@ -1,3 +1,4 @@
+// author: Jwa Yeonjoo
 document.addEventListener('DOMContentLoaded', () => {
     // 1. 모든 북마크 아이콘 요소를 가져옵니다.
     const bookmarkIcons = document.querySelectorAll('.bookmark-icon');

@@ -1,3 +1,4 @@
+<!-- author: Jwa Yeonjoo -->
 <?php
 // BDAProject/footer.php
 

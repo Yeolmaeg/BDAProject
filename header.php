@@ -22,9 +22,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <img src="public/logo_team04.png" alt="TEAM04 Logo" class="header-logo-img">
         </a>
 
-        <div class="header-search-container">
-            <input type="search" class="header-search-input" placeholder="Search">
-        </div>
+        <form id="search-form" action="search.php" method="GET" class="header-search-container">
+            <input 
+                type="search" 
+                name="query" 
+                id="header-search-input" 
+                class="header-search-input" 
+                placeholder="선수 또는 팀 이름 검색"
+            >
+            </form>
 
         <div class="header-menu">
             <?php if (!$is_logged_in): ?>
@@ -46,3 +52,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </nav>
 
     <main class="main-content">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('header-search-input');
+            const searchForm = document.getElementById('search-form');
+
+            // 폼 제출 이벤트 리스너 (불필요한 공백 제거)
+            searchForm.addEventListener('submit', function(e) {
+                const query = searchInput.value.trim();
+                if (query === "") {
+                    e.preventDefault(); // 빈 검색어는 제출 방지
+                    alert("검색어를 입력해 주세요.");
+                } else {
+                    // 검색어의 앞뒤 공백을 제거하여 깔끔한 쿼리를 전송합니다.
+                    searchInput.value = query;
+                }
+            });
+        });
+    </script>

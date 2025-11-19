@@ -33,9 +33,6 @@ function getFlagHtml($nationality) {
     return '<img src="' . $src . '" alt="' . strtoupper($code) . ' flag" class="flag-icon">';
 }
 
-
-
-
 // =======================
 // 1. DB 연결 세팅
 // =======================
@@ -59,7 +56,7 @@ $wind_bucket    = isset($_GET['wind'])     ? $_GET['wind']     : 'ALL';
 $rain_bucket    = isset($_GET['rain'])     ? $_GET['rain']     : 'ALL';
 $player_keyword = isset($_GET['player'])   ? trim($_GET['player']) : '';
 
-// ▽▽▽ NEW: 날씨 중 하나라도 ALL 인지 체크 ▽▽▽
+// ▽▽▽ 날씨 중 하나라도 ALL 인지 체크 ▽▽▽
 $has_any_all_weather =
     ($temp_bucket  === 'ALL') ||
     ($humid_bucket === 'ALL') ||
@@ -97,17 +94,17 @@ $humid_labels = [
 
 $rain_labels = [
     'ALL' => '☔ Rainfall (All)',
-    '0' => '0mm',
+    '0'   => '0mm',
     '0-1' => '0-1mm',
     '1-5' => '1-5mm',
-    '5-10' => '5-10mm',
+    '5-10'=> '5-10mm',
     '>10' => '10mm and above',
     'UNK' => 'unknown'
 ];
 
 $wind_labels = [
     'ALL' => '🍃 Wind Speed (All)',
-    '<1' => 'Below 1m/s',
+    '<1'  => 'Below 1m/s',
     '1-2' => '1-2m/s',
     '2-3' => '2-3m/s',
     '3-5' => '3-5m/s',
@@ -126,27 +123,13 @@ if ($conn->connect_error) {
     $params = [];
     $types  = '';
 
-    // 포지션에 따른 조건 + ORDER BY
+    // 포지션에 따른 기본 조건
     if ($position === 'batters') {
-        // 버킷 단위든, 선수 합계든 "타자 데이터가 실제로 있는 행만" 사용
+        // 타자 데이터가 실제로 있는 행만
         $where[] = "pwp.bat_matches_count > 0 AND pwp.avg_ba IS NOT NULL";
-
-        // ALL이 있으면 집계된 컬럼 기준, 아니면 원래 pwp 기준
-        if ($has_any_all_weather) {
-            $order_by = "avg_ops DESC, avg_ba DESC, bat_matches_count DESC";
-        } else {
-            $order_by = "pwp.avg_ops DESC, pwp.avg_ba DESC, pwp.bat_matches_count DESC";
-        }
-        // △△△
     } else { // pitchers
-        $position = 'pitchers'; 
+        $position = 'pitchers';
         $where[] = "pwp.pitch_matches_count > 0 AND pwp.avg_era IS NOT NULL";
-
-        if ($has_any_all_weather) {
-            $order_by = "avg_era ASC, pitch_matches_count DESC";
-        } else {
-            $order_by = "pwp.avg_era ASC, pwp.pitch_matches_count DESC";
-        }
     }
 
     // 날씨 버킷 필터 (ALL이 아닌 애들만 WHERE에 추가)
@@ -172,9 +155,9 @@ if ($conn->connect_error) {
     }
 
     if ($player_keyword !== '') {
-    $where[]  = "pwp.player_name LIKE ?";
-    $params[] = '%' . $player_keyword . '%';
-    $types   .= 's';  
+        $where[]  = "pwp.player_name LIKE ?";
+        $params[] = '%' . $player_keyword . '%';
+        $types   .= 's';
     }
 
     $where_sql = '';
@@ -184,110 +167,164 @@ if ($conn->connect_error) {
 
     // =======================
     // 4. 최종 SQL
-    //   (1) 날씨 중 하나라도 ALL → 선수당 1행으로 집계
-    //   (2) ALL이 전혀 없음 → 원래처럼 버킷별 행 그대로
+    //   (1) 날씨 중 하나라도 ALL → 선수당 1행 집계 + RANK()
+    //   (2) ALL이 전혀 없음     → 버킷별 행 + RANK()
     // =======================
-
     if ($has_any_all_weather) {
         // ▽▽▽ 선수별 집계 모드 ▽▽▽
         if ($position === 'batters') {
-            // 타자: 경기 수 합산 + 가중 평균 BA/OPS
+            // 타자: 경기 수 합산 + 가중 평균 BA/OPS + RANK()
             $sql = "
                 SELECT
-                    pwp.player_id,
-                    pwp.player_name,
-                    t.team_name,
-                    pl.position,
-                    pl.age,
-                    pl.nationality,
-                    pl.salary,
-                    SUM(pwp.bat_matches_count)   AS bat_matches_count,
-                    0                             AS pitch_matches_count,
-                    ROUND(
-                        SUM(pwp.avg_ba  * pwp.bat_matches_count) /
-                        NULLIF(SUM(pwp.bat_matches_count), 0),
-                        3
-                    ) AS avg_ba,
-                    ROUND(
-                        SUM(pwp.avg_ops * pwp.bat_matches_count) /
-                        NULLIF(SUM(pwp.bat_matches_count), 0),
-                        3
-                    ) AS avg_ops,
-                    NULL AS avg_era
-                FROM player_weather_performance pwp
-                JOIN players pl ON pl.player_id = pwp.player_id
-                JOIN teams   t  ON t.team_id    = pl.team_id
-                $where_sql
-                GROUP BY
-                    pwp.player_id,
-                    pwp.player_name,
-                    t.team_name,
-                    pl.position,
-                    pl.age,
-                    pl.nationality,
-                    pl.salary
-                ORDER BY $order_by
+                    RANK() OVER (
+                        ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
+                    ) AS rank,
+                    sub.*
+                FROM (
+                    SELECT
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary,
+                        SUM(pwp.bat_matches_count)   AS bat_matches_count,
+                        0                             AS pitch_matches_count,
+                        ROUND(
+                            SUM(pwp.avg_ba  * pwp.bat_matches_count) /
+                            NULLIF(SUM(pwp.bat_matches_count), 0),
+                            3
+                        ) AS avg_ba,
+                        ROUND(
+                            SUM(pwp.avg_ops * pwp.bat_matches_count) /
+                            NULLIF(SUM(pwp.bat_matches_count), 0),
+                            3
+                        ) AS avg_ops,
+                        NULL AS avg_era
+                    FROM player_weather_performance pwp
+                    JOIN players pl ON pl.player_id = pwp.player_id
+                    JOIN teams   t  ON t.team_id    = pl.team_id
+                    $where_sql
+                    GROUP BY
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary
+                ) AS sub
+                ORDER BY rank
             ";
         } else {
-            // 투수: 경기 수 합산 + 가중 평균 ERA
+            // 투수: 경기 수 합산 + 가중 평균 ERA + RANK()
             $sql = "
                 SELECT
-                    pwp.player_id,
-                    pwp.player_name,
-                    t.team_name,
-                    pl.position,
-                    pl.age,
-                    pl.nationality,
-                    pl.salary,
-                    0                            AS bat_matches_count,
-                    SUM(pwp.pitch_matches_count) AS pitch_matches_count,
-                    NULL AS avg_ba,
-                    NULL AS avg_ops,
-                    ROUND(
-                        SUM(pwp.avg_era * pwp.pitch_matches_count) /
-                        NULLIF(SUM(pwp.pitch_matches_count), 0),
-                        2
-                    ) AS avg_era
-                FROM player_weather_performance pwp
-                JOIN players pl ON pl.player_id = pwp.player_id
-                JOIN teams   t  ON t.team_id    = pl.team_id
-                $where_sql
-                GROUP BY
-                    pwp.player_id,
-                    pwp.player_name,
-                    t.team_name,
-                    pl.position,
-                    pl.age,
-                    pl.nationality,
-                    pl.salary
-                ORDER BY $order_by
+                    RANK() OVER (
+                        ORDER BY avg_era ASC, pitch_matches_count DESC
+                    ) AS rank,
+                    sub.*
+                FROM (
+                    SELECT
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary,
+                        0                            AS bat_matches_count,
+                        SUM(pwp.pitch_matches_count) AS pitch_matches_count,
+                        NULL AS avg_ba,
+                        NULL AS avg_ops,
+                        ROUND(
+                            SUM(pwp.avg_era * pwp.pitch_matches_count) /
+                            NULLIF(SUM(pwp.pitch_matches_count), 0),
+                            2
+                        ) AS avg_era
+                    FROM player_weather_performance pwp
+                    JOIN players pl ON pl.player_id = pwp.player_id
+                    JOIN teams   t  ON t.team_id    = pl.team_id
+                    $where_sql
+                    GROUP BY
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary
+                ) AS sub
+                WHERE avg_era IS NULL OR avg_era > 0
+                ORDER BY rank
             ";
         }
     } else {
-        // 원래 방식: (선수+4버킷) 조합별 한 행
-        $sql = "
-            SELECT 
-                pwp.player_id,
-                pwp.player_name,
-                t.team_name,
-                pl.position,
-                pl.age,
-                pl.nationality,
-                pl.salary,
-                pwp.bat_matches_count,
-                pwp.pitch_matches_count,
-                pwp.avg_ba,
-                pwp.avg_ops,
-                pwp.avg_era
-            FROM player_weather_performance pwp
-            JOIN players pl ON pl.player_id = pwp.player_id
-            JOIN teams   t  ON t.team_id    = pl.team_id
-            $where_sql
-            ORDER BY $order_by
-        ";
-    }
+        // ▽▽▽ 버킷별 행 모드 + RANK() ▽▽▽
+        if ($position === 'batters') {
+            $sql = "
+                SELECT
+                    RANK() OVER (
+                        ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
+                    ) AS rank,
+                    sub.*
+                FROM (
+                    SELECT 
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary,
+                        pwp.bat_matches_count   AS bat_matches_count,
+                        pwp.pitch_matches_count AS pitch_matches_count,
+                        pwp.avg_ba,
+                        pwp.avg_ops,
+                        pwp.avg_era
+                    FROM player_weather_performance pwp
+                    JOIN players pl ON pl.player_id = pwp.player_id
+                    JOIN teams   t  ON t.team_id    = pl.team_id
+                    $where_sql
+                ) AS sub
+                ORDER BY rank
+            ";
+        } else {
+            $sql = "
+                SELECT
+                    RANK() OVER (
+                        ORDER BY avg_era ASC, pitch_matches_count DESC
+                    ) AS rank,
+                    sub.*
+                FROM (
+                    SELECT 
+                        pwp.player_id,
+                        pwp.player_name,
+                        t.team_name,
+                        pl.position,
+                        pl.age,
+                        pl.nationality,
+                        pl.salary,
+                        pwp.bat_matches_count   AS bat_matches_count,
+                        pwp.pitch_matches_count AS pitch_matches_count,
+                        pwp.avg_ba,
+                        pwp.avg_ops,
+                        pwp.avg_era
+                    FROM player_weather_performance pwp
+                    JOIN players pl ON pl.player_id = pwp.player_id
+                    JOIN teams   t  ON t.team_id    = pl.team_id
+                    $where_sql
+                ) AS sub
+                WHERE avg_era IS NULL OR avg_era > 0
+                ORDER BY rank
+            ";
+        }
+    }   // ← if ($has_any_all_weather) 닫는 중괄호
 
-
+    // =======================
+    // 4-1. 쿼리 실행
+    // =======================
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
         $error_message = "쿼리 준비 중 오류: " . $conn->error;
@@ -298,16 +335,8 @@ if ($conn->connect_error) {
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             if ($result && $result->num_rows > 0) {
-                $rank = 1;
                 while ($row = $result->fetch_assoc()) {
-                    // 투수일 때 avg_era가 0.00인 행은 순위에 표시 안 함
-                    if ($position === 'pitchers'){
-                        if(!is_null($row['avg_era']) && (float)$row['avg_era'] == 0.0){
-                            continue;
-                        }
-                    }
-                    
-                    $row['rank'] = $rank++;
+                    // rank는 DB에서 넘어온 값 그대로 사용
                     $players[] = $row;
                 }
             } else {
@@ -326,9 +355,7 @@ if ($conn->connect_error) {
 // =======================
 // 5. 화면 출력
 // =======================
-
 $colspan = ($position === 'batters') ? 10 : 9;
-
 
 require_once 'header.php';
 ?>
@@ -346,25 +373,25 @@ require_once 'header.php';
         </h2>
     </div>
 
-        <div class = "search-row">
-            <form method="get" class="player-search-form">
-                <!-- 지금 쓰고 있는 hidden 필터들 그대로 유지 -->
-                <input type="hidden" name="position" value="<?php echo htmlspecialchars($position); ?>">
-                <input type="hidden" name="temp"     value="<?php echo htmlspecialchars($temp_bucket); ?>">
-                <input type="hidden" name="humid"    value="<?php echo htmlspecialchars($humid_bucket); ?>">
-                <input type="hidden" name="wind"     value="<?php echo htmlspecialchars($wind_bucket); ?>">
-                <input type="hidden" name="rain"     value="<?php echo htmlspecialchars($rain_bucket); ?>">
+    <div class="search-row">
+        <form method="get" class="player-search-form">
+            <!-- 지금 쓰고 있는 hidden 필터들 그대로 유지 -->
+            <input type="hidden" name="position" value="<?php echo htmlspecialchars($position); ?>">
+            <input type="hidden" name="temp"     value="<?php echo htmlspecialchars($temp_bucket); ?>">
+            <input type="hidden" name="humid"    value="<?php echo htmlspecialchars($humid_bucket); ?>">
+            <input type="hidden" name="wind"     value="<?php echo htmlspecialchars($wind_bucket); ?>">
+            <input type="hidden" name="rain"     value="<?php echo htmlspecialchars($rain_bucket); ?>">
 
-                <input
-                    type="text"
-                    name="player"
-                    class="player-search-input"
-                    placeholder="Search player"
-                    value="<?php echo htmlspecialchars($player_keyword); ?>"
-                >
-                <button type="submit" class="player-search-button">Search</button>
-            </form>
-        </div>
+            <input
+                type="text"
+                name="player"
+                class="player-search-input"
+                placeholder="Search player"
+                value="<?php echo htmlspecialchars($player_keyword); ?>"
+            >
+            <button type="submit" class="player-search-button">Search</button>
+        </form>
+    </div>
 
     <!-- 필터 폼 -->
     <form method="get" class="filter-bar">
@@ -392,7 +419,7 @@ require_once 'header.php';
         <div class="filter-dropdown">
             <select name="humid" class="filter-toggle">
                 <?php foreach ($humid_options as $opt): ?>
-                    <?php $label = isset($humid_labels[$opt]) ? $humid_labels[$opt] : $opt; ?>                    
+                    <?php $label = isset($humid_labels[$opt]) ? $humid_labels[$opt] : $opt; ?>
                     <option value="<?php echo $opt; ?>" <?php if ($humid_bucket === $opt) echo 'selected'; ?>>
                         <?php echo $label; ?>
                     </option>
@@ -404,7 +431,7 @@ require_once 'header.php';
         <div class="filter-dropdown">
             <select name="wind" class="filter-toggle">
                 <?php foreach ($wind_options as $opt): ?>
-                    <?php $label = isset($wind_labels[$opt]) ? $wind_labels[$opt] : $opt; ?> 
+                    <?php $label = isset($wind_labels[$opt]) ? $wind_labels[$opt] : $opt; ?>
                     <option value="<?php echo $opt; ?>" <?php if ($wind_bucket === $opt) echo 'selected'; ?>>
                         <?php echo $label; ?>
                     </option>
@@ -416,7 +443,7 @@ require_once 'header.php';
         <div class="filter-dropdown">
             <select name="rain" class="filter-toggle">
                 <?php foreach ($rain_options as $opt): ?>
-                    <?php $label = isset($rain_labels[$opt]) ? $rain_labels[$opt] : $opt; ?> 
+                    <?php $label = isset($rain_labels[$opt]) ? $rain_labels[$opt] : $opt; ?>
                     <option value="<?php echo $opt; ?>" <?php if ($rain_bucket === $opt) echo 'selected'; ?>>
                         <?php echo $label; ?>
                     </option>
@@ -426,7 +453,6 @@ require_once 'header.php';
 
         <button type="submit" class="filter-toggle">Apply</button>
     </form>
-
 
     <div class="player-rank-card">
         <table class="player-rank-table">
@@ -476,7 +502,7 @@ require_once 'header.php';
                         <td class="col-salary">
                             <?php
                             if ($p['salary'] !== null) {
-                                echo number_format($p['salary']); // 30,000,000 이런 형식
+                                echo number_format($p['salary']); // 30,000,000 형식
                             } else {
                                 echo '-';
                             }

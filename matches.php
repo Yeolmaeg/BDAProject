@@ -389,29 +389,24 @@ require_once 'header.php';
         <?php
         $query_params = $_GET;
         
-        // 맨 처음 페이지
+        // 맨 처음 페이지 (<<)
         if ($page_matches > 1):
             $query_params['page'] = 1;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                &lt;&lt; First
+                &lt;&lt;
             </a>
         <?php endif; ?>
         
         <?php
-        // 이전 페이지
-        if ($page_matches > 1):
-            $query_params['page'] = $page_matches - 1;
-        ?>
-            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                &lt; Previous
-            </a>
-        <?php endif; ?>
-        
-        <?php
-        // 페이지 번호
+        // 페이지 번호 (5개씩)
         $start_page = max(1, $page_matches - 2);
-        $end_page = min($total_pages, $page_matches + 2);
+        $end_page = min($total_pages, $start_page + 4);
+        
+        // 끝 페이지가 5개 미만일 때 시작 페이지 조정
+        if ($end_page - $start_page < 4) {
+            $start_page = max(1, $end_page - 4);
+        }
         
         for ($i = $start_page; $i <= $end_page; $i++):
             $query_params['page'] = $i;
@@ -424,22 +419,12 @@ require_once 'header.php';
         <?php endfor; ?>
         
         <?php
-        // 다음 페이지
-        if ($page_matches < $total_pages):
-            $query_params['page'] = $page_matches + 1;
-        ?>
-            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                Next &gt;
-            </a>
-        <?php endif; ?>
-        
-        <?php
-        // 맨 마지막 페이지
+        // 맨 마지막 페이지 (>>)
         if ($page_matches < $total_pages):
             $query_params['page'] = $total_pages;
         ?>
             <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
-                Last &gt;&gt;
+                &gt;&gt;
             </a>
         <?php endif; ?>
         

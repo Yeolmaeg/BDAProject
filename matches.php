@@ -399,6 +399,16 @@ require_once 'header.php';
         <?php endif; ?>
         
         <?php
+        // 이전 페이지 (<)
+        if ($page_matches > 1):
+            $query_params['page'] = $page_matches - 1;
+        ?>
+            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
+                &lt;
+            </a>
+        <?php endif; ?>
+        
+        <?php
         // 페이지 번호 (5개씩)
         $start_page = max(1, $page_matches - 2);
         $end_page = min($total_pages, $start_page + 4);
@@ -417,6 +427,16 @@ require_once 'header.php';
                 <?php echo $i; ?>
             </a>
         <?php endfor; ?>
+        
+        <?php
+        // 다음 페이지 (>)
+        if ($page_matches < $total_pages):
+            $query_params['page'] = $page_matches + 1;
+        ?>
+            <a href="?<?php echo http_build_query($query_params); ?>" style="margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px;">
+                &gt;
+            </a>
+        <?php endif; ?>
         
         <?php
         // 맨 마지막 페이지 (>>)

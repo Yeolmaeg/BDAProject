@@ -29,6 +29,42 @@ try {
     die("데이터베이스 연결 실패: " . $e->getMessage() . " (User: {$DB_USER})"); 
 }
 
+
+// 🚩 Helper function: 선수의 주된 역할을 판단합니다.
+function getPlayerRole($pdo, $player_id) {
+    // 1. 타격 기록 확인 (야수 우선)
+    $stmt_batting = $pdo->prepare("SELECT 1 FROM batting_stats WHERE player_id = ? LIMIT 1");
+    $stmt_batting->execute([$player_id]);
+    if ($stmt_batting->fetchColumn()) {
+        return 'batters';
+    }
+
+    // 2. 투구 기록 확인
+    $stmt_pitching = $pdo->prepare("SELECT 1 FROM pitching_stats WHERE player_id = ? LIMIT 1");
+    $stmt_pitching->execute([$player_id]);
+    if ($stmt_pitching->fetchColumn()) {
+        return 'pitchers';
+    }
+
+    // 통계가 없는 경우 기본값 (타자로 설정)
+    return 'batters'; 
+}
+
+// 🚩 Helper function: player_rank.php의 완전한 URL을 생성합니다.
+function generatePlayerRankUrl($player_name, $position) {
+    $params = [
+        'position' => $position,
+        'temp' => 'ALL',
+        'humid' => 'ALL',
+        'wind' => 'ALL',
+        'rain' => 'ALL',
+        'player' => $player_name
+    ];
+    // http_build_query가 URL 인코딩을 처리합니다.
+    return "player_rank.php?" . http_build_query($params);
+}
+
+
 // header.php는 세션을 필요로 하므로, 세션이 시작되었는지 확인합니다.
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -42,16 +78,6 @@ if (empty($query)) {
     header("Location: index.php"); // 검색어 없으면 메인으로
     exit;
 }
-
-// === 기본 필터 파라미터 설정 (player_rank.php 형식 맞추기 위함) ===
-$default_player_rank_params = [
-    'position' => 'pitchers', // 예시: 기본 포지션을 투수로 설정
-    'temp' => 'ALL',
-    'humid' => 'ALL',
-    'wind' => 'ALL',
-    'rain' => 'ALL'
-];
-$base_url_player_rank = "player_rank.php?" . http_build_query($default_player_rank_params) . "&player=";
 
 
 // === 리다이렉션 우선 로직: 정확히 일치하는 팀 검색 (선수는 목록으로 유도) ===
@@ -93,6 +119,7 @@ require_once 'header.php';
     
     <?php if ($has_results): ?>
         
+        <!-- 팀 검색 결과 섹션 -->
         <div class="search-section team-results">
             <h3>⚾ Team search results (<?php echo count($team_results); ?> items)</h3>
             <?php if (!empty($team_results)): ?>
@@ -112,18 +139,21 @@ require_once 'header.php';
 
         <hr style="margin: 30px 0;">
 
+        <!-- 선수 검색 결과 섹션 -->
         <div class="search-section player-results">
             <h3>👤 Player search results (<?php echo count($player_results); ?> items)</h3>
             <?php if (!empty($player_results)): ?>
                 <ul style="list-style: none; padding: 0;">
                     <?php foreach ($player_results as $player): ?>
                         <?php
-                            // 🚩 요청 형식에 맞춰 URL 생성
-                            $player_url = $base_url_player_rank . urlencode($player['player_name']);
+                            // 🚩 선수의 역할을 결정
+                            $player_role = getPlayerRole($pdo, $player['player_id']);
+                            // 🚩 요청 형식에 맞춰 URL 생성 (position과 player 포함)
+                            $player_url = generatePlayerRankUrl($player['player_name'], $player_role);
                         ?>
                         <li style="margin-bottom: 10px; padding: 8px; border-bottom: 1px dashed #eee;">
                             <a href="<?php echo $player_url; ?>" style="text-decoration: none; color: #059669; font-weight: bold;">
-                                <?php echo htmlspecialchars($player['player_name']); ?>
+                                <?php echo htmlspecialchars($player['player_name']); ?> (<?php echo $player_role; ?>)
                             </a>
                         </li>
                     <?php endforeach; ?>
@@ -135,6 +165,7 @@ require_once 'header.php';
         
     <?php else: ?>
         
+        <!-- 검색 결과 없음 -->
         <div style="text-align: center; margin-top: 50px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
             <h2 style="color: #c00;">No matching results found.</h2>
             <p>Please check your search term or browse the full list of teams.</p>

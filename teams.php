@@ -1,5 +1,6 @@
 <?php
 // BDAProject/teams.php
+// <!-- author: Jwa Yeonjoo -->
 
 session_start();
 $page_title = "teams";

@@ -14,9 +14,8 @@ if (isset($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // POST 요청 처리 (로그인 시도)
-// POST 요청 처리 (로그인 시도)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once 'config/config.php';
+    // require_once 'config/config.php'; // 기존 config 파일 로드는 제거됨
     
     // 입력값 가져오기
     $email = trim($_POST['email'] ?? '');
@@ -27,10 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Please enter your email and password.";
     } else {
         try {
-            // 데이터베이스 연결
-            $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, defined('DB_PORT') ? DB_PORT : 3306);
+            // 1. DB 연결 설정 (signup.php에서 가져옴)
+            $DB_HOST = '127.0.0.1'; 
+            $DB_NAME = 'team04';    
+            $DB_USER = 'root';      
+            $DB_PASS = '';          
+            $DB_PORT = 3306;       
             
-            if ($mysqli->connect_errno) {
+            // 2. 데이터베이스 연결
+            $mysqli = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+            
+            // 3. 오류 처리 및 인코딩 설정
+            if ($mysqli->connect_error) {
                 throw new Exception("Database connection failed: " . $mysqli->connect_error);
             }
             
@@ -74,7 +81,6 @@ require_once 'header.php';
 
 <div class="wrapper">
     <?php if (isset($_SESSION['user_id'])): ?>
-        <!-- 이미 로그인된 사용자 -->
         <div class="login-page">
             <div class="login-header">
                 <h1 id="login-heading">LOGIN</h1>
@@ -90,7 +96,6 @@ require_once 'header.php';
             </div>
         </div>
     <?php else: ?>
-        <!-- 로그인 폼 -->
         <div class="login-page">
             <div class="login-header">
                 <h1 id="login-heading">LOGIN</h1>

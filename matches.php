@@ -1,5 +1,5 @@
-// author: Eunhyeon Kwon
 <?php
+// author: Eunhyeon Kwon
 // 세션 시작
 session_start();
 

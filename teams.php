@@ -1,4 +1,3 @@
-<!-- author: Jwa Yeonjoo -->
 <?php
 // BDAProject/teams.php
 

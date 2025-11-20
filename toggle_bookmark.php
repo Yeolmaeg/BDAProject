@@ -1,7 +1,6 @@
-<!-- author: Jwa Yeonjoo -->
 <?php
 // BDAProject/toggle_bookmark.php
-
+// <!-- author: Jwa Yeonjoo -->
 session_start();
 header('Content-Type: application/json'); // JSON 응답을 위한 헤더 설정
 

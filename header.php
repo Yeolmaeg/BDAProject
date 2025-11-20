@@ -1,3 +1,4 @@
+<!-- author: Jwa Yeonjoo -->
 <?php
 // BDAProject/header.php
 
@@ -28,7 +29,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 name="query" 
                 id="header-search-input" 
                 class="header-search-input" 
-                placeholder="선수 또는 팀 이름 검색"
+                placeholder="Search for player or team name"
             >
             </form>
 

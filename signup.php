@@ -53,6 +53,9 @@ if ($error_code) {
         case 'email_exists':
             $submission_error = "이미 사용 중인 이메일 주소입니다. 다른 이메일을 사용해 주세요.";
             break;
+        case 'phone_invalid':
+            $submission_error = "유효한 전화번호 형식이 아닙니다. 올바른 형식(예: 010-1234-5678)으로 입력해 주세요.";
+            break;
         case 'db_connect_failed':
             $submission_error = "서버 오류: 데이터베이스 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.";
             break;

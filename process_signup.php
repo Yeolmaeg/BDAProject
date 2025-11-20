@@ -37,6 +37,14 @@ if (strlen($password) < 4) {
     exit();
 }
 
+// 🚩 수정: 전화번호 형식 검증 로직 추가
+// 간단한 전화번호 형식 (숫자와 하이픈(-)만 허용)
+if (!preg_match("/^\d{2,4}-?\d{3,4}-?\d{4}$/", $phone)) {
+    header("Location: signup.php?error=phone_invalid");
+    exit();
+}
+// 🚩 수정 끝
+
 // 4. 비밀번호 해시
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -53,14 +61,10 @@ $conn->set_charset("utf8mb4");
 
 try {
     // 6. SQL 쿼리 준비 (컬럼명 수정 반영 및 user_bdate, user_phone 추가)
-    
-    // NOTE: user_bdate와 user_phone을 포함하여 쿼리 수정
     $sql = "INSERT INTO users (user_name, user_bdate, user_phone, user_email, user_pass, favorite_team_id, favorite_player_id) 
-            VALUES (?, ?, ?, ?, ?, NULL, NULL)";
+             VALUES (?, ?, ?, ?, ?, NULL, NULL)";
 
     $stmt = $conn->prepare($sql);
-    
-    // 데이터 바인딩: s=string (user_name, user_bdate, user_phone, user_email, user_pass 순서)
     $stmt->bind_param("sssss", $name, $bdate, $phone, $email, $hashed_password);
 
     if ($stmt->execute()) {
@@ -71,18 +75,26 @@ try {
         header("Location: signup_success.php"); 
         exit();
     } else {
-        // 삽입 실패 (예: 이메일 중복)
+        // 🚩 수정: execute()가 false를 반환할 때의 오류 처리
         $error_message_key = ($conn->errno == 1062) ? "email_exists" : "signup_failed"; 
         header("Location: signup.php?error=" . $error_message_key);
         exit();
     }
 
 } catch (Exception $e) {
-    error_log("Signup Exception: " . $e->getMessage());
-    header("Location: signup.php?error=exception");
+    // 🚩 수정: Exception 발생 시 오류 코드(e->getCode)를 사용하여 정확한 원인 파악
+    $error_code = $e->getCode();
+    
+    if ($error_code == 1062) {
+        $error_message_key = "email_exists";
+    } else {
+        error_log("Signup Exception: " . $e->getMessage() . " Code: " . $error_code);
+        $error_message_key = "exception";
+    }
+
+    header("Location: signup.php?error=" . $error_message_key);
     exit();
 } finally {
     if (isset($stmt)) $stmt->close();
     if (isset($conn)) $conn->close();
 }
-?>

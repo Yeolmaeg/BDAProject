@@ -119,7 +119,7 @@ function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $messa
     <body>
         <h2>Your Inquiry has been successfully received.</h2>
         <p>Inquiry No: <strong>#$inquiry_id</strong></p>
-        <p>Hi, <strong>$name</strong>님</p>
+        <p>Hi, <strong>$name</strong></p>
         <p><strong>Inquiry Type:</strong> $type_text</p>
         <p><strong>Details:</strong></p>
         <div style='background: #f8f9fa; padding: 15px;'>
@@ -219,7 +219,7 @@ require_once 'header.php';
         <div class="form-group">
             <label for="inquiry-message" class="div">
                 Details 
-                <span style="color: #959595ff; font-size: 11px; font-weight: 400; margin-left: 3px;">
+                <span style="color: #959595ff; font-size: 13px; font-weight: 400; margin-left: 3px;">
                     The response to your inquiry will be sent via email.
                 </span>
             </label>

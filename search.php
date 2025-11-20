@@ -30,38 +30,24 @@ try {
 }
 
 
-// 🚩 Helper function: 선수의 주된 역할을 판단합니다.
+// 🚩 Helper function: 선수의 주된 역할을 판단합니다. (검색 목록에서 역할 표시용)
 function getPlayerRole($pdo, $player_id) {
     // 1. 타격 기록 확인 (야수 우선)
     $stmt_batting = $pdo->prepare("SELECT 1 FROM batting_stats WHERE player_id = ? LIMIT 1");
     $stmt_batting->execute([$player_id]);
     if ($stmt_batting->fetchColumn()) {
-        return 'batters';
+        return 'Batter';
     }
 
     // 2. 투구 기록 확인
     $stmt_pitching = $pdo->prepare("SELECT 1 FROM pitching_stats WHERE player_id = ? LIMIT 1");
     $stmt_pitching->execute([$player_id]);
     if ($stmt_pitching->fetchColumn()) {
-        return 'pitchers';
+        return 'Pitcher';
     }
 
-    // 통계가 없는 경우 기본값 (타자로 설정)
-    return 'batters'; 
-}
-
-// 🚩 Helper function: player_rank.php의 완전한 URL을 생성합니다.
-function generatePlayerRankUrl($player_name, $position) {
-    $params = [
-        'position' => $position,
-        'temp' => 'ALL',
-        'humid' => 'ALL',
-        'wind' => 'ALL',
-        'rain' => 'ALL',
-        'player' => $player_name
-    ];
-    // http_build_query가 URL 인코딩을 처리합니다.
-    return "player_rank.php?" . http_build_query($params);
+    // 통계가 없는 경우 기본값
+    return 'Unknown'; 
 }
 
 
@@ -80,7 +66,7 @@ if (empty($query)) {
 }
 
 
-// === 리다이렉션 우선 로직: 정확히 일치하는 팀 검색 (선수는 목록으로 유도) ===
+// === 리다이렉션 우선 로직: 정확히 일치하는 팀 검색 ===
 
 // 1. 정확히 일치하는 팀 이름 검색 (team_id 필요)
 $stmt_exact_team = $pdo->prepare("SELECT team_id FROM teams WHERE team_name = :query");
@@ -93,7 +79,12 @@ if ($exact_team_id) {
     exit;
 }
 
-// === 목록 검색 로직: 부분 일치하는 모든 결과 검색 (정확히 일치하는 결과가 없을 경우) ===
+// 2. 정확히 일치하는 선수 이름 검색
+//    -> 이제 즉시 리다이렉션 하지 않고, 아래 목록 검색에 포함시켜 페이지를 보여주도록 합니다.
+//    (기존 리다이렉션 로직 제거)
+
+
+// === 목록 검색 로직: 부분 일치하는 모든 결과 검색 ===
 
 $search_param = "%{$query}%";
 
@@ -110,7 +101,7 @@ $player_results = $stmt_players->fetchAll();
 $has_results = !empty($team_results) || !empty($player_results);
 
 // 3. 페이지 출력
-$page_title = $has_results ? "검색 결과" : "검색 결과 없음";
+$page_title = $has_results ? "Search Results" : "No Matching Results";
 require_once 'header.php';
 ?>
 
@@ -148,8 +139,8 @@ require_once 'header.php';
                         <?php
                             // 🚩 선수의 역할을 결정
                             $player_role = getPlayerRole($pdo, $player['player_id']);
-                            // 🚩 요청 형식에 맞춰 URL 생성 (position과 player 포함)
-                            $player_url = generatePlayerRankUrl($player['player_name'], $player_role);
+                            // 🚩 search_players.php로 이동하도록 링크 수정
+                            $player_url = "search_players.php?player_id=" . $player['player_id'];
                         ?>
                         <li style="margin-bottom: 10px; padding: 8px; border-bottom: 1px dashed #eee;">
                             <a href="<?php echo $player_url; ?>" style="text-decoration: none; color: #059669; font-weight: bold;">

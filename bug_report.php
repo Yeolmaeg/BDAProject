@@ -1,18 +1,21 @@
-<!-- author: Seolah Yang-->
-
 <?php
 // 페이지 제목 설정
 $page_title = "bug_report";
 
-// 설정 파일 포함
-require_once __DIR__ . '/config/config.php';
+// DB 연결 설정 
+$DB_HOST = '127.0.0.1'; //
+$DB_NAME = 'team04';    //
+$DB_USER = 'root';      //
+$DB_PASS = '';          //
+$DB_PORT = 3306;        //
+
 
 // 세션 시작
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-로그인 체크 로직
+// 로그인 체크 로직
 if (!isset($_SESSION['user_id'])) {
     echo "<script>
         alert('You need to log in before using this service.');
@@ -27,8 +30,14 @@ $success_message = '';
 
 // 데이터베이스 연결 함수
 function getDBConnection() {
-    $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-    if ($mysqli->connect_errno) {
+    // [수정] 전역 변수를 함수 내에서 사용
+    global $DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT;
+
+    // @new mysqli를 사용하여 연결
+    $mysqli = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT); 
+    
+    // connect_error를 사용하여 연결 오류 확인
+    if ($mysqli->connect_error) { 
         error_log("Database connection failed: " . $mysqli->connect_error);
         return false;
     }

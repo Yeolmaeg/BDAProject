@@ -2,7 +2,9 @@
 <?php
 // BDAProject/match_detail.php
 
+// 세션 시작 (헤더보다 먼저 실행)
 session_start();
+
 $page_title = "match_detail";
 
 // 데이터베이스 연결

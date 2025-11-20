@@ -1,6 +1,9 @@
 // author: Eunhyeon Kwon
 <?php
-// 1. 페이지 제목 설정 (header.php의 <title> 태그에 사용됨)
+// 세션 시작
+session_start();
+
+// 1. 페이지 제목 설정 
 $page_title = "matches";
 
 // 데이터베이스 연결 정보 설정 및 연결

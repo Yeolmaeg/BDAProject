@@ -257,7 +257,7 @@ if ($conn->connect_error) {
                         pl.nationality,
                         pl.salary
                 ) AS sub
-                WHERE avg_era IS NULL OR avg_era > 0
+                WHERE avg_era > 0
                 ORDER BY rank
             ";
         }
@@ -317,7 +317,7 @@ if ($conn->connect_error) {
                     JOIN teams   t  ON t.team_id    = pl.team_id
                     $where_sql
                 ) AS sub
-                WHERE avg_era IS NULL OR avg_era > 0
+                WHERE avg_era > 0
                 ORDER BY rank
             ";
         }

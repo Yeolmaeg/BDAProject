@@ -2,12 +2,15 @@
 // 페이지 제목 설정
 $page_title = "bug_report";
 
-// DB 연결 설정 
-$DB_HOST = '127.0.0.1'; //
-$DB_NAME = 'team04';    //
-$DB_USER = 'root';      //
-$DB_PASS = '';          //
-$DB_PORT = 3306;        //
+// 설정 파일 포함
+// require_once __DIR__ . '/config/config.php'; // config 파일 로드 제거
+
+// DB 연결 설정
+$DB_HOST = '127.0.0.1'; 
+$DB_NAME = 'team04';    
+$DB_USER = 'root';      
+$DB_PASS = '';          
+$DB_PORT = 3306;        
 
 
 // 세션 시작
@@ -30,11 +33,13 @@ $success_message = '';
 
 // 데이터베이스 연결 함수
 function getDBConnection() {
-    // [수정] 전역 변수를 함수 내에서 사용
-    global $DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT;
-
-    // @new mysqli를 사용하여 연결
-    $mysqli = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT); 
+    $mysqli = @new mysqli(
+        $GLOBALS['DB_HOST'], 
+        $GLOBALS['DB_USER'], 
+        $GLOBALS['DB_PASS'], 
+        $GLOBALS['DB_NAME'], 
+        $GLOBALS['DB_PORT']  
+    ); 
     
     // connect_error를 사용하여 연결 오류 확인
     if ($mysqli->connect_error) { 
@@ -48,9 +53,8 @@ function getDBConnection() {
 // 현재 로그인한 사용자 정보 가져오기 함수
 function getCurrentUserInfo($user_id) {
     $mysqli = getDBConnection();
-    if (!$mysqli) return false;
+    if (!$mysqli) return false; 
 
-    // users 테이블에서 이름(user_name)과 이메일(user_email)을 가져옴
     $stmt = $mysqli->prepare("SELECT user_name, user_email FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -119,7 +123,7 @@ function sendConfirmationEmail($email, $name, $inquiry_id, $inquiry_type, $messa
     <body>
         <h2>Your Inquiry has been successfully received.</h2>
         <p>Inquiry No: <strong>#$inquiry_id</strong></p>
-        <p>Hi, <strong>$name</strong></p>
+        <p>Hi, <strong>$name</strong>님</p>
         <p><strong>Inquiry Type:</strong> $type_text</p>
         <p><strong>Details:</strong></p>
         <div style='background: #f8f9fa; padding: 15px;'>
@@ -219,7 +223,7 @@ require_once 'header.php';
         <div class="form-group">
             <label for="inquiry-message" class="div">
                 Details 
-                <span style="color: #959595ff; font-size: 13px; font-weight: 400; margin-left: 3px;">
+                <span style="color: #959595ff; font-size: 11px; font-weight: 400; margin-left: 3px;">
                     The response to your inquiry will be sent via email.
                 </span>
             </label>

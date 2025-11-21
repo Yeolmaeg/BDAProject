@@ -64,7 +64,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 const query = searchInput.value.trim();
                 if (query === "") {
                     e.preventDefault(); // 빈 검색어는 제출 방지
-                    alert("검색어를 입력해 주세요.");
+                    alert("Please enter a search term.");
                 } else {
                     // 검색어의 앞뒤 공백을 제거하여 깔끔한 쿼리를 전송합니다.
                     searchInput.value = query;

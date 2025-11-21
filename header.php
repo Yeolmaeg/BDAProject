@@ -39,8 +39,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <a href="signup.php">SIGN UP</a>
             <?php else: ?>
                 <a href="logout.php">log out</a>
+                <a href="bug_report.php">bug report</a>
             <?php endif; ?>
-            <a href="bug_report.php">bug report</a>
+            
         </div>
     </header>
 

@@ -6,9 +6,9 @@
 ?>
     </main>
 
-    <footer style="text-align: center; padding: 20px; color: #777;">
+    <!-- <footer style="text-align: center; padding: 20px; color: #777;">
         © Team04 KBO Statistics
-    </footer>
+    </footer> -->
     
 </body>
 </html>

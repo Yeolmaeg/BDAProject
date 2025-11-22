@@ -259,7 +259,7 @@ require_once 'header.php';
     <h1 class="page-title">2024 KBO League Match Records</h1>
     <p class="page-description">
         Match Results and Trend Analysis<br>
-        (Based on the selected team's win rate in the last 3 matches using SQL Window Functions)
+        (Based on the selected team's win rate in the last 3 matches)
     </p>
 
     <?php if ($error_message_matches): ?>

@@ -148,7 +148,7 @@ require_once 'header.php';
             </div>
         </div>
 
-<script>
+       <script>
             // 비밀번호 표시/숨김 토글
             function togglePassword() {
                 const passwordInput = document.getElementById('password');
@@ -166,36 +166,19 @@ require_once 'header.php';
                 }
             }
 
-            // 폼 제출 시 버튼 비활성화 및 Enter 키 처리
+            // 폼 제출 시 버튼 비활성화 (버튼 클릭 및 Enter 키 모두에 적용)
             document.addEventListener('DOMContentLoaded', function () {
                 const form = document.querySelector('form');
                 const submitBtn = document.getElementById('submit-btn');
 
                 if (form && submitBtn) {
-                    // 1. 폼 제출(버튼 클릭 또는 Enter 키) 시 버튼 비활성화
+                    // 1. 폼 제출 시 버튼 비활성화 로직은 그대로 유지
                     form.addEventListener('submit', function () {
-                        // Enter 키나 버튼 클릭으로 폼이 제출되면 실행됩니다.
                         submitBtn.disabled = true;
                         submitBtn.textContent = 'Logging in...';
                     });
                 }
 
-                // 2. Enter 키로 폼 제출 로직 (이전 수정된, 확실한 제출 방식)
-                const inputs = document.querySelectorAll('.form-control');
-                inputs.forEach(input => {
-                    input.addEventListener('keypress', function (e) {
-                        // Enter 키(Key Code 13 또는 key 이름 'Enter')가 눌렸을 때만 실행
-                        if (e.key === 'Enter') {
-                            e.preventDefault(); // 기본 Enter 키 동작 방지
-                            
-                            if (form) {
-                                // 폼의 submit 이벤트를 직접 트리거하여, 
-                                // 위에서 정의한 form.addEventListener('submit', ...) 로직이 실행되게 합니다.
-                                form.submit();
-                            }
-                        }
-                    });
-                });
             });
         </script>
     <?php endif; ?>

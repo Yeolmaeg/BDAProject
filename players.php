@@ -1,3 +1,5 @@
+<!-- author: Yang Seolah -->
+
 <?php
 // 페이지 제목 설정
 $page_title = "Players";

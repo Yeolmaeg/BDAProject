@@ -86,9 +86,7 @@ if ($conn_matches && !$error_message_matches) {
         $stmt_count->close();
     }
     
-    // ============================================
     // Window Function을 사용한 경기 데이터 조회
-    // ============================================
     if ($team_id_matches > 0) {
         // 팀이 선택된 경우: Window Function으로 추세 계산
         $sql_matches = "

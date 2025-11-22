@@ -1,6 +1,5 @@
 <?php
 // author: Sumin Son
-// player_rank.php
 
 session_start();
 $page_title = "player_rank";

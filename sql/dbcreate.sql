@@ -169,7 +169,6 @@ CREATE TABLE IF NOT EXISTS batting_stats (
 
 
 -- users
--- users
 CREATE TABLE IF NOT EXISTS users (
   user_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_name     VARCHAR(100) NOT NULL,
@@ -186,7 +185,7 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY uk_users_email (user_email),
   UNIQUE KEY uk_users_phone (user_phone),
   KEY idx_users_name (user_name),
-  KEY idx_users_fav_team (favorite_team_id),
+  KEY idx_users_fav_team (favorite_team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- inquiries

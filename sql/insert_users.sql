@@ -8,8 +8,7 @@ INSERT INTO users (
   user_phone,
   user_email,
   user_pass,
-  favorite_team_id,
-  favorite_player_id
+  favorite_team_id
 )
 SELECT
   s.user_name,
@@ -17,8 +16,7 @@ SELECT
   s.user_phone,
   s.user_email,
   s.user_pass,
-  t.team_id,
-  p.player_id
+  t.team_id
 FROM (
   -- user_name, bdate, phone, email, pass, fav_team_name, fav_player_name
   -- 비번은 순서대로 pass1234, qwer1234, admin123, pw0000, test1234

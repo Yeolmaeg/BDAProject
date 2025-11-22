@@ -178,20 +178,15 @@ CREATE TABLE IF NOT EXISTS users (
   user_email    VARCHAR(255) NOT NULL,
   user_pass     VARCHAR(255) NOT NULL,
   favorite_team_id   INT NULL, -- 북마크용 추가
-  favorite_player_id INT NULL, -- 북마크용 추가
 
   CONSTRAINT fk_users_fav_team
     FOREIGN KEY (favorite_team_id) REFERENCES teams(team_id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
-  CONSTRAINT fk_users_fav_player
-    FOREIGN KEY (favorite_player_id) REFERENCES players(player_id)
     ON UPDATE CASCADE ON DELETE SET NULL,
 
   UNIQUE KEY uk_users_email (user_email),
   UNIQUE KEY uk_users_phone (user_phone),
   KEY idx_users_name (user_name),
   KEY idx_users_fav_team (favorite_team_id),
-  KEY idx_users_fav_player (favorite_player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- inquiries

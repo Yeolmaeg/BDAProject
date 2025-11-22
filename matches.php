@@ -11,7 +11,7 @@ $DB_HOST = '127.0.0.1';
 $DB_NAME = 'team04';
 $DB_USER = 'root';
 $DB_PASS = '';
-$DB_PORT = 3306; // 본인의 XAMPP MySQL 포트에 맞게 설정
+$DB_PORT = 3306;
 
 $conn_matches = null;
 $matches_matches = [];
@@ -86,157 +86,167 @@ if ($conn_matches && !$error_message_matches) {
         $stmt_count->close();
     }
     
-    // 경기 데이터 조회
-    $sql_matches = "
-        SELECT 
-            m.match_id,
-            m.match_date,
-            m.away_team_id,
-            m.home_team_id,
-            m.score_away,
-            m.score_home,
-            s.stadium_name,
-            t_away.team_name AS away_team_name,
-            t_home.team_name AS home_team_name
-        FROM 
-            matches m
-        JOIN stadiums s ON m.stadium_id = s.stadium_id
-        JOIN teams t_away ON m.away_team_id = t_away.team_id
-        JOIN teams t_home ON m.home_team_id = t_home.team_id
-        $where_sql
-        ORDER BY m.match_date $sort_order_matches
+    // ============================================
+    // Window Function을 사용한 경기 데이터 조회
+    // ============================================
+    if ($team_id_matches > 0) {
+        // 팀이 선택된 경우: Window Function으로 추세 계산
+        $sql_matches = "
+        WITH team_matches AS (
+            -- 선택된 팀의 모든 경기 정보
+            SELECT 
+                m.match_id,
+                m.match_date,
+                m.away_team_id,
+                m.home_team_id,
+                m.score_away,
+                m.score_home,
+                m.stadium_id,
+                -- 승패 판정
+                CASE 
+                    WHEN m.away_team_id = ? THEN 
+                        CASE WHEN m.score_away > m.score_home THEN 1 ELSE 0 END
+                    WHEN m.home_team_id = ? THEN 
+                        CASE WHEN m.score_home > m.score_away THEN 1 ELSE 0 END
+                END as is_win
+            FROM matches m
+            WHERE (m.away_team_id = ? OR m.home_team_id = ?)
+        ),
+        windowed_stats AS (
+            -- Window Function으로 승률 계산
+            SELECT 
+                match_id,
+                match_date,
+                away_team_id,
+                home_team_id,
+                score_away,
+                score_home,
+                stadium_id,
+                is_win,
+                -- Recent Window: 현재 경기 포함 최근 3경기 승률
+                AVG(is_win) OVER (
+                    ORDER BY match_date, match_id
+                    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+                ) * 100 as recent_win_rate,
+                -- Past Window: 현재 경기 제외 직전 3경기 승률
+                AVG(is_win) OVER (
+                    ORDER BY match_date, match_id
+                    ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+                ) * 100 as past_win_rate,
+                -- 직전 3경기 데이터 개수 체크 (N/A 판정용)
+                COUNT(*) OVER (
+                    ORDER BY match_date, match_id
+                    ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+                ) as prev_count
+            FROM team_matches
+        ),
+        final_result AS (
+            SELECT 
+                ws.match_id,
+                ws.match_date,
+                ws.away_team_id,
+                ws.home_team_id,
+                ws.score_away,
+                ws.score_home,
+                s.stadium_name,
+                t_away.team_name AS away_team_name,
+                t_home.team_name AS home_team_name,
+                -- 추세 판정
+                CASE 
+                    WHEN ws.prev_count < 3 THEN 'N/A'
+                    WHEN ws.recent_win_rate > ws.past_win_rate THEN 'Up'
+                    WHEN ws.recent_win_rate < ws.past_win_rate THEN 'Down'
+                    ELSE 'Stable'
+                END as trend,
+                -- 아이콘
+                CASE 
+                    WHEN ws.prev_count < 3 THEN '-'
+                    WHEN ws.recent_win_rate > ws.past_win_rate THEN '▲'
+                    WHEN ws.recent_win_rate < ws.past_win_rate THEN '▼'
+                    ELSE '➖'
+                END as trend_icon,
+                -- 색상
+                CASE 
+                    WHEN ws.prev_count < 3 THEN '#adb5bd'
+                    WHEN ws.recent_win_rate > ws.past_win_rate THEN '#28a745'
+                    WHEN ws.recent_win_rate < ws.past_win_rate THEN '#dc3545'
+                    ELSE '#6c757d'
+                END as trend_color
+            FROM windowed_stats ws
+            JOIN stadiums s ON ws.stadium_id = s.stadium_id
+            JOIN teams t_away ON ws.away_team_id = t_away.team_id
+            JOIN teams t_home ON ws.home_team_id = t_home.team_id
+        )
+        SELECT * FROM final_result
+        ORDER BY match_date $sort_order_matches
         LIMIT ? OFFSET ?
-    ";
-    
-    if ($stmt_matches = $conn_matches->prepare($sql_matches)) {
-        $all_params = array_merge($params, [$per_page_matches, $offset_matches]);
-        $all_types = $types . 'ii';
+        ";
         
-        if (!empty($all_params)) {
-            $stmt_matches->bind_param($all_types, ...$all_params);
-        }
-        
-        $stmt_matches->execute();
-        $result_matches = $stmt_matches->get_result();
-        
-        if ($result_matches) {
-            while ($row = $result_matches->fetch_assoc()) {
-                $matches_matches[] = $row;
+        // PreparedStatement 바인딩
+        if ($stmt_matches = $conn_matches->prepare($sql_matches)) {
+            // team_id를 4번 바인딩 (CTE에서 4번 사용)
+            $stmt_matches->bind_param('iiiiii', 
+                $team_id_matches, $team_id_matches,  // team_matches CTE
+                $team_id_matches, $team_id_matches,  // WHERE 절
+                $per_page_matches, $offset_matches    // LIMIT, OFFSET
+            );
+            
+            $stmt_matches->execute();
+            $result_matches = $stmt_matches->get_result();
+            
+            if ($result_matches) {
+                while ($row = $result_matches->fetch_assoc()) {
+                    $matches_matches[] = $row;
+                }
             }
+            $stmt_matches->close();
         }
-        $stmt_matches->close();
-    }
-}
-
-// Windowing: 직전 3경기 승률 계산 함수
-function calculateTrend($conn, $current_match, $selected_team_id) {
-    if (!$selected_team_id) {
-        return ['trend' => '', 'icon' => ''];
-    }
-    
-    $match_date = $current_match['match_date'];
-    $match_id = $current_match['match_id'];
-    
-    // 현재 경기의 승패 판정
-    $is_away = ($current_match['away_team_id'] == $selected_team_id);
-    $current_win = $is_away 
-        ? ($current_match['score_away'] > $current_match['score_home'])
-        : ($current_match['score_home'] > $current_match['score_away']);
-    
-    // 직전 3경기 조회 (현재 경기 제외, 이전 경기만)
-    $sql_prev = "
-        SELECT 
-            m.away_team_id,
-            m.home_team_id,
-            m.score_away,
-            m.score_home
-        FROM matches m
-        WHERE (m.away_team_id = ? OR m.home_team_id = ?)
-          AND m.match_date < ?
-          AND m.match_id != ?
-        ORDER BY m.match_date DESC
-        LIMIT 3
-    ";
-    
-    $stmt = $conn->prepare($sql_prev);
-    $stmt->bind_param('iisi', $selected_team_id, $selected_team_id, $match_date, $match_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $prev_matches = [];
-    while ($row = $result->fetch_assoc()) {
-        $prev_matches[] = $row;
-    }
-    $stmt->close();
-    
-    // 직전 3경기가 없으면 추세 없음
-    if (count($prev_matches) < 3) {
-        return ['trend' => 'N/A', 'icon' => '-', 'color' => '#adb5bd'];
-    }
-    
-    // 직전 3경기 승률 계산
-    $prev_wins = 0;
-    foreach ($prev_matches as $match) {
-        $is_away_prev = ($match['away_team_id'] == $selected_team_id);
-        $win = $is_away_prev
-            ? ($match['score_away'] > $match['score_home'])
-            : ($match['score_home'] > $match['score_away']);
-        if ($win) $prev_wins++;
-    }
-    $prev_win_rate = ($prev_wins / 3) * 100;
-    
-    // 현재 경기 포함 최근 3경기 조회
-    $sql_recent = "
-        SELECT 
-            m.away_team_id,
-            m.home_team_id,
-            m.score_away,
-            m.score_home
-        FROM matches m
-        WHERE (m.away_team_id = ? OR m.home_team_id = ?)
-          AND m.match_date <= ?
-        ORDER BY m.match_date DESC
-        LIMIT 3
-    ";
-    
-    $stmt2 = $conn->prepare($sql_recent);
-    $stmt2->bind_param('iis', $selected_team_id, $selected_team_id, $match_date);
-    $stmt2->execute();
-    $result2 = $stmt2->get_result();
-    
-    $recent_matches = [];
-    while ($row = $result2->fetch_assoc()) {
-        $recent_matches[] = $row;
-    }
-    $stmt2->close();
-    
-    // 최근 3경기 승률 계산
-    $recent_wins = 0;
-    foreach ($recent_matches as $match) {
-        $is_away_recent = ($match['away_team_id'] == $selected_team_id);
-        $win = $is_away_recent
-            ? ($match['score_away'] > $match['score_home'])
-            : ($match['score_home'] > $match['score_away']);
-        if ($win) $recent_wins++;
-    }
-    $recent_win_rate = ($recent_wins / 3) * 100;
-    
-    // 추세 판정
-    if ($recent_win_rate > $prev_win_rate) {
-        return ['trend' => 'Up', 'icon' => '▲', 'color' => '#28a745'];
-    } elseif ($recent_win_rate < $prev_win_rate) {
-        return ['trend' => 'Down', 'icon' => '▼', 'color' => '#dc3545'];
+        
     } else {
-        return ['trend' => 'Stable', 'icon' => '➖', 'color' => '#6c757d'];
+        // 팀이 선택되지 않은 경우: 기본 쿼리 (추세 없음)
+        $sql_matches = "
+            SELECT 
+                m.match_id,
+                m.match_date,
+                m.away_team_id,
+                m.home_team_id,
+                m.score_away,
+                m.score_home,
+                s.stadium_name,
+                t_away.team_name AS away_team_name,
+                t_home.team_name AS home_team_name,
+                '' as trend,
+                '' as trend_icon,
+                '#999' as trend_color
+            FROM 
+                matches m
+            JOIN stadiums s ON m.stadium_id = s.stadium_id
+            JOIN teams t_away ON m.away_team_id = t_away.team_id
+            JOIN teams t_home ON m.home_team_id = t_home.team_id
+            $where_sql
+            ORDER BY m.match_date $sort_order_matches
+            LIMIT ? OFFSET ?
+        ";
+        
+        if ($stmt_matches = $conn_matches->prepare($sql_matches)) {
+            $all_params = array_merge($params, [$per_page_matches, $offset_matches]);
+            $all_types = $types . 'ii';
+            
+            if (!empty($all_params)) {
+                $stmt_matches->bind_param($all_types, ...$all_params);
+            }
+            
+            $stmt_matches->execute();
+            $result_matches = $stmt_matches->get_result();
+            
+            if ($result_matches) {
+                while ($row = $result_matches->fetch_assoc()) {
+                    $matches_matches[] = $row;
+                }
+            }
+            $stmt_matches->close();
+        }
     }
-}
-
-// 각 경기에 대한 추세 계산
-foreach ($matches_matches as &$match) {
-    $trend_data = calculateTrend($conn_matches, $match, $team_id_matches);
-    $match['trend'] = isset($trend_data['trend']) ? $trend_data['trend'] : '';
-    $match['trend_icon'] = isset($trend_data['icon']) ? $trend_data['icon'] : '';
-    $match['trend_color'] = isset($trend_data['color']) ? $trend_data['color'] : '#999';
 }
 
 if ($conn_matches) {
@@ -251,7 +261,7 @@ require_once 'header.php';
     <h1 class="page-title">2024 KBO League Match Records</h1>
     <p class="page-description">
         Match Results and Trend Analysis<br>
-        (Based on the selected team's win rate in the last 3 matches)
+        (Based on the selected team's win rate in the last 3 matches using SQL Window Functions)
     </p>
 
     <?php if ($error_message_matches): ?>
@@ -457,6 +467,7 @@ require_once 'header.php';
         </div>
     </div>
     <?php endif; ?>
+</div>
 
 <?php
 // 4. 푸터 파일 포함

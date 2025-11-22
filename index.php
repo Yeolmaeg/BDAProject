@@ -223,7 +223,7 @@ require_once 'header.php';
                         <div class="vertical-divider"></div> 
                         
                         <div class="weather-info">
-                            <h3>Today's Stadium Weather</h3>
+                            <h3>Stadium Weather</h3>
                             <div class="weather-details">
                                 <span><?php echo $weather_temp; ?></span>
                             </div>

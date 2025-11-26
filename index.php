@@ -1,4 +1,5 @@
 <?php
+//author: Jwa Yeonjoo
 // BDAProject/index.php
 
 // 1. 세션 시작

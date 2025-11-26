@@ -1,4 +1,5 @@
 <?php
+//author: Jwa Yeonjoo
 // BDAProject/process_signup.php
 
 session_start();

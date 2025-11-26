@@ -6,25 +6,22 @@ session_start();
 // 1. 페이지 제목 설정 
 $page_title = "matches";
 
-// 데이터베이스 연결 정보 설정 및 연결
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306;
+// DB 연결 설정
+require_once __DIR__ . '/config/config.php';
 
-$conn_matches = null;
+// config.php의 $conn 사용
+$conn_matches = $conn;
+
 $matches_matches = [];
 $teams_matches = [];
 $error_message_matches = null;
-
-$conn_matches = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 
 if ($conn_matches->connect_error) {
     $error_message_matches = "데이터베이스 연결 실패: " . $conn_matches->connect_error;
 } else {
     $conn_matches->set_charset("utf8mb4");
 }
+
 
 // 필터 및 페이지네이션 파라미터 처리
 $month_matches = isset($_GET['month']) ? intval($_GET['month']) : 0;

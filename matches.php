@@ -27,9 +27,9 @@ $per_page_matches = 30;
 $offset_matches = ($page_matches - 1) * $per_page_matches;
 
 // 전체 팀 목록 조회 (필터용)
-if ($conn_matches && !$error_message_matches) {
+if ($conn && !$error_message_matches) {
     $sql_teams = "SELECT team_id, team_name FROM teams ORDER BY team_name ASC";
-    $result_teams = $conn_matches->query($sql_teams);
+    $result_teams = $conn->query($sql_teams);
     if ($result_teams) {
         while ($row = $result_teams->fetch_assoc()) {
             $teams_matches[] = $row;
@@ -39,7 +39,7 @@ if ($conn_matches && !$error_message_matches) {
 }
 
 // 경기 데이터 조회 (필터 적용)
-if ($conn_matches && !$error_message_matches) {
+if ($conn && !$error_message_matches) {
     // WHERE 조건 구성
     $where_clauses = [];
     $params = [];
@@ -67,7 +67,7 @@ if ($conn_matches && !$error_message_matches) {
         $where_sql
     ";
     
-    if ($stmt_count = $conn_matches->prepare($sql_count)) {
+    if ($stmt_count = $conn->prepare($sql_count)) {
         if (!empty($params)) {
             $stmt_count->bind_param($types, ...$params);
         }
@@ -173,7 +173,7 @@ if ($conn_matches && !$error_message_matches) {
         ";
         
         // PreparedStatement 바인딩
-        if ($stmt_matches = $conn_matches->prepare($sql_matches)) {
+        if ($stmt_matches = $conn->prepare($sql_matches)) {
             // team_id를 4번 바인딩 (CTE에서 4번 사용)
             $stmt_matches->bind_param('iiiiii', 
                 $team_id_matches, $team_id_matches,  // team_matches CTE
@@ -218,7 +218,7 @@ if ($conn_matches && !$error_message_matches) {
             LIMIT ? OFFSET ?
         ";
         
-        if ($stmt_matches = $conn_matches->prepare($sql_matches)) {
+        if ($stmt_matches = $conn->prepare($sql_matches)) {
             $all_params = array_merge($params, [$per_page_matches, $offset_matches]);
             $all_types = $types . 'ii';
             
@@ -239,8 +239,8 @@ if ($conn_matches && !$error_message_matches) {
     }
 }
 
-if ($conn_matches) {
-    $conn_matches->close();
+if ($conn) {
+    $conn->close();
 }
 
 // 2. 헤더 파일 포함

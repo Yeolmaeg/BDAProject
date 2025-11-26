@@ -5,23 +5,18 @@
 session_start();
 $page_title = "signup";
 
-// 1. DB 연결 설정 및 팀 목록 가져오기 (기존 로직 유지)
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306; 
+// 1. DB 연결 설정 불러오기 (config/config.php 사용)
+require_once 'config/config.php';
 
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 $teams_list = [];
 $db_team_error = null; // 팀 목록 로드 시 발생한 DB 오류 메시지
 
-if ($conn->connect_error) {
-    $db_team_error = "데이터베이스 연결 실패: " . $conn->connect_error;
+// config.php에서 $conn이 생성되었는지 확인
+if (!isset($conn) || $conn->connect_error) {
+    $db_team_error = "데이터베이스 연결 실패: " . ($conn->connect_error ?? 'Connection object not found');
 } else {
-    $conn->set_charset("utf8mb4");
-
     // 2. teams 테이블에서 팀 이름 목록을 가져옵니다.
+
     $sql = "SELECT team_id, team_name FROM teams ORDER BY team_name ASC";
     $result = $conn->query($sql);
 
@@ -31,14 +26,19 @@ if ($conn->connect_error) {
         }
         $result->free();
     } else {
-        $db_team_error = "팀 목록을 불러올 수 없습니다. teams 테이블을 확인하세요.";
+        // 팀 데이터가 없거나 쿼리 실패 시
+        if ($conn->error) {
+             $db_team_error = "팀 목록 조회 오류: " . $conn->error;
+        } else if (count($teams_list) === 0) {
+             // DB 연결은 성공했으나 데이터가 없는 경우 (에러는 아님)
+             // 필요하다면 메시지 설정
+        }
     }
-
-    $conn->close();
+    
 }
 
 
-// === 3. 회원가입 실패 시 전달된 오류 메시지 처리 (추가된 로직 유지) ===
+// === 3. 회원가입 실패 시 전달된 오류 메시지 처리 (기존 로직 유지) ===
 $error_code = $_GET['error'] ?? null;
 $submission_error = ""; // 폼 제출 실패로 인한 오류 메시지
 
@@ -78,7 +78,7 @@ require_once 'header.php';
 ?>
 
 <!-- ============================================== -->
-<!-- 🚩 Custom Alert Modal HTML 구조 (추가된 부분) -->
+<!-- 🚩 Custom Alert Modal HTML 구조 -->
 <!-- ============================================== -->
 <div id="custom-alert-modal" style="
     display: none; 
@@ -130,7 +130,7 @@ require_once 'header.php';
         
         <form action="process_signup.php" method="POST" class="signup-form">
             
-            <!-- 팀 목록 로드 DB 오류 메시지 (기존 로직 유지) -->
+            <!-- 팀 목록 로드 DB 오류 메시지 -->
             <?php if ($db_team_error): ?>
                 <p style="color: red; text-align: center; margin-bottom: 15px;"><?php echo htmlspecialchars($db_team_error); ?></p>
             <?php endif; ?>
@@ -158,10 +158,10 @@ require_once 'header.php';
 </div>
 
 <!-- ============================================== -->
-<!-- 🚩 JavaScript 로직 (수정된 부분) -->
+<!-- 🚩 JavaScript 로직 -->
 <!-- ============================================== -->
 <script>
-    // 🚩 수정된 부분: PHP 변수를 직접 문자열로 인코딩하여 JS에 전달
+    // PHP 변수를 직접 문자열로 인코딩하여 JS에 전달
     const signupErrorMessage = "<?php echo htmlspecialchars($submission_error, ENT_QUOTES, 'UTF-8'); ?>";
 
     /**
@@ -179,7 +179,7 @@ require_once 'header.php';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // 🚩 수정된 부분: 메시지가 비어있지 않으면 바로 모달 표시
+        // 메시지가 비어있지 않으면 바로 모달 표시
         if (signupErrorMessage.length > 0) {
             showCustomErrorModal(signupErrorMessage);
         }

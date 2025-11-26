@@ -27,20 +27,18 @@ if (!$team_id) {
     exit;
 }
 
-// 3. DB 연결 (teams.php와 동일한 설정 사용)
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306;
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT); 
+// 3. DB 연결 설정 불러오기 (config/config.php 사용)
+require_once 'config/config.php';
 
-if ($conn->connect_error) {
+// config.php에서 $conn이 생성되었는지 확인
+if (!isset($conn) || $conn->connect_error) {
     http_response_code(503); // 503 Service Unavailable
-    echo json_encode(['success' => false, 'message' => 'DB 연결 오류: ' . $conn->connect_error]);
+    echo json_encode(['success' => false, 'message' => 'DB 연결 오류: ' . ($conn->connect_error ?? 'Connection object not found')]);
     exit;
 }
-$conn->set_charset("utf8mb4");
+
+// config.php에서 utf8mb4 설정을 했겠지만, 안전을 위해 유지해도 무방
+// $conn->set_charset("utf8mb4");
 
 $stmt = null;
 $message = '';
@@ -61,13 +59,14 @@ try {
     $result = $stmt->get_result();
     
     // 'favorite_team_id' 컬럼 이름으로 결과 가져오기
-    $current_fav_team = $result->fetch_assoc()['favorite_team_id'] ?? null;
-    $stmt->close();
+    $row = $result->fetch_assoc();
+    $current_fav_team = $row['favorite_team_id'] ?? null;
+    $stmt->close(); // 다음 쿼리를 위해 닫기
 
 
     // 4-2. 북마크 상태 토글 로직
     if ($current_fav_team == $team_id) {
-        // 현재 팀이 이미 응원팀(북마크)이라면 -> 해제 (NULL로 설정) - 'favorite_team_id'로 수정
+        // 현재 팀이 이미 응원팀(북마크)이라면 -> 해제 (NULL로 설정)
         $sql_update = "UPDATE users SET favorite_team_id = NULL WHERE user_id = ?";
         $stmt = $conn->prepare($sql_update);
         
@@ -79,7 +78,7 @@ try {
         $message = "북마크가 해제되었습니다.";
         $action_success = true;
     } else {
-        // 현재 팀이 응원팀이 아니라면 -> 설정 - 'favorite_team_id'로 수정
+        // 현재 팀이 응원팀이 아니라면 -> 설정
         $sql_update = "UPDATE users SET favorite_team_id = ? WHERE user_id = ?";
         $stmt = $conn->prepare($sql_update);
         
@@ -107,10 +106,11 @@ try {
 }
 
 // 5. 연결 종료 (try-catch 블록 밖에서 안전하게 종료)
-if ($stmt) {
+if (isset($stmt) && $stmt) {
     $stmt->close();
 }
-if ($conn) {
+// API 엔드포인트이므로 명시적으로 닫아주는 것이 좋습니다.
+if (isset($conn) && $conn) {
     $conn->close();
 }
 ?>

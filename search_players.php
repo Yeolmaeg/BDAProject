@@ -4,23 +4,12 @@
 
 session_start();
 
-// 1. DB 연결 설정
-$DB_HOST = '127.0.0.1'; 
-$DB_NAME = 'team04';   
-$DB_USER = 'root';     
-$DB_PASS = '';         
-$DB_PORT = 3306;       
+// 1. DB 연결 설정 불러오기 (config/config.php 사용)
+require_once 'config/config.php';
 
-$pdo = null; 
-
-try {
-    $dsn = "mysql:host={$DB_HOST};port={$DB_PORT};dbname={$DB_NAME};charset=utf8mb4";
-    $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage()); 
+// config.php에서 $conn이 생성되었는지 확인
+if (!isset($conn) || $conn->connect_error) {
+    die("Database connection failed: " . ($conn->connect_error ?? 'Connection object not found'));
 }
 
 // 2. URL에서 player_id 가져오기
@@ -33,14 +22,20 @@ if (!$player_id) {
 }
 
 // 3. 선수 이름 및 팀 ID 가져오기 (players 테이블에서)
-$stmt_player_info = $pdo->prepare("
+// MySQLi 방식 사용
+$sql_player_info = "
     SELECT p.player_name, t.team_name 
     FROM players p
     JOIN teams t ON p.team_id = t.team_id
-    WHERE p.player_id = :player_id
-");
-$stmt_player_info->execute(['player_id' => $player_id]);
-$player_info = $stmt_player_info->fetch();
+    WHERE p.player_id = ?
+";
+
+$stmt_player_info = $conn->prepare($sql_player_info);
+$stmt_player_info->bind_param("i", $player_id);
+$stmt_player_info->execute();
+$result_player_info = $stmt_player_info->get_result();
+$player_info = $result_player_info->fetch_assoc();
+$stmt_player_info->close();
 
 if (!$player_info) {
     $page_title = "Player Not Found";
@@ -56,13 +51,19 @@ $page_title = $player_name . " Weather-Specific Performance Analysis";
 
 
 // 4. player_weather_performance 데이터 조회
-$stmt_perf = $pdo->prepare("
+$sql_perf = "
     SELECT * FROM player_weather_performance 
-    WHERE player_id = :player_id
+    WHERE player_id = ?
     ORDER BY temp_bucket, humidity_bucket, wind_bucket, rain_bucket
-");
-$stmt_perf->execute(['player_id' => $player_id]);
-$performance_data = $stmt_perf->fetchAll();
+";
+
+$stmt_perf = $conn->prepare($sql_perf);
+$stmt_perf->bind_param("i", $player_id);
+$stmt_perf->execute();
+$result_perf = $stmt_perf->get_result();
+// fetch_all(MYSQLI_ASSOC)은 결과 전체를 연관 배열의 배열로 가져옵니다.
+$performance_data = $result_perf->fetch_all(MYSQLI_ASSOC);
+$stmt_perf->close();
 
 
 // 5. 페이지 출력

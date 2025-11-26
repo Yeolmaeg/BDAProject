@@ -2,62 +2,51 @@
 // BDAProject/search.php
 // author: Jwa Yeonjoo
 
-
-// 1. DB 연결 설정
-
-$DB_HOST = '127.0.0.1'; // 호스트 (localhost와 동일)
-$DB_NAME = 'team04';   // 데이터베이스 이름
-$DB_USER = 'root';     // 사용자 이름
-$DB_PASS = '';         // 비밀번호 (XAMPP 기본 설정은 공백)
-$DB_PORT = 3306;       // 포트 번호
-
-$pdo = null; // PDO 객체 초기화
-
-try {
-    // 🚩 PDO 객체 생성 (데이터베이스 연결)
-    $dsn = "mysql:host={$DB_HOST};port={$DB_PORT};dbname={$DB_NAME};charset=utf8mb4";
-    $pdo = new PDO($dsn, $DB_USER, $DB_PASS);
-    
-    // 에러 모드를 예외 발생으로 설정하여 오류를 잡을 수 있게 함
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // 결과 배열의 키를 컬럼 이름으로 설정 (FETCH_ASSOC)
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    
-} catch (PDOException $e) {
-    // 연결 실패 시 오류 메시지 출력 후 스크립트 중단
-    die("데이터베이스 연결 실패: " . $e->getMessage() . " (User: {$DB_USER})"); 
+// 1. 세션 시작 확인 (DB 연결 전에 세션이 필요할 수 있음)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
+// 2. DB 연결 설정 불러오기 (config/config.php 사용)
+require_once 'config/config.php';
 
-// 🚩 Helper function: 선수의 주된 역할을 판단합니다. (검색 목록에서 역할 표시용)
-function getPlayerRole($pdo, $player_id) {
+// config.php에서 $conn이 생성되었는지 확인
+if (!isset($conn) || $conn->connect_error) {
+    die("데이터베이스 연결 실패: " . ($conn->connect_error ?? 'Connection object not found'));
+}
+
+// 🚩 Helper function: 선수의 주된 역할을 판단합니다. (MySQLi 버전)
+function getPlayerRole($conn, $player_id) {
     // 1. 타격 기록 확인 (야수 우선)
-    $stmt_batting = $pdo->prepare("SELECT 1 FROM batting_stats WHERE player_id = ? LIMIT 1");
-    $stmt_batting->execute([$player_id]);
-    if ($stmt_batting->fetchColumn()) {
+    $stmt_batting = $conn->prepare("SELECT 1 FROM batting_stats WHERE player_id = ? LIMIT 1");
+    $stmt_batting->bind_param("i", $player_id);
+    $stmt_batting->execute();
+    $stmt_batting->store_result(); // 결과 유무 확인을 위해 저장
+    
+    if ($stmt_batting->num_rows > 0) {
+        $stmt_batting->close();
         return 'Batter';
     }
+    $stmt_batting->close();
 
     // 2. 투구 기록 확인
-    $stmt_pitching = $pdo->prepare("SELECT 1 FROM pitching_stats WHERE player_id = ? LIMIT 1");
-    $stmt_pitching->execute([$player_id]);
-    if ($stmt_pitching->fetchColumn()) {
+    $stmt_pitching = $conn->prepare("SELECT 1 FROM pitching_stats WHERE player_id = ? LIMIT 1");
+    $stmt_pitching->bind_param("i", $player_id);
+    $stmt_pitching->execute();
+    $stmt_pitching->store_result();
+
+    if ($stmt_pitching->num_rows > 0) {
+        $stmt_pitching->close();
         return 'Pitcher';
     }
+    $stmt_pitching->close();
 
     // 통계가 없는 경우 기본값
     return 'Unknown'; 
 }
 
 
-// header.php는 세션을 필요로 하므로, 세션이 시작되었는지 확인합니다.
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-
-// 2. URL에서 검색어 가져오기
+// 3. URL에서 검색어 가져오기
 $query = trim($_GET['query'] ?? '');
 
 if (empty($query)) {
@@ -69,38 +58,45 @@ if (empty($query)) {
 // === 리다이렉션 우선 로직: 정확히 일치하는 팀 검색 ===
 
 // 1. 정확히 일치하는 팀 이름 검색 (team_id 필요)
-$stmt_exact_team = $pdo->prepare("SELECT team_id FROM teams WHERE team_name = :query");
-$stmt_exact_team->execute(['query' => $query]);
-$exact_team_id = $stmt_exact_team->fetchColumn();
+$sql_exact_team = "SELECT team_id FROM teams WHERE team_name = ?";
+$stmt_exact_team = $conn->prepare($sql_exact_team);
+$stmt_exact_team->bind_param("s", $query);
+$stmt_exact_team->execute();
+$result_exact_team = $stmt_exact_team->get_result();
 
-if ($exact_team_id) {
+if ($row = $result_exact_team->fetch_assoc()) {
+    $exact_team_id = $row['team_id'];
     // 🚩 팀 이름 검색 시 matches.php로 이동하며 month=0과 team={team_id}를 필터 파라미터로 넘김
     header("Location: matches.php?month=0&team={$exact_team_id}");
     exit;
 }
-
-// 2. 정확히 일치하는 선수 이름 검색
-//    -> 이제 즉시 리다이렉션 하지 않고, 아래 목록 검색에 포함시켜 페이지를 보여주도록 합니다.
-//    (기존 리다이렉션 로직 제거)
-
+$stmt_exact_team->close();
 
 // === 목록 검색 로직: 부분 일치하는 모든 결과 검색 ===
 
 $search_param = "%{$query}%";
 
 // A. 부분 일치하는 모든 팀 목록 검색
-$stmt_teams = $pdo->prepare("SELECT team_id, team_name FROM teams WHERE team_name LIKE :query ORDER BY team_name ASC");
-$stmt_teams->execute(['query' => $search_param]);
-$team_results = $stmt_teams->fetchAll();
+$sql_teams = "SELECT team_id, team_name FROM teams WHERE team_name LIKE ? ORDER BY team_name ASC";
+$stmt_teams = $conn->prepare($sql_teams);
+$stmt_teams->bind_param("s", $search_param);
+$stmt_teams->execute();
+$result_teams = $stmt_teams->get_result();
+$team_results = $result_teams->fetch_all(MYSQLI_ASSOC);
+$stmt_teams->close();
 
 // B. 부분 일치하는 모든 선수 목록 검색
-$stmt_players = $pdo->prepare("SELECT player_id, player_name FROM players WHERE player_name LIKE :query ORDER BY player_name ASC");
-$stmt_players->execute(['query' => $search_param]);
-$player_results = $stmt_players->fetchAll();
+$sql_players = "SELECT player_id, player_name FROM players WHERE player_name LIKE ? ORDER BY player_name ASC";
+$stmt_players = $conn->prepare($sql_players);
+$stmt_players->bind_param("s", $search_param);
+$stmt_players->execute();
+$result_players = $stmt_players->get_result();
+$player_results = $result_players->fetch_all(MYSQLI_ASSOC);
+$stmt_players->close();
 
 $has_results = !empty($team_results) || !empty($player_results);
 
-// 3. 페이지 출력
+// 4. 페이지 출력
 $page_title = $has_results ? "Search Results" : "No Matching Results";
 require_once 'header.php';
 ?>
@@ -137,8 +133,8 @@ require_once 'header.php';
                 <ul style="list-style: none; padding: 0;">
                     <?php foreach ($player_results as $player): ?>
                         <?php
-                            // 🚩 선수의 역할을 결정
-                            $player_role = getPlayerRole($pdo, $player['player_id']);
+                            // 🚩 선수의 역할을 결정 (MySQLi용 함수 호출)
+                            $player_role = getPlayerRole($conn, $player['player_id']);
                             // 🚩 search_players.php로 이동하도록 링크 수정
                             $player_url = "search_players.php?player_id=" . $player['player_id'];
                         ?>

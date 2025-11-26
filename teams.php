@@ -5,29 +5,21 @@
 session_start();
 $page_title = "teams";
 
-// ===========================================
-// 1. 데이터베이스 연결 정보 설정 및 연결
-// ===========================================
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306; 
+// 1. DB 연결 설정 불러오기 (config/config.php 사용)
+require_once 'config/config.php';
 
-$conn = null;
 $teams = [];
 $error_message = null;
 $result = false;
 // 현재 사용자의 북마크 팀 ID를 저장할 변수
 $current_favorite_team_id = null;
 
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
-
-// 연결 오류 확인
-if ($conn->connect_error) {
-    $error_message = "데이터베이스 연결 실패: " . $conn->connect_error;
+// config.php에서 $conn이 생성되었는지 확인
+if (!isset($conn) || $conn->connect_error) {
+    $error_message = "데이터베이스 연결 실패: " . ($conn->connect_error ?? 'Connection object not found');
 } else {
-    $conn->set_charset("utf8mb4");
+    // config.php에서 이미 utf8mb4 설정을 완료했다고 가정하거나, 필요시 추가
+    // $conn->set_charset("utf8mb4");
 
     // 1-1. 현재 로그인 사용자의 북마크 팀 ID를 조회합니다. (DB 연결 성공 시 실행)
     if (isset($_SESSION['user_id'])) {
@@ -44,16 +36,13 @@ if ($conn->connect_error) {
             }
             $stmt_fav->close();
         } else {
-             // 디버그 코드 제거 (오류 메시지만 남김)
-             $error_message .= " [Favorite team SQL prep failed]";
+             // 쿼리 준비 실패 시 오류 메시지 추가 (디버깅용)
+             // 실제 서비스에서는 로그로 남기는 것이 좋습니다.
+             $error_message .= " [Favorite team SQL prep failed: " . $conn->error . "]";
         }
-    } else {
-        // 디버그 코드 제거 (오류 메시지만 남김)
-        $error_message .= " [Session user_id is missing]";
-    }
+    } 
 
-
-    // 2. SQL 쿼리 실행
+    // 2. SQL 쿼리 실행 (팀 목록 조회)
     $sql = "
         SELECT 
             t.team_id, 
@@ -85,14 +74,13 @@ if ($conn->connect_error) {
         }
         $result->free();
     } else {
-        $error_message = "팀 정보를 불러올 수 없습니다. 테이블을 확인하세요.";
+        if ($conn->error) {
+            $error_message = "팀 정보 조회 오류: " . $conn->error;
+        } else {
+            $error_message = "팀 정보를 불러올 수 없습니다. 데이터가 존재하는지 확인하세요.";
+        }
     }
 }
-// DB 연결 종료는 데이터 로딩 완료 후, HTML 출력 직전에 수행합니다.
-if ($conn && !$conn->connect_error) {
-    $conn->close();
-}
-
 
 // 5. 헤더 및 푸터 파일 포함
 require_once 'header.php'; 

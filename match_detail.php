@@ -134,3 +134,235 @@ if ($match_info_detail) {
 
 require_once 'header.php';
 ?>
+
+<div class="card-box">
+    <?php if ($error_message_detail): ?>
+        <div style="padding: 20px; background: #f8d7da; color: #721c24; border-radius: 8px; margin: 20px 0;">
+            <strong>Error:</strong> <?php echo htmlspecialchars($error_message_detail); ?>
+            <br><br>
+            <a href="matches.php" style="color: #004085;">← Back to Matches</a>
+        </div>
+    <?php elseif ($match_info_detail): ?>
+
+        <!-- 경기 헤더 -->
+        <h1 class="page-title">
+            <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> 
+            <span style="font-size: 1.2em; margin: 0 15px; color: #007bff;"><?php echo $match_info_detail['score_away']; ?></span>
+            VS
+            <span style="font-size: 1.2em; margin: 0 15px; color: #007bff;"><?php echo $match_info_detail['score_home']; ?></span>
+            <?php echo htmlspecialchars($match_info_detail['home_team_name']); ?>
+        </h1>
+        <p class="page-description">
+            📅 <?php echo date('Y-m-d (l) H:i', strtotime($match_info_detail['match_date'])); ?><br>
+            📍 <?php echo htmlspecialchars($match_info_detail['stadium_name']); ?>
+        </p>
+
+        <!-- 타자 기록 -->
+        <div class="table-header-row">
+            <h2 class="section-title">🏏 Batting Statistics</h2>
+        </div>
+        
+        <!-- Away 팀 타자 -->
+        <div style="background: #f8f9fa; padding: 12px 20px; margin: 0 0 0 0; font-weight: 600; color: #495057; border-left: 4px solid #007bff;">
+            <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> (Away)
+        </div>
+        <?php if (empty($batting_away)): ?>
+            <div style="padding: 30px; text-align: center; color: #6c757d; background: white; border: 1px solid #dee2e6;">
+                No batting records available for this team.
+            </div>
+        <?php else: ?>
+            <div class="player-rank-card" style="margin-top: 0;">
+                <table class="player-rank-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Hits</th>
+                            <th>HR</th>
+                            <th>RBI</th>
+                            <th>AVG</th>
+                            <th>OBP</th>
+                            <th>SLG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($batting_away as $batter): ?>
+                        <tr>
+                            <td style="text-align: left; font-weight: 500;">
+                                <?php echo htmlspecialchars($batter['player_name']); ?>
+                            </td>
+                            <td><?php echo $batter['hits']; ?></td>
+                            <td><?php echo $batter['homeruns']; ?></td>
+                            <td><?php echo $batter['rbi']; ?></td>
+                            <td><?php echo number_format($batter['batting_avg'], 3); ?></td>
+                            <td><?php echo number_format($batter['on_base_percentage'], 3); ?></td>
+                            <td><?php echo number_format($batter['slugging_percentage'], 3); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
+        <!-- Home 팀 타자 -->
+        <div style="background: #f8f9fa; padding: 12px 20px; margin: 20px 0 0 0; font-weight: 600; color: #495057; border-left: 4px solid #007bff;">
+            <?php echo htmlspecialchars($match_info_detail['home_team_name']); ?> (Home)
+        </div>
+        <?php if (empty($batting_home)): ?>
+            <div style="padding: 30px; text-align: center; color: #6c757d; background: white; border: 1px solid #dee2e6;">
+                No batting records available for this team.
+            </div>
+        <?php else: ?>
+            <div class="player-rank-card" style="margin-top: 0;">
+                <table class="player-rank-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Hits</th>
+                            <th>HR</th>
+                            <th>RBI</th>
+                            <th>AVG</th>
+                            <th>OBP</th>
+                            <th>SLG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($batting_home as $batter): ?>
+                        <tr>
+                            <td style="text-align: left; font-weight: 500;">
+                                <?php echo htmlspecialchars($batter['player_name']); ?>
+                            </td>
+                            <td><?php echo $batter['hits']; ?></td>
+                            <td><?php echo $batter['homeruns']; ?></td>
+                            <td><?php echo $batter['rbi']; ?></td>
+                            <td><?php echo number_format($batter['batting_avg'], 3); ?></td>
+                            <td><?php echo number_format($batter['on_base_percentage'], 3); ?></td>
+                            <td><?php echo number_format($batter['slugging_percentage'], 3); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
+        <!-- 투수 기록 -->
+        <div class="table-header-row" style="margin-top: 40px;">
+            <h2 class="section-title">🥎 Pitching Statistics</h2>
+        </div>
+        
+        <!-- Away 팀 투수 -->
+        <div style="background: #f8f9fa; padding: 12px 20px; margin: 0 0 0 0; font-weight: 600; color: #495057; border-left: 4px solid #007bff;">
+            <?php echo htmlspecialchars($match_info_detail['away_team_name']); ?> (Away)
+        </div>
+        <?php if (empty($pitching_away)): ?>
+            <div style="padding: 30px; text-align: center; color: #6c757d; background: white; border: 1px solid #dee2e6;">
+                No pitching records available for this team.
+            </div>
+        <?php else: ?>
+            <div class="player-rank-card" style="margin-top: 0;">
+                <table class="player-rank-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>IP</th>
+                            <th>ERA</th>
+                            <th>K</th>
+                            <th>Pitches</th>
+                            <th>W/L</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pitching_away as $pitcher): ?>
+                        <tr>
+                            <td style="text-align: left; font-weight: 500;">
+                                <?php echo htmlspecialchars($pitcher['player_name']); ?>
+                            </td>
+                            <td><?php echo number_format($pitcher['innings_pitched'], 1); ?></td>
+                            <td><?php echo number_format($pitcher['era'], 2); ?></td>
+                            <td><?php echo $pitcher['strikeouts']; ?></td>
+                            <td><?php echo $pitcher['pitch_count']; ?></td>
+                            <td>
+                                <?php if ($pitcher['win_lost'] === 'W'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #28a745; color: white;">
+                                        W
+                                    </span>
+                                <?php elseif ($pitcher['win_lost'] === 'L'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #dc3545; color: white;">
+                                        L
+                                    </span>
+                                <?php else: ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #adb5bd; color: white;">
+                                        <?php echo !empty($pitcher['win_lost']) ? htmlspecialchars($pitcher['win_lost']) : '-'; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
+        <!-- Home 팀 투수 -->
+        <div style="background: #f8f9fa; padding: 12px 20px; margin: 20px 0 0 0; font-weight: 600; color: #495057; border-left: 4px solid #007bff;">
+            <?php echo htmlspecialchars($match_info_detail['home_team_name']); ?> (Home)
+        </div>
+        <?php if (empty($pitching_home)): ?>
+            <div style="padding: 30px; text-align: center; color: #6c757d; background: white; border: 1px solid #dee2e6;">
+                No pitching records available for this team.
+            </div>
+        <?php else: ?>
+            <div class="player-rank-card" style="margin-top: 0;">
+                <table class="player-rank-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>IP</th>
+                            <th>ERA</th>
+                            <th>K</th>
+                            <th>Pitches</th>
+                            <th>W/L</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pitching_home as $pitcher): ?>
+                        <tr>
+                            <td style="text-align: left; font-weight: 500;">
+                                <?php echo htmlspecialchars($pitcher['player_name']); ?>
+                            </td>
+                            <td><?php echo number_format($pitcher['innings_pitched'], 1); ?></td>
+                            <td><?php echo number_format($pitcher['era'], 2); ?></td>
+                            <td><?php echo $pitcher['strikeouts']; ?></td>
+                            <td><?php echo $pitcher['pitch_count']; ?></td>
+                            <td>
+                                <?php if ($pitcher['win_lost'] === 'W'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #28a745; color: white;">
+                                        W
+                                    </span>
+                                <?php elseif ($pitcher['win_lost'] === 'L'): ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #dc3545; color: white;">
+                                        L
+                                    </span>
+                                <?php else: ?>
+                                    <span style="padding: 4px 12px; border-radius: 4px; font-weight: bold; background: #adb5bd; color: white;">
+                                        <?php echo !empty($pitcher['win_lost']) ? htmlspecialchars($pitcher['win_lost']) : '-'; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="matches.php" style="display: inline-block; padding: 12px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">
+                ← Back to All Matches
+            </a>
+        </div>
+
+    <?php endif; ?>
+</div>
+
+<?php require_once 'footer.php'; ?>
+

@@ -6,16 +6,24 @@ session_start();
 // 1. 페이지 제목 설정 
 $page_title = "matches";
 
-// config.php를 통한 데이터베이스 연결
-require_once __DIR__ . '/config/config.php';
+// DB 연결
+$DB_HOST = '127.0.0.1';
+$DB_NAME = 'team04';
+$DB_USER = 'root';
+$DB_PASS = '';
+$DB_PORT = 3306;
 
-$matches_matches = [];
-$teams_matches = [];
-$error_message_matches = null;
+$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+$teams = [];
+$error_message = null;
 
 // 연결 확인
-if (!$conn) {
-    $error_message_matches = "데이터베이스 연결 실패";
+if ($conn->connect_error) {
+    $error_message_matches = "데이터베이스 연결 실패: " . $conn->connect_error;
+    $conn = null; // 연결 실패 시 명시적으로 null 처리
+} else {
+    // 3. 한글 깨짐 방지 설정 (성공 시 실행)
+    $conn->set_charset("utf8mb4");
 }
 
 // 필터 및 페이지네이션 파라미터 처리

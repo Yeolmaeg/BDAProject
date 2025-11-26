@@ -1398,3 +1398,22 @@ select.filter-toggle option {
     border: 0;
 }
 
+
+/* 마이 페이지 추가 후 header 메뉴 정렬용 */
+.header-menu-left {
+    display: flex;
+    gap: 12px;
+}
+
+/* My Page를 가장 오른쪽으로 밀기 */
+.header-menu-my {
+    margin-left: auto;
+}
+
+
+
+
+
+
+
+

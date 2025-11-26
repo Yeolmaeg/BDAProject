@@ -40,8 +40,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <?php else: ?>
                 <a href="logout.php">log out</a>
                 <a href="bug_report.php">bug report</a>
+                <a 
+                    href="mypage.php" 
+                    class="my-page<?php if($current_page == 'mypage.php') echo ' active'; ?>"
+                >
+                    My Page
+                </a>
             <?php endif; ?>
-            
         </div>
     </header>
 

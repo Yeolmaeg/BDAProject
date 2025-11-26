@@ -116,9 +116,6 @@ if ($stmt === false) {
     $stmt->close();
 }
 
-// 여기서 굳이 $conn->close(); 안 해도 페이지 끝나면 정리됨
-// 필요하면 아래 주석 해제해서 명시적으로 닫아도 됨
-// $conn->close();
 
 include 'header.php';
 ?>
@@ -239,8 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteForm.addEventListener('submit', function (e) {
         const ok = confirm(
             "Are you sure you want to delete your account?\n\n"
-            + "If you continue, your account information and favorite team settings\n"
-            + "will be permanently removed.\n"
+            + "If you continue, your account information and favorite team settings will be permanently removed.\n\n"
             + "This action cannot be undone."
         );
         if (!ok) {

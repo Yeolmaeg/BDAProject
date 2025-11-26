@@ -4,16 +4,7 @@
 // 페이지 제목 설정
 $page_title = "bug_report";
 
-// 설정 파일 포함
-// require_once __DIR__ . '/config/config.php'; // config 파일 로드 제거
-
-// DB 연결 설정
-$DB_HOST = '127.0.0.1'; 
-$DB_NAME = 'team04';    
-$DB_USER = 'root';      
-$DB_PASS = '';          
-$DB_PORT = 3306;        
-
+require_once __DIR__ . '/config/config.php';
 
 // 세션 시작
 if (session_status() === PHP_SESSION_NONE) {
@@ -33,38 +24,17 @@ if (!isset($_SESSION['user_id'])) {
 $error_message = '';
 $success_message = '';
 
-// 데이터베이스 연결 함수
-function getDBConnection() {
-    $mysqli = @new mysqli(
-        $GLOBALS['DB_HOST'], 
-        $GLOBALS['DB_USER'], 
-        $GLOBALS['DB_PASS'], 
-        $GLOBALS['DB_NAME'], 
-        $GLOBALS['DB_PORT']  
-    ); 
-    
-    // connect_error를 사용하여 연결 오류 확인
-    if ($mysqli->connect_error) { 
-        error_log("Database connection failed: " . $mysqli->connect_error);
-        return false;
-    }
-    $mysqli->set_charset('utf8mb4');
-    return $mysqli;
-}
-
 // 현재 로그인한 사용자 정보 가져오기 함수
 function getCurrentUserInfo($user_id) {
-    $mysqli = getDBConnection();
-    if (!$mysqli) return false; 
-
-    $stmt = $mysqli->prepare("SELECT user_name, user_email FROM users WHERE user_id = ?");
+    global $conn;
+    
+    $stmt = $conn->prepare("SELECT user_name, user_email FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     
     $stmt->close();
-    $mysqli->close();
     
     return $user;
 }
@@ -76,13 +46,11 @@ if (!isset($_SESSION['csrf_token'])) {
 
 // 문의사항 저장 함수
 function saveInquiry($user_id, $email, $name, $inquiry_type, $message) {
-    $mysqli = getDBConnection();
-    if (!$mysqli) return false;
+    global $conn;
     
-    $stmt = $mysqli->prepare("INSERT INTO inquiries (user_id, email, name, inquiry_type, message, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', NOW())");
+    $stmt = $conn->prepare("INSERT INTO inquiries (user_id, email, name, inquiry_type, message, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', NOW())");
     if (!$stmt) {
-        error_log("Prepare failed: " . $mysqli->error);
-        $mysqli->close();
+        error_log("Prepare failed: " . $conn->error);
         return false;
     }
     
@@ -93,10 +61,9 @@ function saveInquiry($user_id, $email, $name, $inquiry_type, $message) {
         error_log("Execute failed: " . $stmt->error);
     }
     
-    $inquiry_id = $success ? $mysqli->insert_id : false;
+    $inquiry_id = $success ? $conn->insert_id : false;
     
     $stmt->close();
-    $mysqli->close();
     
     return $inquiry_id;
 }
@@ -145,9 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Invalid request. Please try again.";
     } else {
         // 폼 데이터 받기
-        $user_id = $_SESSION['user_id'] ?? null; // 로그인한 경우 user_id
+        $user_id = $_SESSION['user_id'] ?? null;
         
-        // 사용자 정보 가져오기 (로그인한 경우)
+        // 사용자 정보 가져오기
         $user_info = null;
         if ($user_id) {
             $user_info = getCurrentUserInfo($user_id);

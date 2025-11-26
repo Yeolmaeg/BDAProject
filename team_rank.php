@@ -1,6 +1,5 @@
 <?php
 // author: Sumin Son
-// team_rank.php
 
 session_start();
 $page_title = "team_rank";
@@ -36,18 +35,15 @@ function getTeamLogoSrc($team_name) {
 // =======================
 // 1. DB 연결 세팅
 // =======================
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306;
 
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+require_once __DIR__ . '/config/config.php';
+
 $teams = [];
 $error_message = null;
 
+
 // =======================
-// 2. 필터 값 받기 (GET)
+// 2. 필터 값 받기
 // =======================
 $month        = isset($_GET['month']) ? $_GET['month'] : 'ALL';
 $temp_bucket  = isset($_GET['temp'])  ? $_GET['temp']  : 'ALL';

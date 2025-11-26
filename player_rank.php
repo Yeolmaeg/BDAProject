@@ -36,15 +36,12 @@ function getFlagHtml($nationality) {
 // =======================
 // 1. DB 연결 세팅
 // =======================
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'team04';
-$DB_USER = 'root';
-$DB_PASS = '';
-$DB_PORT = 3306;
 
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+require_once __DIR__ . '/config/config.php';
+
 $players = [];
 $error_message = null;
+
 
 // =======================
 // 2. 필터 값 받기 (GET)
@@ -111,245 +108,243 @@ $wind_labels = [
     '>=5' => '5m/s and above'
 ];
 
-if ($conn->connect_error) {
-    $error_message = "데이터베이스 연결 실패: " . $conn->connect_error;
-} else {
-    $conn->set_charset("utf8mb4");
+$conn->set_charset("utf8mb4");
 
-    // =======================
-    // 3. 기본 WHERE 조건 생성
-    // =======================
-    $where  = [];
-    $params = [];
-    $types  = '';
 
-    // 포지션에 따른 기본 조건
-    if ($position === 'batters') {
-        // 타자 데이터가 실제로 있는 행만
-        $where[] = "pwp.bat_matches_count > 0 AND pwp.avg_ba IS NOT NULL";
-    } else { // pitchers
-        $position = 'pitchers';
-        $where[] = "pwp.pitch_matches_count > 0 AND pwp.avg_era IS NOT NULL";
-    }
+// =======================
+// 3. 기본 WHERE 조건 생성
+// =======================
+$where  = [];
+$params = [];
+$types  = '';
 
-    // 날씨 버킷 필터 (ALL이 아닌 애들만 WHERE에 추가)
-    if ($temp_bucket !== 'ALL') {
-        $where[]  = "pwp.temp_bucket = ?";
-        $params[] = $temp_bucket;
-        $types   .= 's';
-    }
-    if ($humid_bucket !== 'ALL') {
-        $where[]  = "pwp.humidity_bucket = ?";
-        $params[] = $humid_bucket;
-        $types   .= 's';
-    }
-    if ($wind_bucket !== 'ALL') {
-        $where[]  = "pwp.wind_bucket = ?";
-        $params[] = $wind_bucket;
-        $types   .= 's';
-    }
-    if ($rain_bucket !== 'ALL') {
-        $where[]  = "pwp.rain_bucket = ?";
-        $params[] = $rain_bucket;
-        $types   .= 's';
-    }
-
-    if ($player_keyword !== '') {
-        $where[]  = "pwp.player_name LIKE ?";
-        $params[] = '%' . $player_keyword . '%';
-        $types   .= 's';
-    }
-
-    $where_sql = '';
-    if (!empty($where)) {
-        $where_sql = 'WHERE ' . implode(' AND ', $where);
-    }
-
-    // =======================
-    // 4. 최종 SQL
-    //   (1) 날씨 중 하나라도 ALL → 선수당 1행 집계 + RANK()
-    //   (2) ALL이 전혀 없음     → 버킷별 행 + RANK()
-    // =======================
-    if ($has_any_all_weather) {
-        // ▽▽▽ 선수별 집계 모드 ▽▽▽
-        if ($position === 'batters') {
-            // 타자: 경기 수 합산 + 가중 평균 BA/OPS + RANK()
-            $sql = "
-                SELECT
-                    RANK() OVER (
-                        ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
-                    ) AS rank,
-                    sub.*
-                FROM (
-                    SELECT
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary,
-                        SUM(pwp.bat_matches_count)   AS bat_matches_count,
-                        0                             AS pitch_matches_count,
-                        ROUND(
-                            SUM(pwp.avg_ba  * pwp.bat_matches_count) /
-                            NULLIF(SUM(pwp.bat_matches_count), 0),
-                            3
-                        ) AS avg_ba,
-                        ROUND(
-                            SUM(pwp.avg_ops * pwp.bat_matches_count) /
-                            NULLIF(SUM(pwp.bat_matches_count), 0),
-                            3
-                        ) AS avg_ops,
-                        NULL AS avg_era
-                    FROM player_weather_performance pwp
-                    JOIN players pl ON pl.player_id = pwp.player_id
-                    JOIN teams   t  ON t.team_id    = pl.team_id
-                    $where_sql
-                    GROUP BY
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary
-                ) AS sub
-                ORDER BY rank
-            ";
-        } else {
-            // 투수: 경기 수 합산 + 가중 평균 ERA + RANK()
-            $sql = "
-                SELECT
-                    RANK() OVER (
-                        ORDER BY avg_era ASC, pitch_matches_count DESC
-                    ) AS rank,
-                    sub.*
-                FROM (
-                    SELECT
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary,
-                        0                            AS bat_matches_count,
-                        SUM(pwp.pitch_matches_count) AS pitch_matches_count,
-                        NULL AS avg_ba,
-                        NULL AS avg_ops,
-                        ROUND(
-                            SUM(pwp.avg_era * pwp.pitch_matches_count) /
-                            NULLIF(SUM(pwp.pitch_matches_count), 0),
-                            2
-                        ) AS avg_era
-                    FROM player_weather_performance pwp
-                    JOIN players pl ON pl.player_id = pwp.player_id
-                    JOIN teams   t  ON t.team_id    = pl.team_id
-                    $where_sql
-                    GROUP BY
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary
-                ) AS sub
-                WHERE avg_era > 0
-                ORDER BY rank
-            ";
-        }
-    } else {
-        // ▽▽▽ 버킷별 행 모드 + RANK() ▽▽▽
-        if ($position === 'batters') {
-            $sql = "
-                SELECT
-                    RANK() OVER (
-                        ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
-                    ) AS rank,
-                    sub.*
-                FROM (
-                    SELECT 
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary,
-                        pwp.bat_matches_count   AS bat_matches_count,
-                        pwp.pitch_matches_count AS pitch_matches_count,
-                        pwp.avg_ba,
-                        pwp.avg_ops,
-                        pwp.avg_era
-                    FROM player_weather_performance pwp
-                    JOIN players pl ON pl.player_id = pwp.player_id
-                    JOIN teams   t  ON t.team_id    = pl.team_id
-                    $where_sql
-                ) AS sub
-                ORDER BY rank
-            ";
-        } else {
-            $sql = "
-                SELECT
-                    RANK() OVER (
-                        ORDER BY avg_era ASC, pitch_matches_count DESC
-                    ) AS rank,
-                    sub.*
-                FROM (
-                    SELECT 
-                        pwp.player_id,
-                        pwp.player_name,
-                        t.team_name,
-                        pl.position,
-                        pl.age,
-                        pl.nationality,
-                        pl.salary,
-                        pwp.bat_matches_count   AS bat_matches_count,
-                        pwp.pitch_matches_count AS pitch_matches_count,
-                        pwp.avg_ba,
-                        pwp.avg_ops,
-                        pwp.avg_era
-                    FROM player_weather_performance pwp
-                    JOIN players pl ON pl.player_id = pwp.player_id
-                    JOIN teams   t  ON t.team_id    = pl.team_id
-                    $where_sql
-                ) AS sub
-                WHERE avg_era > 0
-                ORDER BY rank
-            ";
-        }
-    }
-
-    // =======================
-    // 4-1. 쿼리 실행
-    // =======================
-    $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
-        $error_message = "쿼리 준비 중 오류: " . $conn->error;
-    } else {
-        if (!empty($params)) {
-            $stmt->bind_param($types, ...$params);
-        }
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $players[] = $row;
-                }
-            } else {
-                $error_message = "조건에 맞는 선수 데이터가 없습니다.";
-            }
-            $result && $result->free();
-        } else {
-            $error_message = "쿼리 실행 오류: " . $stmt->error;
-        }
-        $stmt->close();
-    }
-
-    $conn->close();
+// 포지션에 따른 기본 조건
+if ($position === 'batters') {
+    // 타자 데이터가 실제로 있는 행만
+    $where[] = "pwp.bat_matches_count > 0 AND pwp.avg_ba IS NOT NULL";
+} else { // pitchers
+    $position = 'pitchers';
+    $where[] = "pwp.pitch_matches_count > 0 AND pwp.avg_era IS NOT NULL";
 }
+
+// 날씨 버킷 필터 (ALL이 아닌 애들만 WHERE에 추가)
+if ($temp_bucket !== 'ALL') {
+    $where[]  = "pwp.temp_bucket = ?";
+    $params[] = $temp_bucket;
+    $types   .= 's';
+}
+if ($humid_bucket !== 'ALL') {
+    $where[]  = "pwp.humidity_bucket = ?";
+    $params[] = $humid_bucket;
+    $types   .= 's';
+}
+if ($wind_bucket !== 'ALL') {
+    $where[]  = "pwp.wind_bucket = ?";
+    $params[] = $wind_bucket;
+    $types   .= 's';
+}
+if ($rain_bucket !== 'ALL') {
+    $where[]  = "pwp.rain_bucket = ?";
+    $params[] = $rain_bucket;
+    $types   .= 's';
+}
+
+if ($player_keyword !== '') {
+    $where[]  = "pwp.player_name LIKE ?";
+    $params[] = '%' . $player_keyword . '%';
+    $types   .= 's';
+}
+
+$where_sql = '';
+if (!empty($where)) {
+    $where_sql = 'WHERE ' . implode(' AND ', $where);
+}
+
+// =======================
+// 4. 최종 SQL
+//   (1) 날씨 중 하나라도 ALL → 선수당 1행 집계 + RANK()
+//   (2) ALL이 전혀 없음     → 버킷별 행 + RANK()
+// =======================
+if ($has_any_all_weather) {
+    // ▽▽▽ 선수별 집계 모드 ▽▽▽
+    if ($position === 'batters') {
+        // 타자: 경기 수 합산 + 가중 평균 BA/OPS + RANK()
+        $sql = "
+            SELECT
+                RANK() OVER (
+                    ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
+                ) AS rank,
+                sub.*
+            FROM (
+                SELECT
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary,
+                    SUM(pwp.bat_matches_count)   AS bat_matches_count,
+                    0                             AS pitch_matches_count,
+                    ROUND(
+                        SUM(pwp.avg_ba  * pwp.bat_matches_count) /
+                        NULLIF(SUM(pwp.bat_matches_count), 0),
+                        3
+                    ) AS avg_ba,
+                    ROUND(
+                        SUM(pwp.avg_ops * pwp.bat_matches_count) /
+                        NULLIF(SUM(pwp.bat_matches_count), 0),
+                        3
+                    ) AS avg_ops,
+                    NULL AS avg_era
+                FROM player_weather_performance pwp
+                JOIN players pl ON pl.player_id = pwp.player_id
+                JOIN teams   t  ON t.team_id    = pl.team_id
+                $where_sql
+                GROUP BY
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary
+            ) AS sub
+            ORDER BY rank
+        ";
+    } else {
+        // 투수: 경기 수 합산 + 가중 평균 ERA + RANK()
+        $sql = "
+            SELECT
+                RANK() OVER (
+                    ORDER BY avg_era ASC, pitch_matches_count DESC
+                ) AS rank,
+                sub.*
+            FROM (
+                SELECT
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary,
+                    0                            AS bat_matches_count,
+                    SUM(pwp.pitch_matches_count) AS pitch_matches_count,
+                    NULL AS avg_ba,
+                    NULL AS avg_ops,
+                    ROUND(
+                        SUM(pwp.avg_era * pwp.pitch_matches_count) /
+                        NULLIF(SUM(pwp.pitch_matches_count), 0),
+                        2
+                    ) AS avg_era
+                FROM player_weather_performance pwp
+                JOIN players pl ON pl.player_id = pwp.player_id
+                JOIN teams   t  ON t.team_id    = pl.team_id
+                $where_sql
+                GROUP BY
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary
+            ) AS sub
+            WHERE avg_era > 0
+            ORDER BY rank
+        ";
+    }
+} else {
+    // ▽▽▽ 버킷별 행 모드 + RANK() ▽▽▽
+    if ($position === 'batters') {
+        $sql = "
+            SELECT
+                RANK() OVER (
+                    ORDER BY avg_ops DESC, avg_ba DESC, bat_matches_count DESC
+                ) AS rank,
+                sub.*
+            FROM (
+                SELECT 
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary,
+                    pwp.bat_matches_count   AS bat_matches_count,
+                    pwp.pitch_matches_count AS pitch_matches_count,
+                    pwp.avg_ba,
+                    pwp.avg_ops,
+                    pwp.avg_era
+                FROM player_weather_performance pwp
+                JOIN players pl ON pl.player_id = pwp.player_id
+                JOIN teams   t  ON t.team_id    = pl.team_id
+                $where_sql
+            ) AS sub
+            ORDER BY rank
+        ";
+    } else {
+        $sql = "
+            SELECT
+                RANK() OVER (
+                    ORDER BY avg_era ASC, pitch_matches_count DESC
+                ) AS rank,
+                sub.*
+            FROM (
+                SELECT 
+                    pwp.player_id,
+                    pwp.player_name,
+                    t.team_name,
+                    pl.position,
+                    pl.age,
+                    pl.nationality,
+                    pl.salary,
+                    pwp.bat_matches_count   AS bat_matches_count,
+                    pwp.pitch_matches_count AS pitch_matches_count,
+                    pwp.avg_ba,
+                    pwp.avg_ops,
+                    pwp.avg_era
+                FROM player_weather_performance pwp
+                JOIN players pl ON pl.player_id = pwp.player_id
+                JOIN teams   t  ON t.team_id    = pl.team_id
+                $where_sql
+            ) AS sub
+            WHERE avg_era > 0
+            ORDER BY rank
+        ";
+    }
+}
+
+// =======================
+// 4-1. 쿼리 실행
+// =======================
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    $error_message = "쿼리 준비 중 오류: " . $conn->error;
+} else {
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $players[] = $row;
+            }
+        } else {
+            $error_message = "조건에 맞는 선수 데이터가 없습니다.";
+        }
+        $result && $result->free();
+    } else {
+        $error_message = "쿼리 실행 오류: " . $stmt->error;
+    }
+    $stmt->close();
+}
+
+$conn->close();
+
 
 
 // =======================

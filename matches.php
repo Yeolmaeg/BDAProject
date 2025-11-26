@@ -6,29 +6,30 @@ session_start();
 // 1. 페이지 제목 설정 
 $page_title = "matches";
 
+// [변수 초기화] 
 $matches_matches = [];
 $teams_matches = [];
-$error_message_matches = null;
+$error_message_matches = null; // 초기값 null 설정 
 $conn = null;
 
-// DB 연결
+// [DB 연결 설정] 
 $DB_HOST = '127.0.0.1';
 $DB_NAME = 'team04';
 $DB_USER = 'root';
-$DB_PASS = '';
+$DB_PASS = '';     // XAMPP 기본 비밀번호는 공란
 $DB_PORT = 3306;
 
-// 1. DB 연결 시도 
+// DB 연결 시도
 $conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 
-// 2. 연결 오류 확인 
+// 연결 오류 확인
 if ($conn->connect_error) {
     $error_message_matches = "데이터베이스 연결 실패: " . $conn->connect_error;
-    $conn = null; // 연결 실패 시 명시적으로 null 처리
+    $conn = null; 
 } else {
-    // 3. 한글 깨짐 방지 설정 (성공 시 실행)
     $conn->set_charset("utf8mb4");
 }
+// 
 
 // 필터 및 페이지네이션 파라미터 처리
 $month_matches = isset($_GET['month']) ? intval($_GET['month']) : 0;
@@ -85,9 +86,17 @@ if ($conn && !$error_message_matches) {
         }
         $stmt_count->execute();
         $result_count = $stmt_count->get_result();
-        $total_records = $result_count->fetch_assoc()['total'];
+        // 결과가 있는지 확인
+        if ($result_count && $row = $result_count->fetch_assoc()) {
+             $total_records = $row['total'];
+        } else {
+             $total_records = 0;
+        }
         $total_pages = ceil($total_records / $per_page_matches);
         $stmt_count->close();
+    } else {
+        $total_records = 0;
+        $total_pages = 1;
     }
     
     // Window Function을 사용한 경기 데이터 조회
@@ -274,7 +283,6 @@ require_once 'header.php';
         <h2 class="section-title">Match List</h2>
     </div>
 
-    <!-- 필터 바 -->
     <form method="GET" action="matches.php" class="filter-bar">
         <div class="filter-dropdown">
             <select name="month" class="filter-toggle">

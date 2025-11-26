@@ -8,7 +8,7 @@ session_start();
 $page_title = "match_detail";
 
 // 데이터베이스 연결
-require_once 'config.php';
+require_once __DIR__ . '/config.php';
 
 $conn_detail = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 $match_info_detail = null;

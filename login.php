@@ -17,7 +17,8 @@ if (isset($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // POST 요청 처리 (로그인 시도)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // require_once 'config/config.php'; // 기존 config 파일 로드는 제거됨
+    // config.php에서 데이터베이스 연결 가져오기
+    require_once __DIR__ . '/config/config.php';
     
     // 입력값 가져오기
     $email = trim($_POST['email'] ?? '');
@@ -28,30 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Please enter your email and password.";
     } else {
         try {
-            // 1. DB 연결 설정 (signup.php에서 가져옴)
-            $DB_HOST = '127.0.0.1'; 
-            $DB_NAME = 'team04';    
-            $DB_USER = 'root';      
-            $DB_PASS = '';          
-            $DB_PORT = 3306;       
-            
-            // 2. 데이터베이스 연결
-            $mysqli = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
-            
-            // 3. 오류 처리 및 인코딩 설정
-            if ($mysqli->connect_error) {
-                throw new Exception("Database connection failed: " . $mysqli->connect_error);
+            if (!isset($conn) || $conn->connect_error) {
+                throw new Exception("Database connection failed");
             }
             
-            $mysqli->set_charset('utf8mb4');
-            
             // 사용자 정보 조회
-            $stmt = $mysqli->prepare("SELECT user_id, user_name, user_pass, user_email FROM users WHERE user_email = ?");
+            $stmt = $conn->prepare("SELECT user_id, user_name, user_pass, user_email FROM users WHERE user_email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $result = $stmt->get_result();
             $user = $result->fetch_assoc();
-            
             
             if ($user && password_verify($password, $user['user_pass'])) {
                 // 로그인 성공
@@ -60,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['email'] = $user['user_email'];        
                 
                 $stmt->close();
-                $mysqli->close();
                 
                 header("Location: index.php");
                 exit();
@@ -69,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $stmt->close();
-            $mysqli->close();
             
         } catch (Exception $e) {
             $error_message = "An error occurred while logging in.";
@@ -174,7 +159,7 @@ require_once 'header.php';
                 const submitBtn = document.getElementById('submit-btn');
 
                 if (form && submitBtn) {
-                    // 1. 폼 제출 시 버튼 비활성화 로직은 그대로 유지
+                    // 폼 제출 시 버튼 비활성화 로직은 그대로 유지
                     form.addEventListener('submit', function () {
                         submitBtn.disabled = true;
                         submitBtn.textContent = 'Logging in...';

@@ -6,6 +6,11 @@ session_start();
 // 1. 페이지 제목 설정 
 $page_title = "matches";
 
+$matches_matches = [];
+$teams_matches = [];
+$error_message_matches = null;
+$conn = null;
+
 // DB 연결
 $DB_HOST = '127.0.0.1';
 $DB_NAME = 'team04';
@@ -13,14 +18,10 @@ $DB_USER = 'root';
 $DB_PASS = '';
 $DB_PORT = 3306;
 
-$matches_matches = [];
-$teams_matches = [];
-$error_message_matches = null;
-
-// 1. DB 연결 시도 (@로 에러 출력 억제)
+// 1. DB 연결 시도 
 $conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
 
-// 2. 연결 오류 확인 (이 부분이 중요합니다!)
+// 2. 연결 오류 확인 
 if ($conn->connect_error) {
     $error_message_matches = "데이터베이스 연결 실패: " . $conn->connect_error;
     $conn = null; // 연결 실패 시 명시적으로 null 처리

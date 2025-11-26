@@ -7,7 +7,7 @@ session_start();
 $page_title = "matches";
 
 // config.php를 통한 데이터베이스 연결
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config.php';
 
 $matches_matches = [];
 $teams_matches = [];

@@ -13,11 +13,14 @@ $DB_USER = 'root';
 $DB_PASS = '';
 $DB_PORT = 3306;
 
-$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
-$teams = [];
-$error_message = null;
+$matches_matches = [];
+$teams_matches = [];
+$error_message_matches = null;
 
-// 연결 확인
+// 1. DB 연결 시도 (@로 에러 출력 억제)
+$conn = @new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+
+// 2. 연결 오류 확인 (이 부분이 중요합니다!)
 if ($conn->connect_error) {
     $error_message_matches = "데이터베이스 연결 실패: " . $conn->connect_error;
     $conn = null; // 연결 실패 시 명시적으로 null 처리

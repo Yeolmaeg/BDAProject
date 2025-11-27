@@ -255,8 +255,7 @@ if ($conn->connect_error) {
             t.winnings
         ORDER BY
             wins DESC,
-            games DESC,
-            t.team_name ASC
+            games DESC
     ";
 
     $stmt = $conn->prepare($sql);
@@ -270,9 +269,28 @@ if ($conn->connect_error) {
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             if ($result && $result->num_rows > 0) {
-                $rank = 1;
+                $rank = 0;
+                $row_index = 0;
+                $prev_wins  = null;
+                $prev_games = null;
+
                 while ($row = $result->fetch_assoc()) {
-                    $row['rank'] = $rank++;
+                    $row_index++;
+
+                    $current_wins  = (int)$row['wins'];
+                    $current_games = (int)$row['games'];
+
+                    // 바로 이전 팀과 wins, games 둘 다 같으면 → 같은 순위 유지
+                    if ($prev_wins === $current_wins && $prev_games === $current_games) {
+                        // $rank 그대로 사용
+                    } else {
+                        // 다르면 → 현재 줄 번호를 새 순위로 사용
+                        $rank = $row_index;
+                        $prev_wins  = $current_wins;
+                        $prev_games = $current_games;
+                    }
+
+                    $row['rank'] = $rank;
                     $teams[] = $row;
                 }
             } else {

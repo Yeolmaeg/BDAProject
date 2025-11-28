@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- 생성 시간: 25-11-22 13:02
+-- 생성 시간: 25-11-28 15:43
 -- 서버 버전: 10.4.32-MariaDB
 -- PHP 버전: 8.2.12
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- 프로시저
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `refresh_player_weather_performance` ()   BEGIN
+CREATE DEFINER=`team04`@`localhost` PROCEDURE `refresh_player_weather_performance` ()   BEGIN
   
   TRUNCATE TABLE player_weather_performance;
 
